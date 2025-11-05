@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Paylaşım Takvimi</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: #ffffff;
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+      color: #111827;
+    }
+    h1, h2, h3, label { font-weight: 700; }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo { height: 40px; }
+
+    /* Sekmeler */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .tab-button {
+      cursor: pointer;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      padding: 6px 14px;
+      background: #f3f4f6;
+      font-size: 13px;
+    }
+    .tab-button.active {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #ffffff;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 3fr 1.2fr;
+      gap: 24px;
+      align-items: flex-start;
+    }
+    .calendar {
+      border: 1px solid #dde2ff;
+      border-radius: 12px;
+      padding: 20px;
+      background: #f9faff;
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: -20px -20px 16px -20px;
+      padding: 10px 16px;
+      background: #eef2ff;
+      border-bottom: 1px solid #dde2ff;
+      border-radius: 12px 12px 0 0;
+    }
+    button {
+      cursor: pointer;
+      border-radius: 999px;
+      border: 1px solid #c4d0ff;
+      padding: 4px 12px;
+      background: #f2f5ff;
+      font-size: 12px;
+    }
+    button:hover { background: #e4ebff; }
+    #themeToggleBtn {
+      font-size: 11px;
+      padding-inline: 10px;
+    }
+    .month-label {
+      font-weight: 700;
+      font-size: 20px;
+      color: #152052;
+    }
+    .weekdays,
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .weekday {
+      text-align: center;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 4px 0;
+      background: #f0f3ff;
+      border-radius: 6px;
+      color: #1a275a;
+    }
+    .day {
+      border-radius: 8px;
+      border: 1px solid #e1e5ff;
+      padding: 8px;
+      min-height: 120px;
+      font-size: 13px;
+      cursor: pointer;
+      background: #ffffff;
+      transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+    .day:hover {
+      border-color: #3b5bdb;
+      box-shadow: 0 0 0 1px rgba(59, 91, 219, 0.12);
+      background: #f4f6ff;
+    }
+    .day-number {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 4px;
+      color: #1a275a;
+    }
+    .day.has-data {
+      border-color: #00b3c6;
+      background: #f0fcff;
+    }
+    .day-summary {
+      font-size: 11px;
+      color: #33415c;
+    }
+    .day-summary + .day-summary { margin-top: 2px; }
+
+    .side {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .form {
+      border: 1px solid #dde2ff;
+      border-radius: 12px;
+      padding: 16px;
+      background: #ffffff;
+    }
+    .small {
+      font-size: 11px;
+      color: #4b5563;
+    }
+    .schedule-list {
+      margin-top: 8px;
+      border-top: 1px solid #eef0ff;
+      padding-top: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+    .schedule-item {
+      padding: 6px 0;
+      border-bottom: 1px solid #f1f3ff;
+      cursor: pointer;
+    }
+    .schedule-item:last-child { border-bottom: none; }
+    .schedule-date {
+      font-weight: 700;
+      font-size: 12px;
+      margin-bottom: 2px;
+      color: #111827;
+    }
+    .schedule-text {
+      font-size: 11px;
+      margin-bottom: 2px;
+      color: #374151;
+    }
+
+    /* Raporlar görünümü */
+    #viewReports {
+      border: 1px solid #dde2ff;
+      border-radius: 12px;
+      padding: 16px;
+      background: #ffffff;
+    }
+    .report-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 4px 0 10px 0;
+      font-size: 12px;
+      flex-wrap: wrap;
+    }
+    .report-controls label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .report-section { margin-bottom: 16px; }
+    .report-section h3 {
+      margin: 0 0 4px 0;
+      font-size: 14px;
+    }
+    .report-list {
+      margin: 0;
+      padding-left: 16px;
+      font-size: 12px;
+    }
+    .report-range-inputs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .report-range-inputs input[type="date"] {
+      font-size: 12px;
+      padding: 4px 6px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #ffffff;
+      color: #111827;
+    }
+    .report-range-inputs .range-separator {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .quick-range-buttons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      margin: 0 0 14px 0;
+      flex-wrap: wrap;
+    }
+    .quick-range-buttons span {
+      color: #6b7280;
+      font-weight: 600;
+    }
+    .quick-range-buttons button {
+      font-size: 11px;
+      padding: 4px 10px;
+    }
+    body.dark .report-range-inputs input[type="date"] {
+      background: #111827;
+      border-color: #374151;
+      color: #f3f4f6;
+    }
+    body.dark .quick-range-buttons span {
+      color: #9ca3af;
+    }
+    .report-chart-wrapper {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      background: #f9fafb;
+    }
+    .report-chart-wrapper canvas {
+      width: 100%;
+      height: 260px;
+    }
+    body.dark .report-chart-wrapper {
+      background: #1f2937;
+      border-color: #374151;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 560px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .modal-close {
+      border: none;
+      background: transparent;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111827;
+    }
+    .modal-body { margin-top: 12px; }
+    .form-row {
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+      padding: 6px;
+      font-family: inherit;
+      font-size: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+    input[type="text"],
+    input[type="time"] {
+      padding: 6px;
+      font-size: 12px;
+      font-family: inherit;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+    .platforms {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px 8px;
+      font-size: 12px;
+    }
+    .platforms label {
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .form-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    #toggleFormBtn {
+      border-radius: 999px;
+      padding-inline: 14px;
+      padding-block: 6px;
+    }
+
+    /* Gün içi içerik listesi */
+    #modalSummary {
+      margin-top: 8px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .summary-item {
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #f3f4ff;
+      border: 1px solid #e0e3ff;
+      cursor: pointer;
+      opacity: 0.85; /* daha okunaklı */
+    }
+    .summary-item.active {
+      opacity: 1;
+      background: #e7ebff;
+      border-color: #c4d0ff;
+    }
+    .summary-item-title {
+      font-size: 12px;
+      color: #111827;
+      margin-bottom: 2px;
+    }
+    .summary-item-time {
+      font-size: 11px;
+      color: #4b5563;
+      margin-bottom: 1px;
+    }
+    .summary-item-platforms {
+      font-size: 11px;
+      color: #4b5563;
+    }
+    .summary-empty {
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #f9fafb;
+      border: 1px dashed #e5e7eb;
+      color: #6b7280;
+    }
+
+    /* DARK MODE: yüksek kontrast */
+    body.dark {
+      background: #0b1120;
+      color: #e5e7eb;
+    }
+    body.dark .calendar,
+    body.dark .form,
+    body.dark #viewReports {
+      background: #0b1120;
+      border-color: #1f2937;
+    }
+    body.dark .calendar-header {
+      background: #0f172a;
+      border-color: #1f2937;
+    }
+    body.dark .weekday {
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+    body.dark .day {
+      background: #0b1120;
+      border-color: #1f2937;
+    }
+    body.dark .day.has-data {
+      background: #0f172a;
+      border-color: #38bdf8;
+    }
+    body.dark .day-number { color: #e5e7eb; }
+    body.dark .day-summary { color: #cbd5f5; }
+
+    /* Koyu mod modal daha aydınlık ve kontrastlı */
+    body.dark .modal {
+      background: rgba(15, 23, 42, 0.85);
+    }
+    body.dark .modal-content {
+      background: #111827;
+      color: #f9fafb;
+      border: 1px solid #1f2937;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.9);
+    }
+    body.dark .modal-title { color: #f9fafb; }
+    body.dark textarea,
+    body.dark input[type="text"],
+    body.dark input[type="time"] {
+      background: #020617;
+      color: #f9fafb;
+      border-color: #475569;
+    }
+
+    body.dark .summary-item {
+      background: #020617;
+      border-color: #1f2937;
+      opacity: 0.9;
+    }
+    body.dark .summary-item.active {
+      background: #1d4ed8;
+      border-color: #60a5fa;
+      opacity: 1;
+    }
+    body.dark .summary-empty {
+      background: #020617;
+      border-color: #475569;
+      color: #9ca3af;
+    }
+    body.dark .summary-item-title,
+    body.dark .summary-item-time,
+    body.dark .summary-item-platforms {
+      color: #e5e7eb;
+    }
+    body.dark .schedule-item {
+      border-color: #1f2937;
+    }
+    body.dark .schedule-text,
+    body.dark .schedule-date {
+      color: #e5e7eb;
+    }
+
+    body.dark button {
+      background: #0f172a;
+      border-color: #475569;
+      color: #e5e7eb;
+    }
+    body.dark button:hover {
+      background: #1e293b;
+    }
+    body.dark .tab-button {
+      background: #0f172a;
+      border-color: #475569;
+      color: #e5e7eb;
+    }
+    body.dark .tab-button.active {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #ffffff;
+    }
+    body.dark .report-controls { color: #e5e7eb; }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <img src="goart-logo.png" alt="GoArt Worlds" class="logo" />
+      <h1>Paylaşım Takvimi</h1>
+    </div>
+    <button id="themeToggleBtn">Koyu mod</button>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-button active" id="tabCalendar">Takvim</button>
+    <button class="tab-button" id="tabReports">Raporlar</button>
+  </div>
+
+  <!-- TAKVİM GÖRÜNÜMÜ -->
+  <div id="viewCalendar">
+    <div class="container">
+      <div class="calendar">
+        <div class="calendar-header">
+          <button id="prevMonthBtn">&lt;</button>
+          <div class="month-label" id="monthLabel"></div>
+          <button id="nextMonthBtn">&gt;</button>
+        </div>
+        <div class="weekdays">
+          <div class="weekday">Pzt</div>
+          <div class="weekday">Sal</div>
+          <div class="weekday">Çar</div>
+          <div class="weekday">Per</div>
+          <div class="weekday">Cum</div>
+          <div class="weekday">Cmt</div>
+          <div class="weekday">Paz</div>
+        </div>
+        <div class="days" id="daysContainer"></div>
+      </div>
+
+      <div class="side">
+        <div class="form">
+          <h2>Gün Detayı / Takvim Özeti</h2>
+          <div id="scheduleList" class="schedule-list small"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RAPORLAR -->
+  <div id="viewReports" style="display:none;">
+    <h2>Raporlar</h2>
+    <p class="small" id="reportMonthLabel"></p>
+
+    <div class="report-controls">
+      <span>Görünüm:</span>
+      <label>
+        <input type="radio" name="reportMode" value="month" checked />
+        Aylık
+      </label>
+      <label>
+        <input type="radio" name="reportMode" value="range" />
+        Tarih aralığı
+      </label>
+      <div class="report-range-inputs" id="reportRangeInputs" style="display:none;">
+        <input type="date" id="reportRangeStart" />
+        <span class="range-separator">→</span>
+        <input type="date" id="reportRangeEnd" />
+      </div>
+    </div>
+    <div class="quick-range-buttons" id="quickRangeButtons" style="display:none;">
+      <span>Kısayol:</span>
+      <button type="button" data-range="7">Son 7 gün</button>
+      <button type="button" data-range="14">Son 14 gün</button>
+      <button type="button" data-range="30">Son 30 gün</button>
+      <button type="button" data-range="90">Son 90 gün</button>
+    </div>
+
+    <div class="report-section">
+      <h3>Toplam içerik</h3>
+      <p class="small" id="reportTotal"></p>
+    </div>
+
+    <div class="report-section">
+      <h3>Platforma göre içerik sayısı</h3>
+      <div class="report-chart-wrapper" id="platformChartWrapper" style="display:none;">
+        <canvas id="platformChart"></canvas>
+      </div>
+      <ul class="report-list" id="reportPlatforms"></ul>
+    </div>
+
+    <div class="report-section">
+      <h3>Saat aralığına göre dağılım</h3>
+      <div class="report-chart-wrapper" id="timeChartWrapper" style="display:none;">
+        <canvas id="timeChart"></canvas>
+      </div>
+      <ul class="report-list" id="reportTimes"></ul>
+    </div>
+
+    <div class="report-section">
+      <h3>İçerik olan gün sayısı</h3>
+      <p class="small" id="reportDays"></p>
+    </div>
+  </div>
+
+  <!-- Modal: Seçili Gün -->
+  <div class="modal" id="dayModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="modalDateTitle"></div>
+        <button class="modal-close" id="modalCloseBtn" aria-label="Kapat">&times;</button>
+      </div>
+      <div class="modal-body">
+        <button id="toggleFormBtn">Paylaşım oluştur +</button>
+
+        <div id="modalSummary" class="small"></div>
+
+        <div id="modalFormSection" style="margin-top: 12px; display: none;">
+          <div class="form-row">
+            <label for="filesInput">Paylaşılacak dosyalar / linkler</label>
+            <textarea
+              id="filesInput"
+              placeholder="Örn: Drive linki, dosya adları"
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <label for="textInput">Paylaşım metni</label>
+            <textarea
+              id="textInput"
+              placeholder="Post metnini buraya yaz"
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <label for="timeInput">Paylaşım saati</label>
+            <input type="time" id="timeInput" />
+          </div>
+
+          <div class="form-row">
+            <label>Hangi sosyal medya?</label>
+            <div class="platforms">
+              <label><input type="checkbox" value="Instagram" />Instagram</label>
+              <label><input type="checkbox" value="Facebook" />Facebook</label>
+              <label><input type="checkbox" value="X" />X</label>
+              <label><input type="checkbox" value="Reddit" />Reddit</label>
+              <label><input type="checkbox" value="Discord" />Discord</label>
+              <label><input type="checkbox" value="YouTube" />YouTube</label>
+              <label><input type="checkbox" value="LinkedIn" />LinkedIn</label>
+              <label><input type="checkbox" value="Telegram" />Telegram</label>
+              <label><input type="checkbox" value="Medium" />Medium</label>
+            </div>
+          </div>
+
+          <div class="form-buttons">
+            <button id="deleteBtn">Sil</button>
+            <button id="clearBtn">Temizle</button>
+            <button id="saveBtn">Kaydet</button>
+          </div>
+
+          <p class="small">
+            Not: Veriler sadece bu bilgisayardaki bu tarayıcıda saklanır.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script>
+    const monthLabel = document.getElementById("monthLabel");
+    const daysContainer = document.getElementById("daysContainer");
+    const prevBtn = document.getElementById("prevMonthBtn");
+    const nextBtn = document.getElementById("nextMonthBtn");
+
+    const filesInput = document.getElementById("filesInput");
+    const textInput = document.getElementById("textInput");
+    const timeInput = document.getElementById("timeInput");
+    const saveBtn = document.getElementById("saveBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
+    const platformInputs = document.querySelectorAll(
+      ".platforms input[type='checkbox']"
+    );
+    const scheduleList = document.getElementById("scheduleList");
+
+    const dayModal = document.getElementById("dayModal");
+    const modalDateTitle = document.getElementById("modalDateTitle");
+    const modalCloseBtn = document.getElementById("modalCloseBtn");
+    const modalFormSection = document.getElementById("modalFormSection");
+    const toggleFormBtn = document.getElementById("toggleFormBtn");
+    const modalSummary = document.getElementById("modalSummary");
+    const themeToggleBtn = document.getElementById("themeToggleBtn");
+
+    const tabCalendar = document.getElementById("tabCalendar");
+    const tabReports = document.getElementById("tabReports");
+    const viewCalendar = document.getElementById("viewCalendar");
+    const viewReports = document.getElementById("viewReports");
+
+    const reportMonthLabel = document.getElementById("reportMonthLabel");
+    const reportTotal = document.getElementById("reportTotal");
+    const reportPlatforms = document.getElementById("reportPlatforms");
+    const reportTimes = document.getElementById("reportTimes");
+    const reportDays = document.getElementById("reportDays");
+    const reportModeRadios = document.querySelectorAll("input[name='reportMode']");
+    const reportRangeInputs = document.getElementById("reportRangeInputs");
+    const reportRangeStartInput = document.getElementById("reportRangeStart");
+    const reportRangeEndInput = document.getElementById("reportRangeEnd");
+    const quickRangeButtons = document.getElementById("quickRangeButtons");
+    const platformChartWrapper = document.getElementById("platformChartWrapper");
+    const platformChartCanvas = document.getElementById("platformChart");
+    const timeChartWrapper = document.getElementById("timeChartWrapper");
+    const timeChartCanvas = document.getElementById("timeChart");
+
+    const monthNames = [
+      "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
+      "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"
+    ];
+
+    let currentYear;
+    let currentMonth;
+    let selectedDateKey = null;
+    let currentDayItems = []; // {id, files, text, time, platforms}[]
+    let activeItemId = null;
+
+    let reportMode = "month"; // "month" | "range"
+    let platformChartInstance = null;
+    let timeChartInstance = null;
+    const quickRangeButtonsList = quickRangeButtons
+      ? Array.from(quickRangeButtons.querySelectorAll("button[data-range]"))
+      : [];
+
+    /* Tema */
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.body.classList.add("dark");
+        themeToggleBtn.textContent = "Açık mod";
+      } else {
+        document.body.classList.remove("dark");
+        themeToggleBtn.textContent = "Koyu mod";
+      }
+    }
+    function initTheme() {
+      const stored = localStorage.getItem("contentCalendar_theme");
+      applyTheme(stored === "dark" ? "dark" : "light");
+    }
+    themeToggleBtn.addEventListener("click", () => {
+      const next = document.body.classList.contains("dark") ? "light" : "dark";
+      applyTheme(next);
+      localStorage.setItem("contentCalendar_theme", next);
+      if (viewReports.style.display !== "none") renderReports();
+    });
+
+    /* Yardımcılar */
+    function formatDateKey(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + d;
+    }
+    function formatHumanDate(date) {
+      const day = String(date.getDate());
+      const monthName = monthNames[date.getMonth()];
+      const year = date.getFullYear();
+      return day + " " + monthName + " " + year;
+    }
+    function minutesFromTime(t) {
+      if (!t) return 24 * 60 + 1; // saat yoksa en sona
+      const parts = t.split(":");
+      if (parts.length !== 2) return 24 * 60 + 1;
+      const h = Number(parts[0]);
+      const m = Number(parts[1]);
+      if (Number.isNaN(h) || Number.isNaN(m)) return 24 * 60 + 1;
+      return h * 60 + m;
+    }
+    function sortItemsByTime(items) {
+      return items.slice().sort((a, b) => minutesFromTime(a.time) - minutesFromTime(b.time));
+    }
+    function isDarkMode() {
+      return document.body.classList.contains("dark");
+    }
+
+    /* Veri okuma / yazma */
+    function loadDayData(dateKey) {
+      const raw = localStorage.getItem("contentCalendar_" + dateKey);
+      if (!raw) return { items: [] };
+      let parsed;
+      try { parsed = JSON.parse(raw); } catch { return { items: [] }; }
+
+      let items = [];
+      if (parsed && Array.isArray(parsed.items)) {
+        items = parsed.items.map((it, idx) => ({
+          id: it.id || (Date.now() + idx),
+          files: it.files || "",
+          text: it.text || "",
+          time: it.time || "",
+          platforms: Array.isArray(it.platforms) ? it.platforms : (it.platforms || [])
+        }));
+      } else if (parsed && (parsed.files || parsed.text || parsed.platforms || parsed.time)) {
+        items = [{
+          id: Date.now(),
+          files: parsed.files || "",
+          text: parsed.text || "",
+          time: parsed.time || "",
+          platforms: Array.isArray(parsed.platforms) ? parsed.platforms : (parsed.platforms || [])
+        }];
+      }
+      return { items: sortItemsByTime(items) };
+    }
+
+    function saveDayItems(dateKey, items) {
+      const cleaned = items.filter(it =>
+        it.files || it.text || it.time || (it.platforms && it.platforms.length)
+      );
+      const sorted = sortItemsByTime(cleaned);
+      if (!sorted.length) {
+        localStorage.removeItem("contentCalendar_" + dateKey);
+      } else {
+        localStorage.setItem(
+          "contentCalendar_" + dateKey,
+          JSON.stringify({ items: sorted })
+        );
+      }
+      return sorted;
+    }
+
+    // Bir içerik için 10 karakterlik metin + platformlar + saat
+    function makeItemSummary(item) {
+      const textSource = item.text || item.files || "";
+      let snippet = textSource ? textSource.slice(0, 10) : "";
+      if (textSource.length > 10) snippet += "...";
+      if (!snippet) snippet = "İçerik";
+      const platforms =
+        item.platforms && item.platforms.length
+          ? item.platforms.join(", ")
+          : "Platform seçilmedi";
+      const time = item.time || "";
+      return { snippet, platforms, time };
+    }
+
+    /* Sağ panel: Gün Detayı / Takvim Özeti */
+    function updateScheduleList() {
+      scheduleList.innerHTML = "";
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      let any = false;
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateObj = new Date(currentYear, currentMonth, day);
+        const key = formatDateKey(dateObj);
+        const dayData = loadDayData(key);
+        const items = dayData.items || [];
+        if (!items.length) continue;
+
+        const sortedItems = sortItemsByTime(items);
+
+        sortedItems.forEach((item) => {
+          const hasContent =
+            item.text || item.files || item.time || (item.platforms && item.platforms.length);
+          if (!hasContent) return;
+          any = true;
+
+          const { snippet, platforms, time } = makeItemSummary(item);
+
+          const row = document.createElement("div");
+          row.className = "schedule-item";
+
+          const dateEl = document.createElement("div");
+          dateEl.className = "schedule-date";
+          dateEl.textContent = formatHumanDate(dateObj);
+          row.appendChild(dateEl);
+
+          const textEl = document.createElement("div");
+          textEl.className = "schedule-text";
+          const timePart = time ? time + " - " : "";
+          textEl.textContent = timePart + snippet + " - " + platforms;
+          row.appendChild(textEl);
+
+          row.addEventListener("click", () => {
+            openModalForDate(dateObj, key, item.id);
+          });
+
+          scheduleList.appendChild(row);
+        });
+      }
+
+      if (!any) {
+        const empty = document.createElement("p");
+        empty.className = "small";
+        empty.textContent = "Bu ay için kayıtlı paylaşım yok.";
+        scheduleList.appendChild(empty);
+      }
+    }
+
+    /* Takvim */
+    function renderCalendar() {
+      const firstDay = new Date(currentYear, currentMonth, 1);
+      const lastDay = new Date(currentYear, currentMonth + 1, 0);
+      const firstWeekday = (firstDay.getDay() + 6) % 7;
+      const daysInMonth = lastDay.getDate();
+
+      monthLabel.textContent = monthNames[currentMonth] + " " + currentYear;
+
+      daysContainer.innerHTML = "";
+
+      for (let i = 0; i < firstWeekday; i++) {
+        const empty = document.createElement("div");
+        daysContainer.appendChild(empty);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement("div");
+        cell.className = "day";
+
+        const numSpan = document.createElement("div");
+        numSpan.className = "day-number";
+        numSpan.textContent = day;
+        cell.appendChild(numSpan);
+
+        const dateObj = new Date(currentYear, currentMonth, day);
+        const key = formatDateKey(dateObj);
+        const dayData = loadDayData(key);
+        const items = dayData.items || [];
+
+        if (items.length) {
+          cell.classList.add("has-data");
+          const sortedItems = sortItemsByTime(items);
+          sortedItems.slice(0, 3).forEach(item => {
+            const { snippet, time } = makeItemSummary(item);
+            const line = document.createElement("div");
+            line.className = "day-summary";
+            const timePart = time ? time + " " : "";
+            line.textContent = timePart + snippet;
+            cell.appendChild(line);
+          });
+        }
+
+        cell.addEventListener("click", () => {
+          openModalForDate(dateObj, key);
+        });
+
+        daysContainer.appendChild(cell);
+      }
+
+      updateScheduleList();
+    }
+
+    /* Modal içi liste */
+    function renderModalSummaryList() {
+      modalSummary.innerHTML = "";
+
+      if (!currentDayItems.length) {
+        const empty = document.createElement("div");
+        empty.className = "summary-empty";
+        empty.textContent = "Bu gün için kayıtlı içerik yok.";
+        modalSummary.appendChild(empty);
+        return;
+      }
+
+      currentDayItems = sortItemsByTime(currentDayItems);
+
+      currentDayItems.forEach((item, index) => {
+        const wrap = document.createElement("div");
+        wrap.className = "summary-item";
+        if (item.id === activeItemId) wrap.classList.add("active");
+
+        const { snippet, platforms, time } = makeItemSummary(item);
+
+        const title = document.createElement("div");
+        title.className = "summary-item-title";
+        title.textContent = snippet || `İçerik ${index + 1}`;
+        wrap.appendChild(title);
+
+        const timeDiv = document.createElement("div");
+        timeDiv.className = "summary-item-time";
+        timeDiv.textContent = time ? "Saat: " + time : "Saat seçilmedi";
+        wrap.appendChild(timeDiv);
+
+        const platformsDiv = document.createElement("div");
+        platformsDiv.className = "summary-item-platforms";
+        platformsDiv.textContent = platforms;
+        wrap.appendChild(platformsDiv);
+
+        wrap.addEventListener("click", () => {
+          activeItemId = item.id;
+          filesInput.value = item.files || "";
+          textInput.value = item.text || "";
+          timeInput.value = item.time || "";
+          platformInputs.forEach((cb) => {
+            cb.checked = item.platforms
+              ? item.platforms.includes(cb.value)
+              : false;
+          });
+          modalFormSection.style.display = "block";
+          renderModalSummaryList();
+        });
+
+        modalSummary.appendChild(wrap);
+      });
+    }
+
+    function clearFormOnly() {
+      filesInput.value = "";
+      textInput.value = "";
+      timeInput.value = "";
+      platformInputs.forEach((cb) => (cb.checked = false));
+    }
+
+    function openModalForDate(dateObj, key, initialItemId = null) {
+      selectedDateKey = key;
+      const dayData = loadDayData(key);
+      currentDayItems = dayData.items || [];
+      activeItemId = initialItemId;
+
+      modalDateTitle.textContent = formatHumanDate(dateObj);
+
+      clearFormOnly();
+      modalFormSection.style.display = "none";
+
+      if (activeItemId) {
+        const item = currentDayItems.find((it) => it.id === activeItemId);
+        if (item) {
+          filesInput.value = item.files || "";
+          textInput.value = item.text || "";
+          timeInput.value = item.time || "";
+          platformInputs.forEach((cb) => {
+            cb.checked = item.platforms
+              ? item.platforms.includes(cb.value)
+              : false;
+          });
+          modalFormSection.style.display = "block";
+        } else {
+          activeItemId = null;
+        }
+      }
+
+      renderModalSummaryList();
+      dayModal.style.display = "flex";
+    }
+
+    function closeModal() {
+      dayModal.style.display = "none";
+    }
+
+    function normalizeToMidnight(date) {
+      if (!date) return null;
+      const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      normalized.setHours(0, 0, 0, 0);
+      return normalized;
+    }
+    function formatDateInputValue(date) {
+      if (!date) return "";
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + d;
+    }
+    function parseDateInput(value) {
+      if (!value) return null;
+      const parts = value.split("-");
+      if (parts.length !== 3) return null;
+      const year = Number(parts[0]);
+      const month = Number(parts[1]);
+      const day = Number(parts[2]);
+      if (
+        Number.isNaN(year) ||
+        Number.isNaN(month) ||
+        Number.isNaN(day)
+      ) {
+        return null;
+      }
+      const parsed = new Date(year, month - 1, day);
+      if (
+        parsed.getFullYear() !== year ||
+        parsed.getMonth() !== month - 1 ||
+        parsed.getDate() !== day
+      ) {
+        return null;
+      }
+      return normalizeToMidnight(parsed);
+    }
+
+    function clearReportOutputs() {
+      reportTotal.textContent = "-";
+      reportPlatforms.innerHTML = "";
+      reportTimes.innerHTML = "";
+      reportDays.textContent = "-";
+      if (platformChartInstance) {
+        platformChartInstance.destroy();
+        platformChartInstance = null;
+      }
+      if (platformChartWrapper) platformChartWrapper.style.display = "none";
+      if (timeChartInstance) {
+        timeChartInstance.destroy();
+        timeChartInstance = null;
+      }
+      if (timeChartWrapper) timeChartWrapper.style.display = "none";
+    }
+
+    /* İstatistik hesaplama: seçilen tarih aralığı için */
+    function buildStatsForRange(rangeStartDate, rangeEndDate) {
+      const startDate = normalizeToMidnight(rangeStartDate);
+      const endDate = normalizeToMidnight(rangeEndDate);
+      const platformsList = [
+        "Instagram","Facebook","X","Reddit",
+        "Discord","YouTube","LinkedIn","Telegram","Medium"
+      ];
+
+      let total = 0;
+      const platformCounts = {};
+      let early = 0, mid = 0, late = 0, noTime = 0;
+      let daysWithContent = 0;
+
+      platformsList.forEach((p) => (platformCounts[p] = 0));
+
+      if (!startDate || !endDate || startDate > endDate) {
+        return {
+          total,
+          platformCounts,
+          early,
+          mid,
+          late,
+          noTime,
+          daysWithContent,
+          startDate,
+          endDate
+        };
+      }
+
+      const cursor = new Date(startDate);
+
+      while (cursor <= endDate) {
+        const key = formatDateKey(cursor);
+        const items = loadDayData(key).items;
+        if (!items.length) {
+          cursor.setDate(cursor.getDate() + 1);
+          cursor.setHours(0, 0, 0, 0);
+          continue;
+        }
+
+        let dayHasContent = false;
+
+        items.forEach((item) => {
+          const hasContent =
+            item.text || item.files || item.time || (item.platforms && item.platforms.length);
+          if (!hasContent) return;
+
+          dayHasContent = true;
+          total++;
+
+          (item.platforms || []).forEach((p) => {
+            if (!platformCounts[p]) platformCounts[p] = 0;
+            platformCounts[p]++;
+          });
+
+          if (!item.time) {
+            noTime++;
+          } else {
+            const mins = minutesFromTime(item.time);
+            if (mins < 12 * 60) early++;
+            else if (mins < 18 * 60) mid++;
+            else late++;
+          }
+        });
+
+        if (dayHasContent) daysWithContent++;
+        cursor.setDate(cursor.getDate() + 1);
+        cursor.setHours(0, 0, 0, 0);
+      }
+
+      return {
+        total,
+        platformCounts,
+        early,
+        mid,
+        late,
+        noTime,
+        daysWithContent,
+        startDate,
+        endDate
+      };
+    }
+
+    function setRangeInputs(startDate, endDate) {
+      if (!reportRangeStartInput || !reportRangeEndInput) return;
+      reportRangeStartInput.value = formatDateInputValue(startDate);
+      reportRangeEndInput.value = formatDateInputValue(endDate);
+    }
+
+    function ensureRangeInputsInitialized() {
+      if (!reportRangeStartInput || !reportRangeEndInput) return;
+      const currentStart = parseDateInput(reportRangeStartInput.value);
+      const currentEnd = parseDateInput(reportRangeEndInput.value);
+      if (currentStart && currentEnd) return;
+      const end = normalizeToMidnight(new Date());
+      const start = new Date(end);
+      start.setDate(start.getDate() - 6);
+      setRangeInputs(start, end);
+    }
+
+    function applyQuickRange(days) {
+      if (!Number.isFinite(days) || days < 1) return;
+      const end = normalizeToMidnight(new Date());
+      const start = new Date(end);
+      start.setDate(start.getDate() - (days - 1));
+      setRangeInputs(start, end);
+      if (reportMode === "range") renderReports();
+    }
+
+    function updateRangeControlsVisibility() {
+      if (!reportRangeInputs || !quickRangeButtons) return;
+      if (reportMode === "range") {
+        reportRangeInputs.style.display = "flex";
+        quickRangeButtons.style.display = "flex";
+      } else {
+        reportRangeInputs.style.display = "none";
+        quickRangeButtons.style.display = "none";
+      }
+    }
+
+    function renderReports() {
+      let rangeStart;
+      let rangeEnd;
+
+      if (reportMode === "range") {
+        const parsedStart = parseDateInput(reportRangeStartInput ? reportRangeStartInput.value : "");
+        const parsedEnd = parseDateInput(reportRangeEndInput ? reportRangeEndInput.value : "");
+
+        if (!parsedStart || !parsedEnd) {
+          reportMonthLabel.textContent = "Lütfen geçerli bir tarih aralığı seç.";
+          clearReportOutputs();
+          const li = document.createElement("li");
+          li.textContent = "Geçerli bir tarih aralığı seç.";
+          reportPlatforms.appendChild(li);
+          return;
+        }
+
+        if (parsedStart > parsedEnd) {
+          rangeStart = parsedEnd;
+          rangeEnd = parsedStart;
+          if (reportRangeStartInput && reportRangeEndInput) {
+            reportRangeStartInput.value = formatDateInputValue(rangeStart);
+            reportRangeEndInput.value = formatDateInputValue(rangeEnd);
+          }
+        } else {
+          rangeStart = parsedStart;
+          rangeEnd = parsedEnd;
+        }
+
+        reportMonthLabel.textContent =
+          formatHumanDate(rangeStart) + " - " + formatHumanDate(rangeEnd) + " arası özet";
+      } else {
+        rangeStart = normalizeToMidnight(new Date(currentYear, currentMonth, 1));
+        rangeEnd = normalizeToMidnight(new Date(currentYear, currentMonth + 1, 0));
+        reportMonthLabel.textContent =
+          monthNames[currentMonth] + " " + currentYear + " için aylık özet";
+      }
+
+      const stats = buildStatsForRange(rangeStart, rangeEnd);
+
+      reportTotal.textContent = stats.total + " planlanmış içerik";
+
+      reportPlatforms.innerHTML = "";
+      const entries = Object.entries(stats.platformCounts)
+        .filter(([, count]) => count > 0)
+        .sort((a, b) => b[1] - a[1]);
+      if (!entries.length) {
+        const li = document.createElement("li");
+        li.textContent = "Bu aralık için platform seçilmiş içerik yok.";
+        reportPlatforms.appendChild(li);
+      } else {
+        entries.forEach(([platform, count]) => {
+          const li = document.createElement("li");
+          li.textContent = platform + ": " + count;
+          reportPlatforms.appendChild(li);
+        });
+      }
+      renderPlatformChart(entries);
+
+      reportTimes.innerHTML = "";
+      const slots = [
+        ["Sabah (06:00–11:59)", stats.early],
+        ["Öğlen / Öğleden sonra (12:00–17:59)", stats.mid],
+        ["Akşam (18:00–23:59)", stats.late],
+        ["Saat belirtilmemiş", stats.noTime]
+      ];
+      slots.forEach(([label, count]) => {
+        const li = document.createElement("li");
+        li.textContent = label + ": " + count;
+        reportTimes.appendChild(li);
+      });
+      renderTimeChart(stats);
+
+      reportDays.textContent =
+        stats.daysWithContent + " günde en az bir içerik planlanmış.";
+    }
+    function renderPlatformChart(entries) {
+      if (!platformChartWrapper || !platformChartCanvas || typeof Chart === "undefined") return;
+
+      if (platformChartInstance) {
+        platformChartInstance.destroy();
+        platformChartInstance = null;
+      }
+
+      const labels = entries.map(([label]) => label);
+      const data = entries.map(([, count]) => count);
+      const total = data.reduce((sum, val) => sum + val, 0);
+
+      if (!total) {
+        platformChartWrapper.style.display = "none";
+        return;
+      }
+
+      const axisColor = isDarkMode() ? "#e5e7eb" : "#1f2937";
+      const gridColor = isDarkMode() ? "rgba(148, 163, 184, 0.25)" : "rgba(148, 163, 184, 0.35)";
+      const barColor = isDarkMode() ? "#60a5fa" : "#2563eb";
+
+      platformChartWrapper.style.display = "block";
+      platformChartInstance = new Chart(platformChartCanvas, {
+        type: "bar",
+        data: {
+          labels,
+          datasets: [{
+            label: "İçerik sayısı",
+            data,
+            backgroundColor: data.map(() => barColor),
+            borderRadius: 6,
+            maxBarThickness: 48
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: axisColor,
+                font: { size: 11 }
+              },
+              grid: { display: false }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                precision: 0,
+                color: axisColor
+              },
+              grid: {
+                color: gridColor
+              }
+            }
+          }
+        }
+      });
+    }
+    function renderTimeChart(stats) {
+      if (!timeChartWrapper || !timeChartCanvas || typeof Chart === "undefined") return;
+
+      if (timeChartInstance) {
+        timeChartInstance.destroy();
+        timeChartInstance = null;
+      }
+
+      const labels = [
+        "Sabah (06:00–11:59)",
+        "Öğlen / Öğleden sonra (12:00–17:59)",
+        "Akşam (18:00–23:59)",
+        "Saat belirtilmemiş"
+      ];
+      const data = [stats.early, stats.mid, stats.late, stats.noTime];
+      const total = data.reduce((sum, val) => sum + val, 0);
+
+      if (!total) {
+        timeChartWrapper.style.display = "none";
+        return;
+      }
+
+      const legendColor = isDarkMode() ? "#e5e7eb" : "#1f2937";
+      const colors = isDarkMode()
+        ? ["#38bdf8", "#facc15", "#f472b6", "#94a3b8"]
+        : ["#0ea5e9", "#f59e0b", "#ec4899", "#9ca3af"];
+
+      timeChartWrapper.style.display = "block";
+      timeChartInstance = new Chart(timeChartCanvas, {
+        type: "doughnut",
+        data: {
+          labels,
+          datasets: [{
+            data,
+            backgroundColor: colors,
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "45%",
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                color: legendColor,
+                boxWidth: 12,
+                padding: 12,
+                font: { size: 11 }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    /* Sekmeler */
+    tabCalendar.addEventListener("click", () => {
+      tabCalendar.classList.add("active");
+      tabReports.classList.remove("active");
+      viewCalendar.style.display = "";
+      viewReports.style.display = "none";
+    });
+
+    tabReports.addEventListener("click", () => {
+      tabReports.classList.add("active");
+      tabCalendar.classList.remove("active");
+      viewCalendar.style.display = "none";
+      viewReports.style.display = "";
+      renderReports();
+    });
+
+    /* Rapor görünüm modları */
+    reportModeRadios.forEach((radio) => {
+      radio.addEventListener("change", () => {
+        if (!radio.checked) return;
+        reportMode = radio.value;
+        updateRangeControlsVisibility();
+        if (reportMode === "range") {
+          ensureRangeInputsInitialized();
+        }
+        renderReports();
+      });
+    });
+
+    if (reportRangeStartInput) {
+      reportRangeStartInput.addEventListener("change", () => {
+        if (reportMode === "range") renderReports();
+      });
+    }
+    if (reportRangeEndInput) {
+      reportRangeEndInput.addEventListener("change", () => {
+        if (reportMode === "range") renderReports();
+      });
+    }
+    quickRangeButtonsList.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const days = Number(btn.dataset.range);
+        applyQuickRange(days);
+      });
+    });
+
+    updateRangeControlsVisibility();
+
+    /* Olaylar ve init */
+    function init() {
+      const today = new Date();
+      currentYear = today.getFullYear();
+      currentMonth = today.getMonth();
+      ensureRangeInputsInitialized();
+      renderCalendar();
+    }
+
+    prevBtn.addEventListener("click", () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar();
+      if (viewReports.style.display !== "none") renderReports();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar();
+      if (viewReports.style.display !== "none") renderReports();
+    });
+
+    // Yeni içerik
+    toggleFormBtn.addEventListener("click", () => {
+      if (!selectedDateKey) return;
+
+      const newItem = {
+        id: Date.now(),
+        files: "",
+        text: "",
+        time: "",
+        platforms: []
+      };
+      currentDayItems.push(newItem);
+      currentDayItems = sortItemsByTime(currentDayItems);
+      activeItemId = newItem.id;
+
+      clearFormOnly();
+      modalFormSection.style.display = "block";
+      renderModalSummaryList();
+    });
+
+    function handleSave() {
+      if (!selectedDateKey) {
+        alert("Önce takvimden bir gün seç.");
+        return;
+      }
+
+      const selectedPlatforms = [];
+      platformInputs.forEach((cb) => {
+        if (cb.checked) selectedPlatforms.push(cb.value);
+      });
+
+      const filesVal = filesInput.value.trim();
+      const textVal = textInput.value.trim();
+      const timeVal = timeInput.value;
+      const anyContent = filesVal || textVal || timeVal || selectedPlatforms.length;
+
+      if (!activeItemId) {
+        if (!anyContent) {
+          alert("Kaydedilecek bir içerik yok.");
+          return;
+        }
+        const newItem = {
+          id: Date.now(),
+          files: filesVal,
+          text: textVal,
+          time: timeVal,
+          platforms: selectedPlatforms
+        };
+        currentDayItems.push(newItem);
+        activeItemId = newItem.id;
+      } else {
+        const idx = currentDayItems.findIndex((it) => it.id === activeItemId);
+        if (idx === -1) {
+          const newItem = {
+            id: activeItemId,
+            files: filesVal,
+            text: textVal,
+            time: timeVal,
+            platforms: selectedPlatforms
+          };
+          currentDayItems.push(newItem);
+        } else {
+          currentDayItems[idx].files = filesVal;
+          currentDayItems[idx].text = textVal;
+          currentDayItems[idx].time = timeVal;
+          currentDayItems[idx].platforms = selectedPlatforms;
+        }
+      }
+
+      currentDayItems = saveDayItems(selectedDateKey, currentDayItems);
+
+      renderCalendar();
+      if (viewReports.style.display !== "none") renderReports();
+      renderModalSummaryList();
+
+      activeItemId = null;
+      clearFormOnly();
+      modalFormSection.style.display = "none";
+      renderModalSummaryList();
+    }
+
+    function handleClear() {
+      clearFormOnly();
+    }
+
+    function handleDelete() {
+      if (!selectedDateKey || !activeItemId) return;
+
+      currentDayItems = currentDayItems.filter(
+        (it) => it.id !== activeItemId
+      );
+      activeItemId = null;
+
+      clearFormOnly();
+      modalFormSection.style.display = "none";
+
+      currentDayItems = saveDayItems(selectedDateKey, currentDayItems);
+      renderCalendar();
+      if (viewReports.style.display !== "none") renderReports();
+      renderModalSummaryList();
+    }
+
+    saveBtn.addEventListener("click", handleSave);
+    clearBtn.addEventListener("click", handleClear);
+    deleteBtn.addEventListener("click", handleDelete);
+
+    modalCloseBtn.addEventListener("click", closeModal);
+    dayModal.addEventListener("click", (e) => {
+      if (e.target === dayModal) closeModal();
+    });
+
+    initTheme();
+    init();
+  </script>
+</body>
+</html>

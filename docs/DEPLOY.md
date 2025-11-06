@@ -14,9 +14,9 @@ Takvimi ekiple paylaşmadan önce backend ve frontend taraflarını ayrı servis
    - https://render.com adresinden giriş yap, “New +” → “Web Service” seç.
    - Depoyu seçtikten sonra `Root Directory` alanına `server` yaz; böylece Render sadece backend klasörünü kullanır.
    - Build & start komutları:
-     - Build Command: `npm install`
+     - Build Command: `npm install --omit=dev && npm rebuild better-sqlite3`
      - Start Command: `npm run start` (package.json’daki `node server.js`)
-   - Environment: Node 18+ (varsayılan genellikle uygundur).
+   - Environment sekmesinde Node sürümünü 20.x olacak şekilde ayarla (Render’da `NODE_VERSION` ortam değişkeni olarak da ekleyebilirsin).
 
 3. **Ortam Değişkenleri**
    - `Environment Variables` sekmesinde `.env` değerlerini tek tek gir:

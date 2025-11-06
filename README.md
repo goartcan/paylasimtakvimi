@@ -61,6 +61,7 @@ paylasimtakvimi/
 2. **Backend Dağıtımı**  
    - Node.js destekli bir platform seç (Render, Railway, Fly.io, DigitalOcean App Platform vb.).  
    - `server` klasörünü deploy et, `.env` değerlerini platformda tanımla.  
+   - Üretim ortamında Node 20.x kullan; Render gibi servislerde `NODE_VERSION=20` ortam değişkeni ekleyip build komutunu `npm install --omit=dev && npm rebuild better-sqlite3` olarak ayarla (better-sqlite3 Linux üzerinde kaynak koddan derlenir).
    - Kalıcı dosya depolaması gerekir; SQLite kullanıyorsan `DATABASE_FILE` yolu için volume/persistent disk ayarla ya da yönetilen bir PostgreSQL servis planla.  
    - CORS’a izin verilmesi gereken alan adlarını belirt (`app.use(cors())` varsayılan olarak açık).
 

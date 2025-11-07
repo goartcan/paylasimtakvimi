@@ -468,9 +468,9 @@
       font-size: 10px;
       padding: 2px 6px;
       border-radius: 999px;
-      background: #e0f2fe;
-      color: #075985;
-      border: 1px solid #bae6fd;
+      background: #2563eb;
+      color: #f8fafc;
+      border: 1px solid #1d4ed8;
     }
     .small {
       font-size: 11px;
@@ -699,10 +699,50 @@
       gap: 6px;
       font-size: 12px;
     }
+    .color-picker-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+    }
+    .color-picker-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .color-picker-toggle .toggle-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.1);
+      display: inline-block;
+    }
     .color-picker {
-      display: flex;
+      display: none;
       flex-wrap: wrap;
       gap: 6px;
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff;
+      position: absolute;
+      top: 120%;
+      left: 0;
+      z-index: 20;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+    }
+    .color-picker.open {
+      display: flex;
+    }
+    .color-picker-wrapper.disabled {
+      opacity: 0.5;
+      pointer-events: none;
     }
     .color-picker.disabled {
       opacity: 0.4;
@@ -937,9 +977,9 @@
     }
     body.dark .summary-item-badge,
     body.dark .excel-chip {
-      background: rgba(14, 165, 233, 0.25);
-      border-color: rgba(14, 165, 233, 0.45);
-      color: #bae6fd;
+      background: rgba(59, 130, 246, 0.4);
+      border-color: rgba(59, 130, 246, 0.8);
+      color: #e0f2fe;
     }
     body.dark .excel-upload-container {
       border-top-color: #374151;
@@ -1210,8 +1250,12 @@
       <div class="modal-body">
       <div class="modal-toolbar">
         <button id="toggleFormBtn">Paylaşım oluştur +</button>
-        <div class="highlight-picker">
-          <span>Gün rengi:</span>
+        <div class="highlight-picker color-picker-wrapper" id="highlightColorWrapper">
+          <span>Gün rengi</span>
+          <button type="button" class="color-picker-toggle" id="highlightColorToggle" aria-label="Gün rengini seç">
+            <span class="toggle-swatch"></span>
+            <span>Seç</span>
+          </button>
           <div class="color-picker" id="highlightColorPicker"></div>
           <input type="hidden" id="highlightColorInput" value="#fee2e2" />
         </div>
@@ -1245,8 +1289,14 @@
 
           <div class="form-row color-row">
             <label>Paylaşım rengi</label>
-            <div class="color-picker" id="entryColorPicker"></div>
-            <input type="hidden" id="entryColorInput" value="#2563eb" />
+          <div class="color-picker-wrapper" id="entryColorWrapper">
+              <button type="button" class="color-picker-toggle" id="entryColorToggle" aria-label="Paylaşım rengini seç">
+                <span class="toggle-swatch"></span>
+                <span>Seç</span>
+              </button>
+              <div class="color-picker" id="entryColorPicker"></div>
+              <input type="hidden" id="entryColorInput" value="#2563eb" />
+            </div>
           </div>
 
           <div class="form-row">
@@ -1333,6 +1383,10 @@ const entryColorInput = document.getElementById("entryColorInput");
 const highlightColorInput = document.getElementById("highlightColorInput");
 const entryColorPicker = document.getElementById("entryColorPicker");
 const highlightColorPicker = document.getElementById("highlightColorPicker");
+const entryColorToggle = document.getElementById("entryColorToggle");
+const highlightColorToggle = document.getElementById("highlightColorToggle");
+const entryColorWrapper = document.getElementById("entryColorWrapper");
+const highlightColorWrapper = document.getElementById("highlightColorWrapper");
 
     const dayModal = document.getElementById("dayModal");
     const modalDateTitle = document.getElementById("modalDateTitle");
@@ -1467,6 +1521,27 @@ function setColorPickerValue(container, input, value) {
       }
     });
 }
+
+function updateColorToggle(toggle, color) {
+  if (!toggle) return;
+  const swatch = toggle.querySelector(".toggle-swatch");
+  if (swatch) {
+    swatch.style.backgroundColor = color;
+  }
+}
+
+function setColorPickerEnabled(wrapper, toggle, enabled) {
+  if (!wrapper || !toggle) return;
+  if (enabled) {
+    wrapper.classList.remove("disabled");
+    toggle.disabled = false;
+  } else {
+    wrapper.classList.add("disabled");
+    toggle.disabled = true;
+    const picker = wrapper.querySelector(".color-picker");
+    if (picker) picker.classList.remove("open");
+  }
+}
     const resetScopeLabels = {
       excel: "Excel girişlerini sıfırla",
       manual: "Manuel girişleri sıfırla",
@@ -1491,15 +1566,43 @@ const quickRangeButtonsList = quickRangeButtons
   : [];
 if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
 if (highlightColorInput) highlightColorInput.value = DEFAULT_HIGHLIGHT_COLOR;
-if (entryColorPicker && entryColorInput) {
-  renderColorPicker(entryColorPicker, entryColorInput, COLOR_PALETTE);
-  setColorPickerValue(entryColorPicker, entryColorInput, entryColorInput.value);
+const COLOR_PICKER_CONTAINERS = [];
+
+function setupColorPicker(container, input, toggle, palette, onChange) {
+  if (!container || !input) return;
+  renderColorPicker(container, input, palette, (color) => {
+    updateColorToggle(toggle, color);
+    if (typeof onChange === "function") onChange(color);
+  });
+  setColorPickerValue(container, input, input.value);
+  updateColorToggle(toggle, input.value);
+  COLOR_PICKER_CONTAINERS.push(container);
+  container.addEventListener("click", (event) => event.stopPropagation());
+  if (toggle) {
+    toggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (toggle.disabled) return;
+      const isOpen = container.classList.contains("open");
+      COLOR_PICKER_CONTAINERS.forEach((el) => el.classList.remove("open"));
+      if (!isOpen) container.classList.add("open");
+    });
+  }
 }
+
+if (entryColorPicker && entryColorInput) {
+  setupColorPicker(
+    entryColorPicker,
+    entryColorInput,
+    entryColorToggle,
+    COLOR_PALETTE
+  );
+}
+
 if (highlightColorPicker && highlightColorInput) {
-  renderColorPicker(
+  setupColorPicker(
     highlightColorPicker,
     highlightColorInput,
-    COLOR_PALETTE,
+    highlightColorToggle,
     () => {
       if (selectedDateKey && highlightedDates.has(selectedDateKey)) {
         highlightedDates.set(selectedDateKey, highlightColorInput.value);
@@ -1508,13 +1611,19 @@ if (highlightColorPicker && highlightColorInput) {
       }
     }
   );
-  setColorPickerValue(
-    highlightColorPicker,
-    highlightColorInput,
-    highlightColorInput.value
-  );
   highlightColorPicker.classList.add("disabled");
+  setColorPickerEnabled(
+    highlightColorWrapper,
+    highlightColorToggle,
+    false
+  );
 }
+
+document.addEventListener("click", () => {
+  COLOR_PICKER_CONTAINERS.forEach((container) =>
+    container.classList.remove("open")
+  );
+});
 
     if (scheduleSearchInput) {
       scheduleSearchInput.addEventListener("input", (event) => {
@@ -1731,6 +1840,7 @@ if (highlightColorPicker && highlightColorInput) {
       toggleFormBtn.disabled = !canEdit;
       saveBtn.disabled = !canEdit;
       clearBtn.disabled = !canEdit;
+      setColorPickerEnabled(entryColorWrapper, entryColorToggle, canEdit);
       if (!canEdit) {
         deleteBtn.disabled = true;
         modalFormSection.style.display = "none";
@@ -2306,7 +2416,18 @@ if (highlightColorPicker && highlightColorInput) {
           filesInput.value = item.files || "";
           textInput.value = item.text || "";
           timeInput.value = item.time || "";
-          if (entryColorInput) entryColorInput.value = entryColor || DEFAULT_ENTRY_COLOR;
+          if (entryColorInput) {
+            const colorValue = entryColor || DEFAULT_ENTRY_COLOR;
+            entryColorInput.value = colorValue;
+            updateColorToggle(entryColorToggle, colorValue);
+            if (entryColorPicker && entryColorInput) {
+              setColorPickerValue(
+                entryColorPicker,
+                entryColorInput,
+                colorValue
+              );
+            }
+          }
           platformInputs.forEach((cb) => {
             cb.checked = item.platforms
               ? item.platforms.includes(cb.value)
@@ -2335,6 +2456,7 @@ if (highlightColorPicker && highlightColorInput) {
           DEFAULT_ENTRY_COLOR
         );
       }
+      updateColorToggle(entryColorToggle, DEFAULT_ENTRY_COLOR);
     }
 
     function updateHighlightButtonState() {
@@ -2354,6 +2476,11 @@ if (highlightColorPicker && highlightColorInput) {
             DEFAULT_HIGHLIGHT_COLOR
           );
         }
+        setColorPickerEnabled(
+          highlightColorWrapper,
+          highlightColorToggle,
+          false
+        );
         return;
       }
       const hasHighlight = highlightedDates.has(selectedDateKey);
@@ -2368,15 +2495,15 @@ if (highlightColorPicker && highlightColorInput) {
           : DEFAULT_HIGHLIGHT_COLOR;
       }
       if (highlightColorPicker && highlightColorInput) {
-        if (isViewingOwnData()) {
-          highlightColorPicker.classList.remove("disabled");
-        } else {
-          highlightColorPicker.classList.add("disabled");
-        }
         setColorPickerValue(
           highlightColorPicker,
           highlightColorInput,
           highlightColorInput.value
+        );
+        setColorPickerEnabled(
+          highlightColorWrapper,
+          highlightColorToggle,
+          isViewingOwnData()
         );
       }
     }

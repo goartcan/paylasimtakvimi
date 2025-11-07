@@ -725,21 +725,22 @@
     }
     .color-picker {
       display: none;
-      flex-wrap: wrap;
-      gap: 6px;
-      padding: 8px;
+      padding: 10px;
       border: 1px solid #d1d5db;
-      border-radius: 12px;
+      border-radius: 14px;
       background: #fff;
       position: absolute;
-      top: 120%;
+      top: calc(100% + 8px);
       left: 0;
-      width: 138px;
-      z-index: 20;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+      width: 168px;
+      z-index: 30;
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.2);
+      display: grid;
+      grid-template-columns: repeat(4, 32px);
+      gap: 8px;
     }
     .color-picker.open {
-      display: flex;
+      display: grid;
     }
     .color-picker-wrapper.disabled {
       opacity: 0.5;
@@ -750,8 +751,8 @@
       pointer-events: none;
     }
     .color-swatch {
-      width: 24px;
-      height: 24px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       border: 2px solid transparent;
       cursor: pointer;
@@ -782,6 +783,10 @@
       border-radius: 12px;
       padding: 12px;
       background: #f9fafb;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
     .modal-form-section {
       border: 1px solid #e5e7eb;
@@ -891,11 +896,13 @@
       gap: 4px;
     }
     .summary-empty {
-      padding: 6px 10px;
-      border-radius: 8px;
+      padding: 20px;
+      border-radius: 12px;
       background: #f9fafb;
       border: 1px dashed #e5e7eb;
       color: #6b7280;
+      width: 100%;
+      text-align: center;
     }
 
     /* DARK MODE: yüksek kontrast */
@@ -1501,6 +1508,7 @@ function renderColorPicker(container, input, palette, onChange) {
         .forEach((el) => el.classList.remove("active"));
       button.classList.add("active");
       if (onChange) onChange(color);
+      container.classList.remove("open");
     });
     container.appendChild(button);
   });
@@ -1540,6 +1548,22 @@ function setColorPickerEnabled(wrapper, toggle, enabled) {
     const picker = wrapper.querySelector(".color-picker");
     if (picker) picker.classList.remove("open");
   }
+}
+
+function handleHighlightSelection(color) {
+  if (!selectedDateKey || !isViewingOwnData()) return;
+  const current = highlightedDates.get(selectedDateKey);
+  const action =
+    current && current === color
+      ? removeDateHighlight(selectedDateKey)
+      : setDateHighlight(selectedDateKey, color);
+  action
+    .then(() => {
+      renderCalendar();
+      updateScheduleList();
+      updateHighlightStateUI();
+    })
+    .catch((err) => alert(err.message || "Gün işaretlenemedi."));
 }
     const resetScopeLabels = {
       excel: "Excel girişlerini sıfırla",
@@ -1603,13 +1627,7 @@ if (highlightColorPicker && highlightColorInput) {
     highlightColorInput,
     highlightColorToggle,
     COLOR_PALETTE,
-    () => {
-      if (selectedDateKey && highlightedDates.has(selectedDateKey)) {
-        highlightedDates.set(selectedDateKey, highlightColorInput.value);
-        renderCalendar();
-        updateScheduleList();
-      }
-    }
+    (color) => handleHighlightSelection(color)
   );
   highlightColorPicker.classList.add("disabled");
   setColorPickerEnabled(
@@ -2516,27 +2534,6 @@ document.addEventListener("click", () => {
       highlightedDates.delete(dateKey);
     }
 
-    if (highlightColorPicker && highlightColorInput) {
-      highlightColorPicker.addEventListener("click", async (event) => {
-        if (!selectedDateKey || !isViewingOwnData()) return;
-        const target = event.target.closest(".color-swatch");
-        if (!target) return;
-        const newColor = target.dataset.color || DEFAULT_HIGHLIGHT_COLOR;
-        const hasHighlight = highlightedDates.has(selectedDateKey);
-        try {
-          if (hasHighlight && newColor === highlightedDates.get(selectedDateKey)) {
-            await removeDateHighlight(selectedDateKey);
-          } else {
-            await setDateHighlight(selectedDateKey, newColor);
-          }
-          renderCalendar();
-          updateScheduleList();
-          updateHighlightStateUI();
-        } catch (err) {
-          alert(err.message || "Gün işaretlenemedi.");
-        }
-      }, true);
-    }
 
     function openModalForDate(dateObj, key, initialItemId = null) {
       selectedDateKey = key;

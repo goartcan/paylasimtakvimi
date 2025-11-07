@@ -729,11 +729,12 @@
       gap: 6px;
       padding: 8px;
       border: 1px solid #d1d5db;
-      border-radius: 8px;
+      border-radius: 12px;
       background: #fff;
       position: absolute;
       top: 120%;
       left: 0;
+      width: 138px;
       z-index: 20;
       box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
     }
@@ -1259,7 +1260,6 @@
           <div class="color-picker" id="highlightColorPicker"></div>
           <input type="hidden" id="highlightColorInput" value="#fee2e2" />
         </div>
-        <button id="toggleHighlightBtn" class="secondary-btn">Gün rengini uygula</button>
       </div>
 
         <div class="modal-columns">
@@ -1393,7 +1393,6 @@ const highlightColorWrapper = document.getElementById("highlightColorWrapper");
     const modalCloseBtn = document.getElementById("modalCloseBtn");
     const modalFormSection = document.getElementById("modalFormSection");
     const toggleFormBtn = document.getElementById("toggleFormBtn");
-    const toggleHighlightBtn = document.getElementById("toggleHighlightBtn");
     const modalSummary = document.getElementById("modalSummary");
     const themeToggleBtn = document.getElementById("themeToggleBtn");
 
@@ -1603,6 +1602,7 @@ if (highlightColorPicker && highlightColorInput) {
     highlightColorPicker,
     highlightColorInput,
     highlightColorToggle,
+    COLOR_PALETTE,
     () => {
       if (selectedDateKey && highlightedDates.has(selectedDateKey)) {
         highlightedDates.set(selectedDateKey, highlightColorInput.value);
@@ -1856,12 +1856,12 @@ document.addEventListener("click", () => {
       try {
         const response = await apiFetch(`/calendar/highlights${query}`);
         const data = await response.json();
-        highlightedDates = new Map(
-          data.map((item) => [
-            item.date,
-            item.color || DEFAULT_HIGHLIGHT_COLOR
-          ])
-        );
+  highlightedDates = new Map(
+    data.map((item) => [
+      item.date,
+      item.color || DEFAULT_HIGHLIGHT_COLOR
+    ])
+  );
       } catch (err) {
         console.warn("Vurgular yüklenemedi:", err.message);
         highlightedDates = new Map();
@@ -1882,9 +1882,9 @@ document.addEventListener("click", () => {
       if (selectedDateKey) {
         currentDayItems = loadDayData(selectedDateKey).items;
         renderModalSummaryList();
-        updateHighlightButtonState();
+        updateHighlightStateUI();
       } else {
-        updateHighlightButtonState();
+        updateHighlightStateUI();
       }
       if (currentUser && currentUser.role === "admin") {
         if (targetUserId && targetUserId !== currentUser.id) {
@@ -2459,11 +2459,8 @@ document.addEventListener("click", () => {
       updateColorToggle(entryColorToggle, DEFAULT_ENTRY_COLOR);
     }
 
-    function updateHighlightButtonState() {
-      if (!toggleHighlightBtn) return;
+    function updateHighlightStateUI() {
       if (!selectedDateKey) {
-        toggleHighlightBtn.disabled = true;
-        toggleHighlightBtn.textContent = "Gün rengini uygula";
         if (highlightColorInput) {
           highlightColorInput.disabled = true;
           highlightColorInput.value = DEFAULT_HIGHLIGHT_COLOR;
@@ -2484,10 +2481,6 @@ document.addEventListener("click", () => {
         return;
       }
       const hasHighlight = highlightedDates.has(selectedDateKey);
-      toggleHighlightBtn.disabled = !isViewingOwnData();
-      toggleHighlightBtn.textContent = hasHighlight
-        ? "Rengi kaldır"
-        : "Gün rengini uygula";
       if (highlightColorInput) {
         highlightColorInput.disabled = !isViewingOwnData();
         highlightColorInput.value = hasHighlight
@@ -2523,32 +2516,26 @@ document.addEventListener("click", () => {
       highlightedDates.delete(dateKey);
     }
 
-    if (toggleHighlightBtn) {
-      toggleHighlightBtn.addEventListener("click", async () => {
-        if (!selectedDateKey) return;
+    if (highlightColorPicker && highlightColorInput) {
+      highlightColorPicker.addEventListener("click", async (event) => {
+        if (!selectedDateKey || !isViewingOwnData()) return;
+        const target = event.target.closest(".color-swatch");
+        if (!target) return;
+        const newColor = target.dataset.color || DEFAULT_HIGHLIGHT_COLOR;
+        const hasHighlight = highlightedDates.has(selectedDateKey);
         try {
-          toggleHighlightBtn.disabled = true;
-          if (highlightedDates.has(selectedDateKey)) {
+          if (hasHighlight && newColor === highlightedDates.get(selectedDateKey)) {
             await removeDateHighlight(selectedDateKey);
-            if (highlightColorInput) {
-              highlightColorInput.value = DEFAULT_HIGHLIGHT_COLOR;
-            }
           } else {
-            const colorValue =
-              highlightColorInput && highlightColorInput.value
-                ? highlightColorInput.value
-                : DEFAULT_HIGHLIGHT_COLOR;
-            await setDateHighlight(selectedDateKey, colorValue);
+            await setDateHighlight(selectedDateKey, newColor);
           }
           renderCalendar();
-          updateHighlightButtonState();
           updateScheduleList();
+          updateHighlightStateUI();
         } catch (err) {
           alert(err.message || "Gün işaretlenemedi.");
-        } finally {
-          toggleHighlightBtn.disabled = false;
         }
-      });
+      }, true);
     }
 
     function openModalForDate(dateObj, key, initialItemId = null) {
@@ -2558,7 +2545,7 @@ document.addEventListener("click", () => {
       activeItemId = initialItemId;
 
       modalDateTitle.textContent = formatHumanDate(dateObj);
-      updateHighlightButtonState();
+      updateHighlightStateUI();
 
       clearFormOnly();
       modalFormSection.style.display = "none";
@@ -3524,3 +3511,5 @@ document.addEventListener("click", () => {
 </div>
 </body>
 </html>
+      flex: 0 0 calc(25% - 6px);
+    }

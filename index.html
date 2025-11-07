@@ -699,14 +699,33 @@
       gap: 6px;
       font-size: 12px;
     }
-    .highlight-picker input[type="color"],
-    #entryColorInput {
-      width: 38px;
-      height: 32px;
-      padding: 0;
-      border: none;
-      background: transparent;
+    .color-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .color-picker.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .color-swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid transparent;
       cursor: pointer;
+      padding: 0;
+      outline: none;
+      background: transparent;
+    }
+    .color-swatch span {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+    .color-swatch.active {
+      border-color: #111;
     }
     .color-row {
       align-items: center;
@@ -973,6 +992,9 @@
       border-color: #374151;
       color: #f9fafb;
     }
+    body.dark .color-swatch.active {
+      border-color: #f9fafb;
+    }
     body.dark .danger-btn {
       background: #7f1d1d;
       border-color: #ef4444;
@@ -1186,14 +1208,15 @@
         <button class="modal-close" id="modalCloseBtn" aria-label="Kapat">&times;</button>
       </div>
       <div class="modal-body">
-        <div class="modal-toolbar">
-          <button id="toggleFormBtn">Paylaşım oluştur +</button>
-          <div class="highlight-picker">
-            <label for="highlightColorInput">Gün rengi</label>
-            <input type="color" id="highlightColorInput" value="#fee2e2" />
-          </div>
-          <button id="toggleHighlightBtn" class="secondary-btn">Gün rengini uygula</button>
+      <div class="modal-toolbar">
+        <button id="toggleFormBtn">Paylaşım oluştur +</button>
+        <div class="highlight-picker">
+          <span>Gün rengi:</span>
+          <div class="color-picker" id="highlightColorPicker"></div>
+          <input type="hidden" id="highlightColorInput" value="#fee2e2" />
         </div>
+        <button id="toggleHighlightBtn" class="secondary-btn">Gün rengini uygula</button>
+      </div>
 
         <div class="modal-columns">
           <div id="modalSummary" class="modal-summary small"></div>
@@ -1221,8 +1244,9 @@
           </div>
 
           <div class="form-row color-row">
-            <label for="entryColorInput">Paylaşım rengi</label>
-            <input type="color" id="entryColorInput" value="#2563eb" />
+            <label>Paylaşım rengi</label>
+            <div class="color-picker" id="entryColorPicker"></div>
+            <input type="hidden" id="entryColorInput" value="#2563eb" />
           </div>
 
           <div class="form-row">
@@ -1304,9 +1328,11 @@
       ".platforms input[type='checkbox']"
     );
     const scheduleList = document.getElementById("scheduleList");
-    const scheduleSearchInput = document.getElementById("scheduleSearchInput");
-    const entryColorInput = document.getElementById("entryColorInput");
-    const highlightColorInput = document.getElementById("highlightColorInput");
+const scheduleSearchInput = document.getElementById("scheduleSearchInput");
+const entryColorInput = document.getElementById("entryColorInput");
+const highlightColorInput = document.getElementById("highlightColorInput");
+const entryColorPicker = document.getElementById("entryColorPicker");
+const highlightColorPicker = document.getElementById("highlightColorPicker");
 
     const dayModal = document.getElementById("dayModal");
     const modalDateTitle = document.getElementById("modalDateTitle");
@@ -1350,11 +1376,97 @@
     let isRegisterMode = false;
     let currentUser = null;
     let adminSelectedUserId = null;
-    const excelUploadDefaultText = excelUploadBtn ? excelUploadBtn.textContent : "Excel yükle";
-    let scheduleSearchQuery = "";
-    let highlightedDates = new Map();
-    const DEFAULT_ENTRY_COLOR = "#2563eb";
-    const DEFAULT_HIGHLIGHT_COLOR = "#fee2e2";
+const excelUploadDefaultText = excelUploadBtn ? excelUploadBtn.textContent : "Excel yükle";
+let scheduleSearchQuery = "";
+let highlightedDates = new Map();
+const DEFAULT_ENTRY_COLOR = "#2563eb";
+const DEFAULT_HIGHLIGHT_COLOR = "#fee2e2";
+const COLOR_PALETTE = [
+  "#000000",
+  "#dc2626",
+  "#f97316",
+  "#facc15",
+  "#22c55e",
+  "#0ea5e9",
+  "#2563eb",
+  "#7c3aed",
+  "#ec4899",
+  "#6b7280",
+  "#fbbf24",
+  "#34d399",
+  "#38bdf8",
+  "#a855f7",
+  "#ef4444"
+];
+
+function hexToRgb(hex) {
+  const value = hex.replace("#", "");
+  const bigint = parseInt(value, 16);
+  if (value.length === 3) {
+    const r = (bigint >> 8) & 0xf;
+    const g = (bigint >> 4) & 0xf;
+    const b = bigint & 0xf;
+    return { r: r * 17, g: g * 17, b: b * 17 };
+  }
+  return {
+    r: (bigint >> 16) & 255,
+    g: (bigint >> 8) & 255,
+    b: bigint & 255
+  };
+}
+
+function hexToRgba(hex, alpha = 1) {
+  const { r, g, b } = hexToRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function getContrastingTextColor(hex) {
+  const { r, g, b } = hexToRgb(hex);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.6 ? "#111827" : "#f9fafb";
+}
+
+function renderColorPicker(container, input, palette, onChange) {
+  if (!container || !input) return;
+  container.innerHTML = "";
+  palette.forEach((color) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "color-swatch";
+    button.setAttribute("aria-label", color);
+    const span = document.createElement("span");
+    span.style.backgroundColor = color;
+    button.appendChild(span);
+    button.dataset.color = color.toLowerCase();
+    if (input.value && input.value.toLowerCase() === button.dataset.color) {
+      button.classList.add("active");
+    }
+    button.addEventListener("click", () => {
+      input.value = color;
+      container
+        .querySelectorAll(".color-swatch.active")
+        .forEach((el) => el.classList.remove("active"));
+      button.classList.add("active");
+      if (onChange) onChange(color);
+    });
+    container.appendChild(button);
+  });
+}
+
+function setColorPickerValue(container, input, value) {
+  if (!container || !input) return;
+  const normalizedValue = (value || "").toLowerCase();
+  input.value = value;
+  container
+    .querySelectorAll(".color-swatch")
+    .forEach((btn) => {
+      btn.classList.remove("active");
+      const swatchColor = btn.dataset.color;
+      if (swatchColor && swatchColor === normalizedValue) {
+        btn.classList.add("active");
+      }
+    });
+}
     const resetScopeLabels = {
       excel: "Excel girişlerini sıfırla",
       manual: "Manuel girişleri sıfırla",
@@ -1374,11 +1486,35 @@
     let reportMode = "month"; // "month" | "range"
     let platformChartInstance = null;
     let timeChartInstance = null;
-    const quickRangeButtonsList = quickRangeButtons
-      ? Array.from(quickRangeButtons.querySelectorAll("button[data-range]"))
-      : [];
-    if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
-    if (highlightColorInput) highlightColorInput.value = DEFAULT_HIGHLIGHT_COLOR;
+const quickRangeButtonsList = quickRangeButtons
+  ? Array.from(quickRangeButtons.querySelectorAll("button[data-range]"))
+  : [];
+if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
+if (highlightColorInput) highlightColorInput.value = DEFAULT_HIGHLIGHT_COLOR;
+if (entryColorPicker && entryColorInput) {
+  renderColorPicker(entryColorPicker, entryColorInput, COLOR_PALETTE);
+  setColorPickerValue(entryColorPicker, entryColorInput, entryColorInput.value);
+}
+if (highlightColorPicker && highlightColorInput) {
+  renderColorPicker(
+    highlightColorPicker,
+    highlightColorInput,
+    COLOR_PALETTE,
+    () => {
+      if (selectedDateKey && highlightedDates.has(selectedDateKey)) {
+        highlightedDates.set(selectedDateKey, highlightColorInput.value);
+        renderCalendar();
+        updateScheduleList();
+      }
+    }
+  );
+  setColorPickerValue(
+    highlightColorPicker,
+    highlightColorInput,
+    highlightColorInput.value
+  );
+  highlightColorPicker.classList.add("disabled");
+}
 
     if (scheduleSearchInput) {
       scheduleSearchInput.addEventListener("input", (event) => {
@@ -1959,17 +2095,24 @@
       const counts = {};
       let total = 0;
       items.forEach((item) => {
+        const entryColor = item.color || DEFAULT_ENTRY_COLOR;
         const list =
           item.platforms && item.platforms.length
             ? item.platforms
             : ["Platform seçilmedi"];
         list.forEach((platform) => {
           const label = summarizePlatformLabel(platform);
-          counts[label] = (counts[label] || 0) + 1;
+          if (!counts[label]) {
+            counts[label] = { count: 0, color: entryColor };
+          }
+          counts[label].count += 1;
+          counts[label].color = entryColor;
         });
         total += 1;
       });
-      const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+      const entries = Object.entries(counts)
+        .map(([label, info]) => [label, info.count, info.color])
+        .sort((a, b) => b[1] - a[1]);
       return { total, entries };
     }
 
@@ -2000,7 +2143,9 @@
         row.className = "schedule-item summary";
         if (highlightedDates.has(key)) {
           row.classList.add("has-highlight");
-          row.style.borderLeft = `4px solid ${highlightedDates.get(key)}`;
+          const highlightColor = highlightedDates.get(key);
+          row.style.borderLeft = `4px solid ${highlightColor}`;
+          row.style.backgroundColor = hexToRgba(highlightColor, 0.12);
         }
 
         const header = document.createElement("div");
@@ -2010,10 +2155,14 @@
 
         const chips = document.createElement("div");
         chips.className = "schedule-summary-chips";
-        summary.entries.forEach(([label, count]) => {
+        summary.entries.forEach(([label, count, color]) => {
           const chip = document.createElement("span");
           chip.className = "summary-chip";
+          const chipColor = color || DEFAULT_ENTRY_COLOR;
           chip.textContent = `${label} ${count}`;
+          chip.style.backgroundColor = hexToRgba(chipColor, 0.15);
+          chip.style.border = `1px solid ${hexToRgba(chipColor, 0.4)}`;
+          chip.style.color = getContrastingTextColor(chipColor);
           chips.appendChild(chip);
         });
         row.appendChild(chips);
@@ -2074,10 +2223,14 @@
         if (items.length) {
           cell.classList.add("has-data");
           const summary = buildDaySummary(items);
-          summary.entries.slice(0, 3).forEach(([label, count]) => {
+          summary.entries.slice(0, 3).forEach(([label, count, color]) => {
             const chip = document.createElement("div");
             chip.className = "day-summary-chip";
+            const chipColor = color || DEFAULT_ENTRY_COLOR;
             chip.textContent = `${label} ${count}`;
+            chip.style.backgroundColor = hexToRgba(chipColor, 0.2);
+            chip.style.border = `1px solid ${hexToRgba(chipColor, 0.35)}`;
+            chip.style.color = getContrastingTextColor(chipColor);
             cell.appendChild(chip);
           });
         }
@@ -2114,27 +2267,35 @@
         if (item.id === activeItemId) wrap.classList.add("active");
         if (item.source === "excel") wrap.classList.add("excel");
         const entryColor = item.color || DEFAULT_ENTRY_COLOR;
-        wrap.style.borderLeft = `4px solid ${entryColor}`;
+        wrap.style.backgroundColor = hexToRgba(entryColor, 0.18);
+        wrap.style.border = `1px solid ${hexToRgba(entryColor, 0.35)}`;
+        wrap.style.color = getContrastingTextColor(entryColor);
 
         const { snippet, platforms, time } = makeItemSummary(item);
+        const textColor = getContrastingTextColor(entryColor);
 
         const title = document.createElement("div");
         title.className = "summary-item-title";
         title.textContent = snippet || `İçerik ${index + 1}`;
+        title.style.color = textColor;
         wrap.appendChild(title);
 
         const timeDiv = document.createElement("div");
         timeDiv.className = "summary-item-time";
         timeDiv.textContent = time ? "Saat: " + time : "Saat seçilmedi";
+        timeDiv.style.color = textColor;
         wrap.appendChild(timeDiv);
 
         const platformsDiv = document.createElement("div");
         platformsDiv.className = "summary-item-platforms";
         platformsDiv.textContent = platforms;
+        platformsDiv.style.color = textColor;
         if (item.source === "excel") {
           const badge = document.createElement("span");
           badge.className = "summary-item-badge";
           badge.textContent = "Excel";
+          badge.style.backgroundColor = hexToRgba(entryColor, 0.25);
+          badge.style.borderColor = hexToRgba(entryColor, 0.4);
           platformsDiv.appendChild(document.createTextNode(" "));
           platformsDiv.appendChild(badge);
         }
@@ -2167,6 +2328,13 @@
       timeInput.value = "";
       platformInputs.forEach((cb) => (cb.checked = false));
       if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
+      if (entryColorPicker && entryColorInput) {
+        setColorPickerValue(
+          entryColorPicker,
+          entryColorInput,
+          DEFAULT_ENTRY_COLOR
+        );
+      }
     }
 
     function updateHighlightButtonState() {
@@ -2177,6 +2345,14 @@
         if (highlightColorInput) {
           highlightColorInput.disabled = true;
           highlightColorInput.value = DEFAULT_HIGHLIGHT_COLOR;
+        }
+        if (highlightColorPicker && highlightColorInput) {
+          highlightColorPicker.classList.add("disabled");
+          setColorPickerValue(
+            highlightColorPicker,
+            highlightColorInput,
+            DEFAULT_HIGHLIGHT_COLOR
+          );
         }
         return;
       }
@@ -2190,6 +2366,18 @@
         highlightColorInput.value = hasHighlight
           ? highlightedDates.get(selectedDateKey) || DEFAULT_HIGHLIGHT_COLOR
           : DEFAULT_HIGHLIGHT_COLOR;
+      }
+      if (highlightColorPicker && highlightColorInput) {
+        if (isViewingOwnData()) {
+          highlightColorPicker.classList.remove("disabled");
+        } else {
+          highlightColorPicker.classList.add("disabled");
+        }
+        setColorPickerValue(
+          highlightColorPicker,
+          highlightColorInput,
+          highlightColorInput.value
+        );
       }
     }
 
@@ -2261,12 +2449,27 @@
               : false;
           });
           if (entryColorInput) {
-            entryColorInput.value = item.color || DEFAULT_ENTRY_COLOR;
+            const entryColor = item.color || DEFAULT_ENTRY_COLOR;
+            entryColorInput.value = entryColor;
+            if (entryColorPicker) {
+              setColorPickerValue(
+                entryColorPicker,
+                entryColorInput,
+                entryColor
+              );
+            }
           }
           modalFormSection.style.display = "";
         } else {
           activeItemId = null;
           if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
+          if (entryColorPicker && entryColorInput) {
+            setColorPickerValue(
+              entryColorPicker,
+              entryColorInput,
+              DEFAULT_ENTRY_COLOR
+            );
+          }
         }
       }
 

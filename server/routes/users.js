@@ -73,4 +73,27 @@ router.post("/:id/reject", requireAuth, requireAdmin, (req, res) => {
   res.json({ ok: true });
 });
 
+router.post("/:id/role", requireAuth, requireAdmin, (req, res) => {
+  const userId = Number(req.params.id);
+  if (!Number.isInteger(userId)) {
+    return res.status(400).json({ error: "Geçersiz kullanıcı kimliği." });
+  }
+  const { role } = req.body || {};
+  if (!role || !["admin", "user"].includes(role)) {
+    return res.status(400).json({ error: "Geçersiz rol." });
+  }
+
+  const info = db
+    .prepare("UPDATE users SET role = ? WHERE id = ?")
+    .run(role, userId);
+  if (info.changes === 0) {
+    return res.status(404).json({ error: "Kullanıcı bulunamadı." });
+  }
+
+  const updated = db
+    .prepare("SELECT id, email, role, approved FROM users WHERE id = ?")
+    .get(userId);
+  res.json({ ...updated, approved: Boolean(updated.approved) });
+});
+
 export default router;

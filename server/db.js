@@ -82,6 +82,7 @@ ensureColumn("users", "role", "TEXT NOT NULL DEFAULT 'user'");
 ensureColumn("users", "approved", "INTEGER NOT NULL DEFAULT 0");
 ensureColumn("users", "created_at", "TEXT NOT NULL DEFAULT (datetime('now'))");
 ensureColumn("entries", "source", "TEXT NOT NULL DEFAULT 'manual'");
+ensureColumn("entries", "color", "TEXT");
 
 try {
   db.prepare("UPDATE users SET role = 'user' WHERE role IS NULL OR role = ''").run();

@@ -184,6 +184,13 @@
       border-radius: 12px;
       background: #f9fafb;
     }
+    .admin-user-row .role-select {
+      width: 100%;
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      font-size: 12px;
+    }
     .admin-user-row > div:first-child {
       word-break: break-all;
     }
@@ -400,6 +407,16 @@
     .day-summary.excel {
       color: #0369a1;
     }
+    .day-summary-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 6px;
+      margin: 2px 4px 0 0;
+      border-radius: 999px;
+      background: #eef2ff;
+      font-size: 10px;
+      color: #1e1b4b;
+    }
 
     .side {
       display: flex;
@@ -513,6 +530,10 @@
       padding: 6px 0;
       border-bottom: 1px solid #f1f3ff;
       cursor: pointer;
+    }
+    .schedule-item.has-highlight {
+      border-left: 4px solid #ef4444;
+      padding-left: 6px;
     }
     .schedule-item.from-excel {
       background: rgba(14, 165, 233, 0.08);
@@ -671,6 +692,24 @@
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
+    }
+    .highlight-picker {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+    }
+    .highlight-picker input[type="color"],
+    #entryColorInput {
+      width: 38px;
+      height: 32px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    .color-row {
+      align-items: center;
     }
     .modal-columns {
       display: grid;
@@ -897,9 +936,16 @@
     body.dark .schedule-item {
       border-color: #1f2937;
     }
+    body.dark .schedule-item.has-highlight {
+      border-left-color: #f87171;
+    }
     body.dark .schedule-text,
     body.dark .schedule-date {
       color: #e5e7eb;
+    }
+    body.dark .day-summary-chip {
+      background: #1e3a8a;
+      color: #c7d2fe;
     }
     body.dark .summary-chip {
       background: #1e3a8a;
@@ -921,6 +967,11 @@
     }
     body.dark .secondary-btn:hover {
       background: #2c3a52;
+    }
+    body.dark .admin-user-row .role-select {
+      background: #0f172a;
+      border-color: #374151;
+      color: #f9fafb;
     }
     body.dark .danger-btn {
       background: #7f1d1d;
@@ -1137,7 +1188,11 @@
       <div class="modal-body">
         <div class="modal-toolbar">
           <button id="toggleFormBtn">Paylaşım oluştur +</button>
-          <button id="toggleHighlightBtn" class="secondary-btn">Önemli yap</button>
+          <div class="highlight-picker">
+            <label for="highlightColorInput">Gün rengi</label>
+            <input type="color" id="highlightColorInput" value="#fee2e2" />
+          </div>
+          <button id="toggleHighlightBtn" class="secondary-btn">Gün rengini uygula</button>
         </div>
 
         <div class="modal-columns">
@@ -1163,6 +1218,11 @@
           <div class="form-row">
             <label for="timeInput">Paylaşım saati</label>
             <input type="time" id="timeInput" />
+          </div>
+
+          <div class="form-row color-row">
+            <label for="entryColorInput">Paylaşım rengi</label>
+            <input type="color" id="entryColorInput" value="#2563eb" />
           </div>
 
           <div class="form-row">
@@ -1245,6 +1305,8 @@
     );
     const scheduleList = document.getElementById("scheduleList");
     const scheduleSearchInput = document.getElementById("scheduleSearchInput");
+    const entryColorInput = document.getElementById("entryColorInput");
+    const highlightColorInput = document.getElementById("highlightColorInput");
 
     const dayModal = document.getElementById("dayModal");
     const modalDateTitle = document.getElementById("modalDateTitle");
@@ -1291,6 +1353,8 @@
     const excelUploadDefaultText = excelUploadBtn ? excelUploadBtn.textContent : "Excel yükle";
     let scheduleSearchQuery = "";
     let highlightedDates = new Map();
+    const DEFAULT_ENTRY_COLOR = "#2563eb";
+    const DEFAULT_HIGHLIGHT_COLOR = "#fee2e2";
     const resetScopeLabels = {
       excel: "Excel girişlerini sıfırla",
       manual: "Manuel girişleri sıfırla",
@@ -1313,6 +1377,8 @@
     const quickRangeButtonsList = quickRangeButtons
       ? Array.from(quickRangeButtons.querySelectorAll("button[data-range]"))
       : [];
+    if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
+    if (highlightColorInput) highlightColorInput.value = DEFAULT_HIGHLIGHT_COLOR;
 
     if (scheduleSearchInput) {
       scheduleSearchInput.addEventListener("input", (event) => {
@@ -1459,7 +1525,8 @@
         communication_type: entry.communication_type || entry.communicationType || "",
         status: entry.status || "",
         platforms: platformsRaw,
-        source: normalizedSource
+        source: normalizedSource,
+        color: entry.color || ""
       };
     }
 
@@ -1544,7 +1611,10 @@
         const response = await apiFetch(`/calendar/highlights${query}`);
         const data = await response.json();
         highlightedDates = new Map(
-          data.map((item) => [item.date, item.color || "#fee2e2"])
+          data.map((item) => [
+            item.date,
+            item.color || DEFAULT_HIGHLIGHT_COLOR
+          ])
         );
       } catch (err) {
         console.warn("Vurgular yüklenemedi:", err.message);
@@ -1566,6 +1636,8 @@
       if (selectedDateKey) {
         currentDayItems = loadDayData(selectedDateKey).items;
         renderModalSummaryList();
+        updateHighlightButtonState();
+      } else {
         updateHighlightButtonState();
       }
       if (currentUser && currentUser.role === "admin") {
@@ -1624,9 +1696,33 @@
         emailDiv.textContent = user.email;
 
         const roleDiv = document.createElement("div");
-        roleDiv.appendChild(
-          createBadge(user.role === "admin" ? "Admin" : "Kullanıcı", "info")
-        );
+        const roleSelect = document.createElement("select");
+        roleSelect.className = "role-select";
+        ["user", "admin"].forEach((roleOption) => {
+          const opt = document.createElement("option");
+          opt.value = roleOption;
+          opt.textContent =
+            roleOption === "admin" ? "Admin" : "Kullanıcı";
+          roleSelect.appendChild(opt);
+        });
+        roleSelect.value = user.role === "admin" ? "admin" : "user";
+        roleSelect.disabled =
+          !user.approved ||
+          (currentUser && currentUser.id === user.id);
+        roleSelect.addEventListener("change", async () => {
+          const nextRole = roleSelect.value;
+          roleSelect.disabled = true;
+          try {
+            await updateUserRole(user.id, nextRole);
+            await loadAdminUsers();
+          } catch (error) {
+            alert(error.message);
+          } finally {
+            roleSelect.disabled =
+              currentUser && currentUser.id === user.id;
+          }
+        });
+        roleDiv.appendChild(roleSelect);
 
         const statusDiv = document.createElement("div");
         statusDiv.style.display = "flex";
@@ -1715,6 +1811,13 @@
         await loadEntriesFromServer();
       }
       await loadAdminUsers();
+    }
+
+    async function updateUserRole(userId, role) {
+      await apiFetch(`/users/${userId}/role`, {
+        method: "POST",
+        body: JSON.stringify({ role })
+      });
     }
 
     function openAdminOverlay() {
@@ -1814,7 +1917,8 @@
       communication: item.communication || "",
       communicationType: item.communication_type || item.communicationType || "",
       status: item.status || "",
-      source: item.source || "manual"
+      source: item.source || "manual",
+      color: item.color || ""
     }));
       return { items: sortItemsByTime(clones) };
     }
@@ -1896,6 +2000,7 @@
         row.className = "schedule-item summary";
         if (highlightedDates.has(key)) {
           row.classList.add("has-highlight");
+          row.style.borderLeft = `4px solid ${highlightedDates.get(key)}`;
         }
 
         const header = document.createElement("div");
@@ -1968,22 +2073,12 @@
 
         if (items.length) {
           cell.classList.add("has-data");
-          const sortedItems = sortItemsByTime(items);
-          sortedItems.slice(0, 3).forEach(item => {
-            const { snippet, time } = makeItemSummary(item);
-            const line = document.createElement("div");
-            line.className = "day-summary";
-            if (item.source === "excel") line.classList.add("excel");
-            const timePart = time ? time + " " : "";
-            line.textContent = timePart + snippet;
-            if (item.source === "excel") {
-              const tag = document.createElement("span");
-              tag.className = "excel-chip";
-              tag.textContent = "Excel";
-              line.appendChild(document.createTextNode(" "));
-              line.appendChild(tag);
-            }
-            cell.appendChild(line);
+          const summary = buildDaySummary(items);
+          summary.entries.slice(0, 3).forEach(([label, count]) => {
+            const chip = document.createElement("div");
+            chip.className = "day-summary-chip";
+            chip.textContent = `${label} ${count}`;
+            cell.appendChild(chip);
           });
         }
 
@@ -2018,6 +2113,8 @@
         wrap.className = "summary-item";
         if (item.id === activeItemId) wrap.classList.add("active");
         if (item.source === "excel") wrap.classList.add("excel");
+        const entryColor = item.color || DEFAULT_ENTRY_COLOR;
+        wrap.style.borderLeft = `4px solid ${entryColor}`;
 
         const { snippet, platforms, time } = makeItemSummary(item);
 
@@ -2048,6 +2145,7 @@
           filesInput.value = item.files || "";
           textInput.value = item.text || "";
           timeInput.value = item.time || "";
+          if (entryColorInput) entryColorInput.value = entryColor || DEFAULT_ENTRY_COLOR;
           platformInputs.forEach((cb) => {
             cb.checked = item.platforms
               ? item.platforms.includes(cb.value)
@@ -2068,30 +2166,41 @@
       textInput.value = "";
       timeInput.value = "";
       platformInputs.forEach((cb) => (cb.checked = false));
+      if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
     }
 
     function updateHighlightButtonState() {
       if (!toggleHighlightBtn) return;
       if (!selectedDateKey) {
         toggleHighlightBtn.disabled = true;
-        toggleHighlightBtn.textContent = "Önemli yap";
+        toggleHighlightBtn.textContent = "Gün rengini uygula";
+        if (highlightColorInput) {
+          highlightColorInput.disabled = true;
+          highlightColorInput.value = DEFAULT_HIGHLIGHT_COLOR;
+        }
         return;
       }
       const hasHighlight = highlightedDates.has(selectedDateKey);
       toggleHighlightBtn.disabled = !isViewingOwnData();
       toggleHighlightBtn.textContent = hasHighlight
-        ? "Önemli işaretini kaldır"
-        : "Günü önemli yap";
+        ? "Rengi kaldır"
+        : "Gün rengini uygula";
+      if (highlightColorInput) {
+        highlightColorInput.disabled = !isViewingOwnData();
+        highlightColorInput.value = hasHighlight
+          ? highlightedDates.get(selectedDateKey) || DEFAULT_HIGHLIGHT_COLOR
+          : DEFAULT_HIGHLIGHT_COLOR;
+      }
     }
 
-    async function setDateHighlight(dateKey) {
-      const payload = { date: dateKey, color: "#fee2e2" };
+    async function setDateHighlight(dateKey, colorValue = DEFAULT_HIGHLIGHT_COLOR) {
+      const payload = { date: dateKey, color: colorValue };
       const response = await apiFetch("/calendar/highlights", {
         method: "POST",
         body: JSON.stringify(payload)
       });
       const data = await response.json();
-      highlightedDates.set(data.date, data.color || "#fee2e2");
+      highlightedDates.set(data.date, data.color || colorValue);
     }
 
     async function removeDateHighlight(dateKey) {
@@ -2106,8 +2215,15 @@
           toggleHighlightBtn.disabled = true;
           if (highlightedDates.has(selectedDateKey)) {
             await removeDateHighlight(selectedDateKey);
+            if (highlightColorInput) {
+              highlightColorInput.value = DEFAULT_HIGHLIGHT_COLOR;
+            }
           } else {
-            await setDateHighlight(selectedDateKey);
+            const colorValue =
+              highlightColorInput && highlightColorInput.value
+                ? highlightColorInput.value
+                : DEFAULT_HIGHLIGHT_COLOR;
+            await setDateHighlight(selectedDateKey, colorValue);
           }
           renderCalendar();
           updateHighlightButtonState();
@@ -2144,9 +2260,13 @@
               ? item.platforms.includes(cb.value)
               : false;
           });
+          if (entryColorInput) {
+            entryColorInput.value = item.color || DEFAULT_ENTRY_COLOR;
+          }
           modalFormSection.style.display = "";
         } else {
           activeItemId = null;
+          if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
         }
       }
 
@@ -2987,6 +3107,7 @@
         text: textVal,
         files: filesVal,
         platforms: selectedPlatforms,
+        color: entryColorInput ? entryColorInput.value || DEFAULT_ENTRY_COLOR : DEFAULT_ENTRY_COLOR,
         communication: existing ? existing.communication || "" : "",
         communicationType: existing
           ? existing.communication_type || existing.communicationType || ""

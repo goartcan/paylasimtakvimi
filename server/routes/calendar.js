@@ -64,14 +64,16 @@ router.post("/", requireAuth, (req, res) => {
     communicationType = "",
     status = "",
     platforms = [],
-    source: incomingSource
+    source: incomingSource,
+    color = ""
   } = req.body;
 
   const source = incomingSource || "manual";
+  const entryColor = color || "";
 
   const insertStmt = db.prepare(`
-    INSERT INTO entries (user_id, date, time, text, files, communication, communication_type, status, platforms, source)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO entries (user_id, date, time, text, files, communication, communication_type, status, platforms, source, color)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const result = insertStmt.run(
@@ -84,7 +86,8 @@ router.post("/", requireAuth, (req, res) => {
     communicationType,
     status,
     JSON.stringify(platforms),
-    source
+    source,
+    entryColor
   );
 
   const inserted = db
@@ -141,12 +144,14 @@ router.put("/:id", requireAuth, (req, res) => {
     communicationType = existing.communication_type || "",
     status = existing.status || "",
     platforms = existing.platforms ? JSON.parse(existing.platforms) : [],
-    source = existing.source || "manual"
+    source = existing.source || "manual",
+    color = existing.color || ""
   } = req.body;
+  const entryColor = color || "";
 
   db.prepare(`
     UPDATE entries
-    SET date = ?, time = ?, text = ?, files = ?, communication = ?, communication_type = ?, status = ?, platforms = ?, source = ?
+    SET date = ?, time = ?, text = ?, files = ?, communication = ?, communication_type = ?, status = ?, platforms = ?, source = ?, color = ?
     WHERE id = ? AND user_id = ?
   `).run(
     date,
@@ -158,6 +163,7 @@ router.put("/:id", requireAuth, (req, res) => {
     status,
     JSON.stringify(platforms),
     source,
+    entryColor,
     entryId,
     req.userId
   );

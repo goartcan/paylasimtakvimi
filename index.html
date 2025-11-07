@@ -725,6 +725,10 @@
     }
     .color-picker {
       display: none;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(4px) scale(0.98);
+      transition: opacity 120ms ease, transform 120ms ease;
       padding: 10px;
       border: 1px solid #d1d5db;
       border-radius: 14px;
@@ -735,12 +739,14 @@
       width: 168px;
       z-index: 30;
       box-shadow: 0 16px 32px rgba(15, 23, 42, 0.2);
-      display: grid;
       grid-template-columns: repeat(4, 32px);
       gap: 8px;
     }
     .color-picker.open {
       display: grid;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
     }
     .color-picker-wrapper.disabled {
       opacity: 0.5;
@@ -1487,7 +1493,7 @@ function getContrastingTextColor(hex) {
 }
 
 function renderColorPicker(container, input, palette, onChange) {
-  if (!container || !input) return;
+  if (!container || !input || !Array.isArray(palette)) return;
   container.innerHTML = "";
   palette.forEach((color) => {
     const button = document.createElement("button");
@@ -1508,10 +1514,11 @@ function renderColorPicker(container, input, palette, onChange) {
         .forEach((el) => el.classList.remove("active"));
       button.classList.add("active");
       if (onChange) onChange(color);
-      container.classList.remove("open");
+      closeColorPicker(container);
     });
     container.appendChild(button);
   });
+  closeColorPicker(container);
 }
 
 function setColorPickerValue(container, input, value) {
@@ -1546,7 +1553,7 @@ function setColorPickerEnabled(wrapper, toggle, enabled) {
     wrapper.classList.add("disabled");
     toggle.disabled = true;
     const picker = wrapper.querySelector(".color-picker");
-    if (picker) picker.classList.remove("open");
+    if (picker) closeColorPicker(picker);
   }
 }
 
@@ -1590,6 +1597,28 @@ const quickRangeButtonsList = quickRangeButtons
 if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
 if (highlightColorInput) highlightColorInput.value = DEFAULT_HIGHLIGHT_COLOR;
 const COLOR_PICKER_CONTAINERS = [];
+const COLOR_PICKER_TOGGLE_MAP = new Map();
+
+function closeColorPicker(container) {
+  if (!container) return;
+  container.classList.remove("open");
+  const toggle = COLOR_PICKER_TOGGLE_MAP.get(container);
+  if (toggle) toggle.setAttribute("aria-expanded", "false");
+}
+
+function openColorPicker(container, toggle) {
+  if (!container) return;
+  container.classList.add("open");
+  if (toggle) toggle.setAttribute("aria-expanded", "true");
+}
+
+function closeAllColorPickers(except = null) {
+  COLOR_PICKER_CONTAINERS.forEach((container) => {
+    if (!container) return;
+    if (except && container === except) return;
+    closeColorPicker(container);
+  });
+}
 
 function setupColorPicker(container, input, toggle, palette, onChange) {
   if (!container || !input) return;
@@ -1600,14 +1629,22 @@ function setupColorPicker(container, input, toggle, palette, onChange) {
   setColorPickerValue(container, input, input.value);
   updateColorToggle(toggle, input.value);
   COLOR_PICKER_CONTAINERS.push(container);
+  if (toggle) {
+    COLOR_PICKER_TOGGLE_MAP.set(container, toggle);
+    toggle.setAttribute("aria-expanded", "false");
+  }
   container.addEventListener("click", (event) => event.stopPropagation());
   if (toggle) {
     toggle.addEventListener("click", (event) => {
       event.stopPropagation();
       if (toggle.disabled) return;
       const isOpen = container.classList.contains("open");
-      COLOR_PICKER_CONTAINERS.forEach((el) => el.classList.remove("open"));
-      if (!isOpen) container.classList.add("open");
+      if (isOpen) {
+        closeColorPicker(container);
+      } else {
+        closeAllColorPickers();
+        openColorPicker(container, toggle);
+      }
     });
   }
 }
@@ -1638,9 +1675,7 @@ if (highlightColorPicker && highlightColorInput) {
 }
 
 document.addEventListener("click", () => {
-  COLOR_PICKER_CONTAINERS.forEach((container) =>
-    container.classList.remove("open")
-  );
+  closeAllColorPickers();
 });
 
     if (scheduleSearchInput) {

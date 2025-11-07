@@ -1546,14 +1546,18 @@ function updateColorToggle(toggle, color) {
 
 function setColorPickerEnabled(wrapper, toggle, enabled) {
   if (!wrapper || !toggle) return;
+  const picker = wrapper.querySelector(".color-picker");
   if (enabled) {
     wrapper.classList.remove("disabled");
     toggle.disabled = false;
+    if (picker) picker.classList.remove("disabled");
   } else {
     wrapper.classList.add("disabled");
     toggle.disabled = true;
-    const picker = wrapper.querySelector(".color-picker");
-    if (picker) closeColorPicker(picker);
+    if (picker) {
+      picker.classList.add("disabled");
+      closeColorPicker(picker);
+    }
   }
 }
 
@@ -1666,7 +1670,6 @@ if (highlightColorPicker && highlightColorInput) {
     COLOR_PALETTE,
     (color) => handleHighlightSelection(color)
   );
-  highlightColorPicker.classList.add("disabled");
   setColorPickerEnabled(
     highlightColorWrapper,
     highlightColorToggle,
@@ -2519,7 +2522,6 @@ document.addEventListener("click", () => {
           highlightColorInput.value = DEFAULT_HIGHLIGHT_COLOR;
         }
         if (highlightColorPicker && highlightColorInput) {
-          highlightColorPicker.classList.add("disabled");
           setColorPickerValue(
             highlightColorPicker,
             highlightColorInput,

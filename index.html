@@ -370,13 +370,20 @@
       color: #1a275a;
     }
     .day {
+      --day-surface: #ffffff;
+      --day-text: #0f172a;
+      --day-border: #e1e5ff;
+      --day-chip-bg: rgba(15, 23, 42, 0.06);
+      --day-chip-color: #0f172a;
+      --day-chip-border: transparent;
       border-radius: 8px;
-      border: 1px solid #e1e5ff;
+      border: 1px solid var(--day-border);
       padding: 8px;
       min-height: 120px;
       font-size: 13px;
       cursor: pointer;
-      background: #ffffff;
+      background: var(--day-surface);
+      color: var(--day-text);
       transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
     }
     .day:hover {
@@ -388,15 +395,16 @@
       font-weight: 700;
       font-size: 14px;
       margin-bottom: 4px;
-      color: #1a275a;
+      color: var(--day-text);
     }
-    .day.has-data {
-      border-color: #00b3c6;
-      background: #f0fcff;
+    .day.has-data:not([data-color]) {
+      --day-border: #00b3c6;
+      --day-surface: #f0fcff;
     }
     .day.day-highlighted {
-      background: var(--day-highlight-color, #fee2e2);
-      border-color: #f87171;
+      --day-border: #f87171;
+      background: var(--day-surface, var(--day-highlight-color, #fee2e2));
+      border-color: var(--day-border);
       box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2);
     }
     .day-summary {
@@ -413,9 +421,40 @@
       padding: 2px 6px;
       margin: 2px 4px 0 0;
       border-radius: 999px;
-      background: #eef2ff;
+      background: var(--day-chip-bg);
+      border: 1px solid var(--day-chip-border);
       font-size: 10px;
-      color: #1e1b4b;
+      color: var(--day-chip-color);
+      font-weight: 500;
+    }
+    .day[data-color] .day-summary {
+      color: var(--day-text);
+    }
+    .day[data-color="yellow"],
+    .day[data-color="amber"],
+    .day[data-color="orange"],
+    .day[data-color="green"],
+    .day[data-color="emerald"],
+    .day[data-color="cyan"],
+    .day[data-color="sky"],
+    .day[data-color="default"] {
+      --day-text: #1f2937;
+      --day-chip-bg: rgba(255, 255, 255, 0.78);
+      --day-chip-color: #1f2937;
+      --day-chip-border: rgba(31, 41, 55, 0.18);
+    }
+    .day[data-color="blue"],
+    .day[data-color="purple"],
+    .day[data-color="violet"],
+    .day[data-color="pink"],
+    .day[data-color="red"],
+    .day[data-color="rose"],
+    .day[data-color="gray"],
+    .day[data-color="black"] {
+      --day-text: #ffffff;
+      --day-chip-bg: rgba(255, 255, 255, 0.22);
+      --day-chip-color: #ffffff;
+      --day-chip-border: rgba(255, 255, 255, 0.45);
     }
 
     .side {
@@ -931,19 +970,23 @@
       color: #e5e7eb;
     }
     body.dark .day {
-      background: #0b1120;
-      border-color: #1f2937;
+      --day-surface: #0b1120;
+      --day-text: #e5e7eb;
+      --day-border: #1f2937;
+      --day-chip-bg: rgba(226, 232, 240, 0.08);
+      --day-chip-color: #e5e7eb;
+      --day-chip-border: rgba(226, 232, 240, 0.18);
+      background: var(--day-surface);
+      border-color: var(--day-border);
     }
-    body.dark .day.has-data {
-      background: #0f172a;
-      border-color: #38bdf8;
+    body.dark .day.has-data:not([data-color]) {
+      --day-surface: #0f172a;
+      --day-border: #38bdf8;
     }
     body.dark .day.day-highlighted {
-      background: rgba(248, 113, 113, 0.2);
-      border-color: #fca5a5;
       box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.35);
     }
-    body.dark .day-number { color: #e5e7eb; }
+    body.dark .day-number { color: var(--day-text); }
     body.dark .day-summary { color: #cbd5f5; }
 
     /* Koyu mod modal daha aydınlık ve kontrastlı */
@@ -1017,8 +1060,9 @@
       color: #e5e7eb;
     }
     body.dark .day-summary-chip {
-      background: #1e3a8a;
-      color: #c7d2fe;
+      background: var(--day-chip-bg, #1e3a8a);
+      color: var(--day-chip-color, #c7d2fe);
+      border-color: var(--day-chip-border, transparent);
     }
     body.dark .summary-chip {
       background: #1e3a8a;
@@ -1464,6 +1508,24 @@ const COLOR_PALETTE = [
   "#a855f7",
   "#ef4444"
 ];
+const COLOR_TOKEN_MAP = {
+  "#000000": "black",
+  "#dc2626": "red",
+  "#f97316": "orange",
+  "#facc15": "yellow",
+  "#22c55e": "green",
+  "#0ea5e9": "sky",
+  "#2563eb": "blue",
+  "#7c3aed": "purple",
+  "#ec4899": "pink",
+  "#6b7280": "gray",
+  "#fbbf24": "amber",
+  "#34d399": "emerald",
+  "#38bdf8": "cyan",
+  "#a855f7": "violet",
+  "#ef4444": "rose",
+  "#fee2e2": "default"
+};
 
 function hexToRgb(hex) {
   const value = hex.replace("#", "");
@@ -1490,6 +1552,30 @@ function getContrastingTextColor(hex) {
   const { r, g, b } = hexToRgb(hex);
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   return luminance > 0.6 ? "#111827" : "#f9fafb";
+}
+
+function normalizeHexColor(value) {
+  if (!value) return null;
+  let hex = value.toString().trim().toLowerCase();
+  if (!hex.startsWith("#")) return null;
+  if (hex.length === 4) {
+    hex =
+      "#" +
+      hex[1] +
+      hex[1] +
+      hex[2] +
+      hex[2] +
+      hex[3] +
+      hex[3];
+  }
+  if (hex.length === 7) return hex;
+  return null;
+}
+
+function getColorTokenFromHex(value) {
+  const normalized = normalizeHexColor(value);
+  if (!normalized) return null;
+  return COLOR_TOKEN_MAP[normalized] || null;
 }
 
 function renderColorPicker(container, input, palette, onChange) {
@@ -2384,6 +2470,26 @@ document.addEventListener("click", () => {
         if (highlightColor) {
           cell.classList.add("day-highlighted");
           cell.style.setProperty("--day-highlight-color", highlightColor);
+          cell.style.setProperty("--day-surface", highlightColor);
+          const colorToken = getColorTokenFromHex(highlightColor);
+          if (colorToken) {
+            cell.dataset.color = colorToken;
+          } else {
+            delete cell.dataset.color;
+            const textColor = getContrastingTextColor(highlightColor);
+            cell.style.setProperty("--day-text", textColor);
+            if (textColor === "#f9fafb") {
+              cell.style.setProperty("--day-chip-bg", "rgba(255, 255, 255, 0.22)");
+              cell.style.setProperty("--day-chip-color", "#ffffff");
+              cell.style.setProperty("--day-chip-border", "rgba(255, 255, 255, 0.45)");
+            } else {
+              cell.style.setProperty("--day-chip-bg", "rgba(15, 23, 42, 0.08)");
+              cell.style.setProperty("--day-chip-color", "#0f172a");
+              cell.style.setProperty("--day-chip-border", "rgba(15, 23, 42, 0.18)");
+            }
+          }
+        } else {
+          delete cell.dataset.color;
         }
 
         if (items.length) {
@@ -2392,11 +2498,7 @@ document.addEventListener("click", () => {
           summary.entries.slice(0, 3).forEach(([label, count, color]) => {
             const chip = document.createElement("div");
             chip.className = "day-summary-chip";
-            const chipColor = color || DEFAULT_ENTRY_COLOR;
             chip.textContent = `${label} ${count}`;
-            chip.style.backgroundColor = hexToRgba(chipColor, 0.2);
-            chip.style.border = `1px solid ${hexToRgba(chipColor, 0.35)}`;
-            chip.style.color = getContrastingTextColor(chipColor);
             cell.appendChild(chip);
           });
         }
@@ -3545,5 +3647,3 @@ document.addEventListener("click", () => {
 </div>
 </body>
 </html>
-      flex: 0 0 calc(25% - 6px);
-    }

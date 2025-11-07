@@ -2453,7 +2453,7 @@ document.addEventListener("click", () => {
         if (highlightColor) {
           row.classList.add("has-highlight");
           row.style.setProperty("--summary-border", highlightColor);
-          row.style.setProperty("--summary-surface", hexToRgba(highlightColor, 0.18));
+          row.style.setProperty("--summary-surface", highlightColor);
           const token = getColorTokenFromHex(highlightColor);
           if (token) {
             row.dataset.color = token;

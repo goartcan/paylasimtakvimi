@@ -28,6 +28,32 @@ router.get("/", requireAuth, (req, res) => {
   res.json(rows);
 });
 
+router.get("/highlights", requireAuth, (req, res) => {
+  let targetUserId = req.userId;
+  if (req.user.role === "admin" && req.query.userId) {
+    const requested = Number(req.query.userId);
+    if (!Number.isInteger(requested)) {
+      return res.status(400).json({ error: "Geçersiz kullanıcı kimliği." });
+    }
+    const targetUser = db
+      .prepare("SELECT id FROM users WHERE id = ?")
+      .get(requested);
+    if (!targetUser) {
+      return res.status(404).json({ error: "Kullanıcı bulunamadı." });
+    }
+    targetUserId = requested;
+  } else if (req.query.userId && req.user.role !== "admin") {
+    return res
+      .status(403)
+      .json({ error: "Sadece adminler diğer kullanıcıları görüntüleyebilir." });
+  }
+
+  const rows = db
+    .prepare("SELECT date, color FROM day_flags WHERE user_id = ?")
+    .all(targetUserId);
+  res.json(rows);
+});
+
 router.post("/", requireAuth, (req, res) => {
   const {
     date,
@@ -65,6 +91,32 @@ router.post("/", requireAuth, (req, res) => {
     .prepare("SELECT * FROM entries WHERE id = ? AND user_id = ?")
     .get(result.lastInsertRowid, req.userId);
   res.json(inserted);
+});
+
+router.post("/highlights", requireAuth, (req, res) => {
+  const { date, color } = req.body || {};
+  if (!date || typeof date !== "string") {
+    return res.status(400).json({ error: "Tarih gerekli." });
+  }
+  const normalizedDate = date.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(normalizedDate)) {
+    return res.status(400).json({ error: "Tarih formatı geçersiz." });
+  }
+  const highlightColor =
+    color && typeof color === "string" && color.trim()
+      ? color.trim()
+      : "#fee2e2";
+
+  db.prepare(
+    `INSERT INTO day_flags (user_id, date, color)
+     VALUES (?, ?, ?)
+     ON CONFLICT(user_id, date) DO UPDATE SET color = excluded.color`
+  ).run(req.userId, normalizedDate, highlightColor);
+
+  const saved = db
+    .prepare("SELECT date, color FROM day_flags WHERE user_id = ? AND date = ?")
+    .get(req.userId, normalizedDate);
+  res.json(saved);
 });
 
 router.put("/:id", requireAuth, (req, res) => {
@@ -144,6 +196,17 @@ router.delete("/reset", requireAuth, (req, res) => {
   const info = stmt.run(req.userId);
 
   res.json({ ok: true, deleted: info.changes, scope });
+});
+
+router.delete("/highlights/:date", requireAuth, (req, res) => {
+  const dateParam = (req.params.date || "").trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+    return res.status(400).json({ error: "Geçersiz tarih formatı." });
+  }
+  const info = db
+    .prepare("DELETE FROM day_flags WHERE user_id = ? AND date = ?")
+    .run(req.userId, dateParam);
+  res.json({ ok: true, deleted: info.changes });
 });
 
 router.delete("/:id", requireAuth, (req, res) => {

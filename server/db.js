@@ -52,6 +52,14 @@ db.exec(`
     platforms TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id)
   );
+
+  CREATE TABLE IF NOT EXISTS day_flags (
+    user_id INTEGER NOT NULL,
+    date TEXT NOT NULL,
+    color TEXT NOT NULL DEFAULT '#fee2e2',
+    PRIMARY KEY (user_id, date),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  );
 `);
 
 function ensureColumn(table, column, definition) {

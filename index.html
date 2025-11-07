@@ -387,6 +387,11 @@
       border-color: #00b3c6;
       background: #f0fcff;
     }
+    .day.day-highlighted {
+      background: var(--day-highlight-color, #fee2e2);
+      border-color: #f87171;
+      box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2);
+    }
     .day-summary {
       font-size: 11px;
       color: #33415c;
@@ -461,6 +466,48 @@
       flex: 0 0 340px;
       max-height: 340px;
       overflow-y: auto;
+    }
+    .schedule-search {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+    }
+    .schedule-search input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 12px;
+      outline: none;
+    }
+    .schedule-item.summary {
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f3ff;
+    }
+    .schedule-summary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #111827;
+    }
+    .schedule-summary-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .summary-chip {
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #1e1b4b;
+      font-size: 11px;
+    }
+    .schedule-item.has-highlight .schedule-summary-header {
+      color: #b91c1c;
     }
     .schedule-item {
       padding: 6px 0;
@@ -621,6 +668,9 @@
     .modal-toolbar {
       display: flex;
       justify-content: flex-start;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     .modal-columns {
       display: grid;
@@ -776,6 +826,11 @@
       background: #0f172a;
       border-color: #38bdf8;
     }
+    body.dark .day.day-highlighted {
+      background: rgba(248, 113, 113, 0.2);
+      border-color: #fca5a5;
+      box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.35);
+    }
     body.dark .day-number { color: #e5e7eb; }
     body.dark .day-summary { color: #cbd5f5; }
 
@@ -831,6 +886,11 @@
     body.dark .excel-upload-container {
       border-top-color: #374151;
     }
+    body.dark .schedule-search input {
+      background: #1f2937;
+      border-color: #374151;
+      color: #f9fafb;
+    }
     body.dark .day-summary.excel {
       color: #bae6fd;
     }
@@ -840,6 +900,10 @@
     body.dark .schedule-text,
     body.dark .schedule-date {
       color: #e5e7eb;
+    }
+    body.dark .summary-chip {
+      background: #1e3a8a;
+      color: #c7d2fe;
     }
 
     body.dark button {
@@ -977,6 +1041,14 @@
       <div class="side">
         <div class="form">
           <h2>Gün Detayı / Takvim Özeti</h2>
+          <div class="schedule-search">
+            <input
+              type="text"
+              id="scheduleSearchInput"
+              placeholder="Tarih veya platform ara"
+              aria-label="Takvim araması"
+            />
+          </div>
           <div id="scheduleList" class="schedule-list small"></div>
           <div class="excel-upload-container">
             <p class="excel-note">
@@ -1065,6 +1137,7 @@
       <div class="modal-body">
         <div class="modal-toolbar">
           <button id="toggleFormBtn">Paylaşım oluştur +</button>
+          <button id="toggleHighlightBtn" class="secondary-btn">Önemli yap</button>
         </div>
 
         <div class="modal-columns">
@@ -1126,7 +1199,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script>
-    const API_BASE = "https://paylasimtakvimi.onrender.com/";
+    const API_BASE = "https://paylasimtakvimi.onrender.com";
     let authToken = localStorage.getItem("contentCalendar_token") || "";
     let entriesById = new Map();
     let entriesByDate = new Map();
@@ -1171,12 +1244,14 @@
       ".platforms input[type='checkbox']"
     );
     const scheduleList = document.getElementById("scheduleList");
+    const scheduleSearchInput = document.getElementById("scheduleSearchInput");
 
     const dayModal = document.getElementById("dayModal");
     const modalDateTitle = document.getElementById("modalDateTitle");
     const modalCloseBtn = document.getElementById("modalCloseBtn");
     const modalFormSection = document.getElementById("modalFormSection");
     const toggleFormBtn = document.getElementById("toggleFormBtn");
+    const toggleHighlightBtn = document.getElementById("toggleHighlightBtn");
     const modalSummary = document.getElementById("modalSummary");
     const themeToggleBtn = document.getElementById("themeToggleBtn");
 
@@ -1214,6 +1289,8 @@
     let currentUser = null;
     let adminSelectedUserId = null;
     const excelUploadDefaultText = excelUploadBtn ? excelUploadBtn.textContent : "Excel yükle";
+    let scheduleSearchQuery = "";
+    let highlightedDates = new Map();
     const resetScopeLabels = {
       excel: "Excel girişlerini sıfırla",
       manual: "Manuel girişleri sıfırla",
@@ -1236,6 +1313,13 @@
     const quickRangeButtonsList = quickRangeButtons
       ? Array.from(quickRangeButtons.querySelectorAll("button[data-range]"))
       : [];
+
+    if (scheduleSearchInput) {
+      scheduleSearchInput.addEventListener("input", (event) => {
+        scheduleSearchQuery = event.target.value.trim().toLowerCase();
+        updateScheduleList();
+      });
+    }
 
     function setAuthToken(token) {
       authToken = token || "";
@@ -1454,11 +1538,26 @@
       }
     }
 
+    async function loadHighlightsFromServer(targetUserId = null) {
+      const query = targetUserId ? `?userId=${targetUserId}` : "";
+      try {
+        const response = await apiFetch(`/calendar/highlights${query}`);
+        const data = await response.json();
+        highlightedDates = new Map(
+          data.map((item) => [item.date, item.color || "#fee2e2"])
+        );
+      } catch (err) {
+        console.warn("Vurgular yüklenemedi:", err.message);
+        highlightedDates = new Map();
+      }
+    }
+
     async function loadEntriesFromServer(targetUserId = null, label = "") {
       const query = targetUserId ? `?userId=${targetUserId}` : "";
       const response = await apiFetch(`/calendar${query}`);
       const data = await response.json();
       rebuildEntriesCache(data);
+      await loadHighlightsFromServer(targetUserId);
       activeItemId = null;
       modalFormSection.style.display = "none";
       clearFormOnly();
@@ -1467,6 +1566,7 @@
       if (selectedDateKey) {
         currentDayItems = loadDayData(selectedDateKey).items;
         renderModalSummaryList();
+        updateHighlightButtonState();
       }
       if (currentUser && currentUser.role === "admin") {
         if (targetUserId && targetUserId !== currentUser.id) {
@@ -1734,10 +1834,46 @@
     }
 
     /* Sağ panel: Gün Detayı / Takvim Özeti */
+    function summarizePlatformLabel(platform) {
+      const key = (platform || "").toLowerCase();
+      if (!key) return "Platform seçilmedi";
+      if (key.includes("instagram")) return "Instagram";
+      if (key.includes("facebook")) return "Facebook";
+      if (key.includes("telegram")) return "Telegram";
+      if (key.includes("linkedin")) return "LinkedIn";
+      if (key.includes("youtube")) return "YouTube";
+      if (key.includes("tiktok")) return "TikTok";
+      if (key.includes("reddit")) return "Reddit";
+      if (key.includes("discord")) return "Discord";
+      if (key.includes("medium")) return "Medium";
+      if (key.includes("blog")) return "Blog";
+      if (key.includes("twitter") || key === "x") return "X";
+      return platform || "Platform seçilmedi";
+    }
+
+    function buildDaySummary(items) {
+      const counts = {};
+      let total = 0;
+      items.forEach((item) => {
+        const list =
+          item.platforms && item.platforms.length
+            ? item.platforms
+            : ["Platform seçilmedi"];
+        list.forEach((platform) => {
+          const label = summarizePlatformLabel(platform);
+          counts[label] = (counts[label] || 0) + 1;
+        });
+        total += 1;
+      });
+      const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+      return { total, entries };
+    }
+
     function updateScheduleList() {
       scheduleList.innerHTML = "";
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
       let any = false;
+      const query = scheduleSearchQuery;
 
       for (let day = 1; day <= daysInMonth; day++) {
         const dateObj = new Date(currentYear, currentMonth, day);
@@ -1746,52 +1882,50 @@
         const items = dayData.items || [];
         if (!items.length) continue;
 
-        const sortedItems = sortItemsByTime(items);
+        const summary = buildDaySummary(items);
+        const humanDate = formatHumanDate(dateObj);
+        const haystack =
+          (humanDate +
+            " " +
+            summary.entries.map(([label]) => label).join(" ")).toLowerCase();
+        if (query && !haystack.includes(query)) continue;
 
-        sortedItems.forEach((item) => {
-          const hasContent =
-            item.text || item.files || item.time || (item.platforms && item.platforms.length);
-          if (!hasContent) return;
-          any = true;
+        any = true;
 
-          const { snippet, platforms, time } = makeItemSummary(item);
+        const row = document.createElement("div");
+        row.className = "schedule-item summary";
+        if (highlightedDates.has(key)) {
+          row.classList.add("has-highlight");
+        }
 
-          const row = document.createElement("div");
-          row.className = "schedule-item";
-          if (item.source === "excel") {
-            row.classList.add("from-excel");
-          }
+        const header = document.createElement("div");
+        header.className = "schedule-summary-header";
+        header.textContent = `${humanDate} · ${summary.total} paylaşım`;
+        row.appendChild(header);
 
-          const dateEl = document.createElement("div");
-          dateEl.className = "schedule-date";
-          dateEl.textContent = formatHumanDate(dateObj);
-          row.appendChild(dateEl);
-
-          const textEl = document.createElement("div");
-          textEl.className = "schedule-text";
-          const timePart = time ? time + " - " : "";
-          textEl.textContent = timePart + snippet + " - " + platforms;
-          if (item.source === "excel") {
-            const tag = document.createElement("span");
-            tag.className = "excel-chip";
-            tag.textContent = "Excel";
-            textEl.appendChild(document.createTextNode(" "));
-            textEl.appendChild(tag);
-          }
-          row.appendChild(textEl);
-
-          row.addEventListener("click", () => {
-            openModalForDate(dateObj, key, item.id);
-          });
-
-          scheduleList.appendChild(row);
+        const chips = document.createElement("div");
+        chips.className = "schedule-summary-chips";
+        summary.entries.forEach(([label, count]) => {
+          const chip = document.createElement("span");
+          chip.className = "summary-chip";
+          chip.textContent = `${label} ${count}`;
+          chips.appendChild(chip);
         });
+        row.appendChild(chips);
+
+        row.addEventListener("click", () => {
+          openModalForDate(dateObj, key);
+        });
+
+        scheduleList.appendChild(row);
       }
 
       if (!any) {
         const empty = document.createElement("p");
         empty.className = "small";
-        empty.textContent = "Bu ay için kayıtlı paylaşım yok.";
+        empty.textContent = query
+          ? "Aramanızla eşleşen gün bulunamadı."
+          : "Bu ay için kayıtlı paylaşım yok.";
         scheduleList.appendChild(empty);
       }
     }
@@ -1825,6 +1959,12 @@
         const key = formatDateKey(dateObj);
         const dayData = loadDayData(key);
         const items = dayData.items || [];
+        const highlightColor = highlightedDates.get(key);
+
+        if (highlightColor) {
+          cell.classList.add("day-highlighted");
+          cell.style.setProperty("--day-highlight-color", highlightColor);
+        }
 
         if (items.length) {
           cell.classList.add("has-data");
@@ -1930,6 +2070,56 @@
       platformInputs.forEach((cb) => (cb.checked = false));
     }
 
+    function updateHighlightButtonState() {
+      if (!toggleHighlightBtn) return;
+      if (!selectedDateKey) {
+        toggleHighlightBtn.disabled = true;
+        toggleHighlightBtn.textContent = "Önemli yap";
+        return;
+      }
+      const hasHighlight = highlightedDates.has(selectedDateKey);
+      toggleHighlightBtn.disabled = !isViewingOwnData();
+      toggleHighlightBtn.textContent = hasHighlight
+        ? "Önemli işaretini kaldır"
+        : "Günü önemli yap";
+    }
+
+    async function setDateHighlight(dateKey) {
+      const payload = { date: dateKey, color: "#fee2e2" };
+      const response = await apiFetch("/calendar/highlights", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+      const data = await response.json();
+      highlightedDates.set(data.date, data.color || "#fee2e2");
+    }
+
+    async function removeDateHighlight(dateKey) {
+      await apiFetch(`/calendar/highlights/${dateKey}`, { method: "DELETE" });
+      highlightedDates.delete(dateKey);
+    }
+
+    if (toggleHighlightBtn) {
+      toggleHighlightBtn.addEventListener("click", async () => {
+        if (!selectedDateKey) return;
+        try {
+          toggleHighlightBtn.disabled = true;
+          if (highlightedDates.has(selectedDateKey)) {
+            await removeDateHighlight(selectedDateKey);
+          } else {
+            await setDateHighlight(selectedDateKey);
+          }
+          renderCalendar();
+          updateHighlightButtonState();
+          updateScheduleList();
+        } catch (err) {
+          alert(err.message || "Gün işaretlenemedi.");
+        } finally {
+          toggleHighlightBtn.disabled = false;
+        }
+      });
+    }
+
     function openModalForDate(dateObj, key, initialItemId = null) {
       selectedDateKey = key;
       const dayData = loadDayData(key);
@@ -1937,6 +2127,7 @@
       activeItemId = initialItemId;
 
       modalDateTitle.textContent = formatHumanDate(dateObj);
+      updateHighlightButtonState();
 
       clearFormOnly();
       modalFormSection.style.display = "none";

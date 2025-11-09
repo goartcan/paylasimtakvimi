@@ -143,6 +143,45 @@
       gap: 16px;
       box-shadow: 0 20px 45px rgba(15, 23, 42, 0.3);
     }
+    .admin-panel-tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 8px;
+      margin-bottom: -4px;
+      flex-wrap: wrap;
+    }
+    .admin-tab-btn {
+      border: none;
+      background: transparent;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .admin-tab-btn.active {
+      background: #0f172a;
+      color: #ffffff;
+    }
+    .admin-tab-view {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .admin-tab-view.active {
+      display: flex;
+    }
+    .color-description-scroll {
+      max-height: 360px;
+      overflow-y: auto;
+      padding-right: 6px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px;
+      background: #f8fafc;
+    }
     .admin-panel-header {
       display: flex;
       align-items: center;
@@ -500,6 +539,7 @@
       --day-chip-bg: rgba(15, 23, 42, 0.06);
       --day-chip-color: #0f172a;
       --day-chip-border: transparent;
+      --day-highlight-shadow: rgba(15, 23, 42, 0.08);
       border-radius: 8px;
       border: 1px solid var(--day-border);
       padding: 8px;
@@ -530,15 +570,10 @@
       color: #6b21a8;
       margin-bottom: 4px;
     }
-    .day.has-data:not([data-color]) {
-      --day-border: #7c3aed;
-      --day-surface: #f5f0ff;
-    }
     .day.day-highlighted {
-      --day-border: #f87171;
-      background: var(--day-surface, var(--day-highlight-color, #fee2e2));
-      border-color: var(--day-border);
-      box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.2);
+      background: var(--day-surface, #ffffff);
+      border-color: var(--day-border, #e1e5ff);
+      box-shadow: 0 12px 28px var(--day-highlight-shadow, rgba(15, 23, 42, 0.12));
     }
     .day-summary {
       font-size: 11px;
@@ -594,6 +629,7 @@
       color: var(--summary-text);
     }
     .schedule-item.summary[data-color="yellow"],
+    .schedule-item.summary[data-color="white"],
     .schedule-item.summary[data-color="amber"],
     .schedule-item.summary[data-color="orange"],
     .schedule-item.summary[data-color="green"],
@@ -706,6 +742,7 @@
       --summary-chip-bg: rgba(15, 23, 42, 0.06);
       --summary-chip-color: #0f172a;
       --summary-chip-border: rgba(15, 23, 42, 0.16);
+      --summary-shadow: rgba(15, 23, 42, 0.08);
       padding: 12px;
       margin-bottom: 10px;
       border-radius: 10px;
@@ -716,7 +753,7 @@
       transition: border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
     }
     .schedule-item.summary:hover {
-      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+      box-shadow: 0 6px 16px var(--summary-shadow, rgba(15, 23, 42, 0.08));
     }
     .schedule-summary-header {
       display: flex;
@@ -742,17 +779,10 @@
       font-size: 11px;
       font-weight: 500;
     }
-    .schedule-item.has-highlight .schedule-summary-header {
-      color: #b91c1c;
-    }
     .schedule-item {
       padding: 6px 0;
       border-bottom: 1px solid #f1f3ff;
       cursor: pointer;
-    }
-    .schedule-item.has-highlight {
-      border-left: 4px solid #ef4444;
-      padding-left: 6px;
     }
     .schedule-item.from-excel {
       background: rgba(14, 165, 233, 0.08);
@@ -1059,11 +1089,6 @@
       gap: 6px;
       font-size: 12px;
     }
-    .highlight-actions {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
     .highlight-help-btn {
       width: 24px;
       height: 24px;
@@ -1074,6 +1099,9 @@
       font-weight: 600;
       color: #0f172a;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
     .highlight-help-btn:hover {
       background: #f3f4f6;
@@ -1133,17 +1161,29 @@
       border: 1px solid rgba(15, 23, 42, 0.12);
       flex-shrink: 0;
     }
-    .copy-popover {
+    .copy-popover-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
       display: none;
-      margin-top: 16px;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 14px;
-      background: #f9fafb;
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+      align-items: center;
+      justify-content: center;
+      z-index: 1600;
+      padding: 16px;
     }
-    .copy-popover.active {
-      display: block;
+    .copy-popover-backdrop.active {
+      display: flex;
+    }
+    .copy-popover {
+      width: min(360px, 100%);
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      border-radius: 18px;
+      padding: 18px;
+      background: #ffffff;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     .copy-popover-header {
       display: flex;
@@ -1165,6 +1205,11 @@
       align-items: center;
       gap: 6px;
       position: relative;
+    }
+    .highlight-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #0f172a;
     }
     .color-picker-toggle {
       display: inline-flex;
@@ -1352,6 +1397,10 @@
       box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
       cursor: pointer;
       color: #0f172a;
+    }
+    .summary-item:focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
     }
     .summary-item + .summary-item {
       margin-top: 2px;
@@ -1613,15 +1662,12 @@
       --day-chip-bg: rgba(226, 232, 240, 0.08);
       --day-chip-color: #e5e7eb;
       --day-chip-border: rgba(226, 232, 240, 0.18);
+      --day-highlight-shadow: rgba(0, 0, 0, 0.45);
       background: var(--day-surface);
       border-color: var(--day-border);
     }
-    body.dark .day.has-data:not([data-color]) {
-      --day-surface: #0f172a;
-      --day-border: #38bdf8;
-    }
     body.dark .day.day-highlighted {
-      box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.35);
+      box-shadow: 0 14px 30px var(--day-highlight-shadow, rgba(15, 23, 42, 0.45));
     }
     body.dark .day-number { color: var(--day-text); }
     body.dark .day-summary { color: #cbd5f5; }
@@ -1689,6 +1735,9 @@
       border-color: rgba(15, 23, 42, 0.12);
       color: #0f172a;
     }
+    body.dark .copy-popover-backdrop {
+      background: rgba(0, 0, 0, 0.6);
+    }
     body.dark .copy-popover {
       background: #111827;
       border-color: #1f2937;
@@ -1717,9 +1766,6 @@
     }
     body.dark .schedule-item {
       border-color: #1f2937;
-    }
-    body.dark .schedule-item.has-highlight {
-      border-left-color: #f87171;
     }
     body.dark .schedule-text,
     body.dark .schedule-date {
@@ -1856,20 +1902,41 @@
         <h2>Admin Paneli</h2>
         <button id="adminCloseBtn" class="admin-close-btn" aria-label="Kapat">×</button>
       </div>
-      <p class="small">
-        Bekleyen kullanıcı kayıtlarını onaylayabilir, herhangi bir kullanıcının takvimini görüntüleyebilirsin.
-        <span id="pendingCountBadge" class="pending-count-badge">(0 bekleyen kayıt)</span>
-      </p>
-      <div class="admin-panel-actions">
-        <button type="button" id="adminViewSelfBtn" class="primary-btn">Kendi takvimimi göster</button>
+      <div class="admin-panel-tabs" id="adminPanelTabs">
+        <button type="button" class="admin-tab-btn active" data-panel="users">Kullanıcı yönetimi</button>
+        <button
+          type="button"
+          class="admin-tab-btn"
+          data-panel="colors"
+          id="colorTabBtn"
+          style="display:none;"
+        >
+          Renk açıklamalarını düzenle
+        </button>
       </div>
-      <div class="admin-user-list" id="adminUserList"></div>
-      <div class="admin-section" id="colorDescriptionsSection" style="display:none;">
-        <h3>Renk açıklamaları</h3>
+      <div class="admin-tab-view active" id="adminUsersSection" data-panel="users">
+        <p class="small">
+          Bekleyen kullanıcı kayıtlarını onaylayabilir, herhangi bir kullanıcının takvimini görüntüleyebilirsin.
+          <span id="pendingCountBadge" class="pending-count-badge">(0 bekleyen kayıt)</span>
+        </p>
+        <div class="admin-panel-actions">
+          <button type="button" id="adminViewSelfBtn" class="primary-btn">Kendi takvimimi göster</button>
+        </div>
+        <div class="admin-user-list" id="adminUserList"></div>
+      </div>
+      <div
+        class="admin-tab-view admin-section"
+        id="colorDescriptionsSection"
+        data-panel="colors"
+        style="display:none;"
+      >
+        <h3>Renk açıklamalarını düzenle</h3>
         <p class="small">
           Gün rengi panelinde görünen metinleri burada düzenleyebilirsin. Bu ayarlar tüm kullanıcılar için geçerlidir.
         </p>
-        <div id="colorDescriptionsForm"></div>
+        <div class="color-description-scroll">
+          <div id="colorDescriptionsForm"></div>
+        </div>
         <div class="color-description-actions">
           <button type="button" id="colorDescriptionSaveBtn" class="secondary-btn">Kaydet</button>
           <span class="small" id="colorDescriptionSaveStatus"></span>
@@ -2068,14 +2135,12 @@
       <div class="modal-toolbar">
         <button id="toggleFormBtn">Paylaşım oluştur +</button>
         <div class="highlight-picker color-picker-wrapper" id="highlightColorWrapper">
-          <div class="highlight-actions">
-            <span>Gün rengi</span>
-            <button type="button" class="highlight-help-btn" id="colorHelpBtn" aria-label="Gün rengi açıklamalarını göster">?</button>
-          </div>
+          <span class="highlight-label">Gün rengi</span>
           <button type="button" class="color-picker-toggle" id="highlightColorToggle" aria-label="Gün rengini seç">
             <span class="toggle-swatch"></span>
             <span>Seç</span>
           </button>
+          <button type="button" class="highlight-help-btn" id="colorHelpBtn" aria-label="Gün rengi açıklamalarını göster">?</button>
           <div class="color-picker" id="highlightColorPicker"></div>
           <input type="hidden" id="highlightColorInput" value="#fee2e2" />
           <div class="color-help-panel" id="colorHelpPanel">
@@ -2218,20 +2283,23 @@
             </div>
           </div>
         </div>
-        <div class="copy-popover" id="copyPopover">
-          <div class="copy-popover-header">
-            <span>Bu paylaşımı kopyala</span>
-            <button type="button" class="color-help-close" id="copyPopoverCloseBtn" aria-label="Kapat">×</button>
-          </div>
-          <div class="form-row" style="margin-bottom:0;">
-            <label for="copyDateInput">Hedef tarih</label>
-            <input type="date" id="copyDateInput" />
-          </div>
-          <div class="copy-popover-actions">
-            <button type="button" class="secondary-btn" id="copyCancelBtn">Vazgeç</button>
-            <button type="button" class="primary-btn" id="copyConfirmBtn">Kopyala</button>
-          </div>
-        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="copyPopoverBackdrop" class="copy-popover-backdrop">
+    <div class="copy-popover" id="copyPopover">
+      <div class="copy-popover-header">
+        <span>Bu paylaşımı kopyala</span>
+        <button type="button" class="color-help-close" id="copyPopoverCloseBtn" aria-label="Kapat">×</button>
+      </div>
+      <div class="form-row" style="margin-bottom:0;">
+        <label for="copyDateInput">Hedef tarih</label>
+        <input type="date" id="copyDateInput" />
+      </div>
+      <div class="copy-popover-actions">
+        <button type="button" class="secondary-btn" id="copyCancelBtn">Vazgeç</button>
+        <button type="button" class="primary-btn" id="copyConfirmBtn">Kopyala</button>
       </div>
     </div>
   </div>
@@ -2271,6 +2339,9 @@ const colorDescriptionsSection = document.getElementById("colorDescriptionsSecti
 const colorDescriptionsForm = document.getElementById("colorDescriptionsForm");
 const colorDescriptionSaveBtn = document.getElementById("colorDescriptionSaveBtn");
 const colorDescriptionSaveStatus = document.getElementById("colorDescriptionSaveStatus");
+const adminTabButtons = Array.from(document.querySelectorAll(".admin-tab-btn"));
+const adminUsersSection = document.getElementById("adminUsersSection");
+const colorTabBtn = document.getElementById("colorTabBtn");
 
     const monthLabel = document.getElementById("monthLabel");
     const daysContainer = document.getElementById("daysContainer");
@@ -2308,6 +2379,7 @@ const channelFilter = document.getElementById("channelFilter");
 const channelFilterButtons = channelFilter
   ? Array.from(channelFilter.querySelectorAll("button[data-channel]"))
   : [];
+const copyPopoverBackdrop = document.getElementById("copyPopoverBackdrop");
 const copyPopover = document.getElementById("copyPopover");
 const copyDateInput = document.getElementById("copyDateInput");
 const copyConfirmBtn = document.getElementById("copyConfirmBtn");
@@ -2389,6 +2461,7 @@ let activeItemId = null;
 let isRegisterMode = false;
 let currentUser = null;
 let adminSelectedUserId = null;
+setActiveAdminPanelTab("users");
 let modalForcePlanMode = false;
 let copySourceEntry = null;
 const excelUploadDefaultText = excelUploadBtn ? excelUploadBtn.textContent : "Excel yükle";
@@ -2481,6 +2554,7 @@ function cloneColorDescriptionDefaults() {
 let colorDescriptions = cloneColorDescriptionDefaults();
 let colorDescriptionsLoaded = false;
 let colorHelpPanelOpen = false;
+let activeAdminPanelTab = "users";
 const CHANNEL_FILTER_DEFINITIONS = {
   all: {
     label: "Tümü",
@@ -2666,15 +2740,18 @@ function applyPlatformPreset(values = []) {
 }
 
 function openCopyPopover(entry) {
-  if (!copyPopover || !copyDateInput) return;
+  if (!copyPopover || !copyDateInput || !copyPopoverBackdrop) return;
   copySourceEntry = entry;
   copyDateInput.value = entry.date || "";
+  copyPopoverBackdrop.classList.add("active");
   copyPopover.classList.add("active");
+  requestAnimationFrame(() => copyDateInput.focus());
 }
 
 function closeCopyPopover() {
-  if (!copyPopover) return;
+  if (!copyPopover || !copyPopoverBackdrop) return;
   copySourceEntry = null;
+  copyPopoverBackdrop.classList.remove("active");
   copyPopover.classList.remove("active");
 }
 
@@ -2758,6 +2835,11 @@ function entryMatchesChannelFilter(entry, filterId = "all") {
 function dayMatchesChannelFilter(items, filterId = "all") {
   if (filterId === "all") return true;
   return items.some((item) => entryMatchesChannelFilter(item, filterId));
+}
+
+function filterEntriesByChannel(items, filterId = "all") {
+  if (filterId === "all") return items.slice();
+  return items.filter((item) => entryMatchesChannelFilter(item, filterId));
 }
 
 function getChannelFilterLabel(filterId) {
@@ -2897,7 +2979,12 @@ function setHighlightInputValue(value) {
 function updateDayHighlightLocally(dateKey, colorValue) {
   if (!dateKey) return;
   if (colorValue) {
-    highlightedDates.set(dateKey, colorValue);
+    const normalized = normalizeHexColor(colorValue);
+    if (normalized) {
+      highlightedDates.set(dateKey, normalized);
+    } else {
+      highlightedDates.delete(dateKey);
+    }
   } else {
     highlightedDates.delete(dateKey);
   }
@@ -2908,13 +2995,52 @@ function updateDayHighlightLocally(dateKey, colorValue) {
   updateScheduleList();
 }
 
+function setActiveAdminPanelTab(panelId = "users") {
+  let target = panelId || "users";
+  const isColorPanel = target === "colors";
+  const canEditColors = Boolean(currentUser && currentUser.role === "admin");
+  if (isColorPanel && !canEditColors) {
+    target = "users";
+  }
+  activeAdminPanelTab = target;
+  adminTabButtons.forEach((btn) => {
+    const btnPanel = btn.dataset.panel || "users";
+    btn.classList.toggle("active", btnPanel === activeAdminPanelTab);
+  });
+  if (adminUsersSection) {
+    const showUsers = activeAdminPanelTab === "users";
+    adminUsersSection.classList.toggle("active", showUsers);
+    adminUsersSection.style.display = showUsers ? "" : "none";
+  }
+  if (isColorPanel && canEditColors) {
+    ensureColorDescriptionsLoaded();
+  }
+  refreshColorDescriptionSection();
+}
+
 function refreshColorDescriptionSection() {
   if (!colorDescriptionsSection) return;
   const canEdit = Boolean(currentUser && currentUser.role === "admin");
-  const shouldShow = canEdit && colorDescriptionsLoaded;
+  if (colorTabBtn) {
+    colorTabBtn.style.display = canEdit ? "" : "none";
+  }
+  if (!canEdit && activeAdminPanelTab === "colors") {
+    setActiveAdminPanelTab("users");
+    return;
+  }
+  const shouldShow = canEdit && activeAdminPanelTab === "colors";
+  colorDescriptionsSection.classList.toggle("active", shouldShow);
   colorDescriptionsSection.style.display = shouldShow ? "" : "none";
   if (shouldShow) {
-    renderColorDescriptionsForm();
+    if (colorDescriptionsLoaded) {
+      renderColorDescriptionsForm();
+    } else {
+      ensureColorDescriptionsLoaded().then(() => {
+        if (activeAdminPanelTab === "colors") {
+          renderColorDescriptionsForm();
+        }
+      });
+    }
   }
 }
 
@@ -3463,14 +3589,17 @@ document.addEventListener("click", () => {
     async function loadHighlightsFromServer(targetUserId = null) {
       const query = targetUserId ? `?userId=${targetUserId}` : "";
       try {
-        const response = await apiFetch(`/calendar/highlights${query}`);
-        const data = await response.json();
-  highlightedDates = new Map(
-    data.map((item) => [
-      item.date,
-      item.color || DEFAULT_HIGHLIGHT_COLOR
-    ])
-  );
+      const response = await apiFetch(`/calendar/highlights${query}`);
+      const data = await response.json();
+      highlightedDates = new Map(
+        data
+          .map((item) => {
+            const normalized = normalizeHexColor(item.color);
+            if (!normalized) return null;
+            return [item.date, normalized];
+          })
+          .filter(Boolean)
+      );
       } catch (err) {
         console.warn("Vurgular yüklenemedi:", err.message);
         highlightedDates = new Map();
@@ -3844,10 +3973,11 @@ document.addEventListener("click", () => {
       return platform || "Platform seçilmedi";
     }
 
-    function buildDaySummary(items) {
+    function buildDaySummary(items, options = {}) {
+      const filterId = options.filterId || "all";
+      const scopedItems = filterEntriesByChannel(items, filterId);
       const counts = {};
-      let total = 0;
-      items.forEach((item) => {
+      scopedItems.forEach((item) => {
         const entryColor = item.color || DEFAULT_ENTRY_COLOR;
         const list =
           item.platforms && item.platforms.length
@@ -3861,12 +3991,11 @@ document.addEventListener("click", () => {
           counts[label].count += 1;
           counts[label].color = entryColor;
         });
-        total += 1;
       });
       const entries = Object.entries(counts)
         .map(([label, info]) => [label, info.count, info.color])
         .sort((a, b) => b[1] - a[1]);
-      return { total, entries };
+      return { total: scopedItems.length, entries };
     }
 
     function updateScheduleList() {
@@ -3882,7 +4011,15 @@ document.addEventListener("click", () => {
         const items = dayData.items || [];
         if (!items.length) continue;
 
-        const summary = buildDaySummary(items);
+        if (
+          activeChannelFilter !== "all" &&
+          !dayMatchesChannelFilter(items, activeChannelFilter)
+        ) {
+          continue;
+        }
+
+        const summary = buildDaySummary(items, { filterId: activeChannelFilter });
+        if (!summary.total) continue;
         const humanDate = formatHumanDate(dateObj);
         const haystack =
           (humanDate +
@@ -3897,9 +4034,20 @@ document.addEventListener("click", () => {
         const highlightColor = highlightedDates.get(key);
         if (highlightColor) {
           row.classList.add("has-highlight");
-          row.style.setProperty("--summary-border", highlightColor);
-          row.style.setProperty("--summary-surface", highlightColor);
-          const token = getColorTokenFromHex(highlightColor);
+          const normalizedHighlight =
+            normalizeHexColor(highlightColor) || highlightColor;
+          const token = getColorTokenFromHex(normalizedHighlight);
+          const isPureWhite =
+            token === "white" || normalizedHighlight === "#ffffff";
+          const surfaceTint = isPureWhite
+            ? "#ffffff"
+            : hexToRgba(normalizedHighlight, 0.12);
+          const summaryShadow = isPureWhite
+            ? "rgba(15, 23, 42, 0.08)"
+            : hexToRgba(normalizedHighlight, 0.2);
+          row.style.setProperty("--summary-border", normalizedHighlight);
+          row.style.setProperty("--summary-surface", surfaceTint);
+          row.style.setProperty("--summary-shadow", summaryShadow);
           if (token) {
             row.dataset.color = token;
             row.style.removeProperty("--summary-text");
@@ -3908,7 +4056,7 @@ document.addEventListener("click", () => {
             row.style.removeProperty("--summary-chip-border");
           } else {
             delete row.dataset.color;
-            const textColor = getContrastingTextColor(highlightColor);
+            const textColor = getContrastingTextColor(normalizedHighlight);
             row.style.setProperty("--summary-text", textColor);
             if (textColor === "#f9fafb") {
               row.style.setProperty("--summary-chip-bg", "rgba(255, 255, 255, 0.28)");
@@ -3925,6 +4073,7 @@ document.addEventListener("click", () => {
           row.style.setProperty("--summary-border", "transparent");
           delete row.dataset.color;
           row.style.removeProperty("--summary-surface");
+          row.style.removeProperty("--summary-shadow");
           row.style.removeProperty("--summary-text");
           row.style.removeProperty("--summary-chip-bg");
           row.style.removeProperty("--summary-chip-color");
@@ -3933,7 +4082,11 @@ document.addEventListener("click", () => {
 
         const header = document.createElement("div");
         header.className = "schedule-summary-header";
-        header.textContent = `${humanDate} · ${summary.total} paylaşım`;
+        const headerSuffix =
+          activeChannelFilter === "all"
+            ? `${summary.total} paylaşım`
+            : `${getChannelFilterLabel(activeChannelFilter)} ${summary.total} paylaşım`;
+        header.textContent = `${humanDate} · ${headerSuffix}`;
         row.appendChild(header);
 
         const chips = document.createElement("div");
@@ -3956,9 +4109,13 @@ document.addEventListener("click", () => {
       if (!any) {
         const empty = document.createElement("p");
         empty.className = "small";
+        const baseMessage =
+          activeChannelFilter === "all"
+            ? "Bu ay için kayıtlı paylaşım yok."
+            : `${getChannelFilterLabel(activeChannelFilter)} için içerik bulunamadı.`;
         empty.textContent = query
           ? "Aramanızla eşleşen gün bulunamadı."
-          : "Bu ay için kayıtlı paylaşım yok.";
+          : baseMessage;
         scheduleList.appendChild(empty);
       }
     }
@@ -3993,17 +4150,26 @@ document.addEventListener("click", () => {
         const dayData = loadDayData(key);
         const items = dayData.items || [];
         const highlightColor = highlightedDates.get(key);
-
         if (highlightColor) {
+          const normalizedHighlight =
+            normalizeHexColor(highlightColor) || highlightColor;
           cell.classList.add("day-highlighted");
-          cell.style.setProperty("--day-highlight-color", highlightColor);
-          cell.style.setProperty("--day-surface", highlightColor);
-          const colorToken = getColorTokenFromHex(highlightColor);
+          cell.style.setProperty("--day-surface", normalizedHighlight);
+          cell.style.setProperty("--day-border", normalizedHighlight);
+          cell.style.setProperty(
+            "--day-highlight-shadow",
+            hexToRgba(normalizedHighlight, 0.28)
+          );
+          const colorToken = getColorTokenFromHex(normalizedHighlight);
           if (colorToken) {
             cell.dataset.color = colorToken;
+            cell.style.removeProperty("--day-text");
+            cell.style.removeProperty("--day-chip-bg");
+            cell.style.removeProperty("--day-chip-color");
+            cell.style.removeProperty("--day-chip-border");
           } else {
             delete cell.dataset.color;
-            const textColor = getContrastingTextColor(highlightColor);
+            const textColor = getContrastingTextColor(normalizedHighlight);
             cell.style.setProperty("--day-text", textColor);
             if (textColor === "#f9fafb") {
               cell.style.setProperty("--day-chip-bg", "rgba(255, 255, 255, 0.22)");
@@ -4016,7 +4182,15 @@ document.addEventListener("click", () => {
             }
           }
         } else {
+          cell.classList.remove("day-highlighted");
           delete cell.dataset.color;
+          cell.style.removeProperty("--day-surface");
+          cell.style.removeProperty("--day-border");
+          cell.style.removeProperty("--day-highlight-shadow");
+          cell.style.removeProperty("--day-text");
+          cell.style.removeProperty("--day-chip-bg");
+          cell.style.removeProperty("--day-chip-color");
+          cell.style.removeProperty("--day-chip-border");
         }
 
         const matchesFilter = dayMatchesChannelFilter(items, activeChannelFilter);
@@ -4028,20 +4202,28 @@ document.addEventListener("click", () => {
 
         if (items.length) {
           cell.classList.add("has-data");
-          const counter = document.createElement("div");
-          counter.className = "day-counter";
-          counter.textContent =
-            items.length === 1
-              ? "1 içerik"
-              : `+${items.length} içerik`;
-          cell.appendChild(counter);
-          const summary = buildDaySummary(items);
-          summary.entries.slice(0, 3).forEach(([label, count, color]) => {
-            const chip = document.createElement("div");
-            chip.className = "day-summary-chip";
-            chip.textContent = `${label} ${count}`;
-            cell.appendChild(chip);
-          });
+          const summary = buildDaySummary(items, { filterId: activeChannelFilter });
+          if (summary.total > 0) {
+            const counter = document.createElement("div");
+            counter.className = "day-counter";
+            if (activeChannelFilter === "all") {
+              counter.textContent =
+                summary.total === 1
+                  ? "1 içerik"
+                  : `+${summary.total} içerik`;
+            } else {
+              counter.textContent = `${getChannelFilterLabel(
+                activeChannelFilter
+              )} ${summary.total} içerik`;
+            }
+            cell.appendChild(counter);
+            summary.entries.slice(0, 3).forEach(([label, count]) => {
+              const chip = document.createElement("div");
+              chip.className = "day-summary-chip";
+              chip.textContent = `${label} ${count}`;
+              cell.appendChild(chip);
+            });
+          }
         }
 
         cell.addEventListener("click", () => {
@@ -4073,6 +4255,8 @@ document.addEventListener("click", () => {
       currentDayItems.forEach((item, index) => {
         const wrap = document.createElement("div");
         wrap.className = "summary-item";
+        wrap.setAttribute("role", "button");
+        wrap.setAttribute("tabindex", "0");
         if (item.id === activeItemId) wrap.classList.add("active");
         if (item.source === "excel") wrap.classList.add("excel");
         const statusKey =
@@ -4136,6 +4320,12 @@ document.addEventListener("click", () => {
 
         wrap.addEventListener("click", () => {
           selectEntryById(item.id);
+        });
+        wrap.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectEntryById(item.id);
+          }
         });
 
         modalSummary.appendChild(wrap);
@@ -4409,7 +4599,10 @@ document.addEventListener("click", () => {
         body: JSON.stringify(payload)
       });
       const data = await response.json();
-      highlightedDates.set(data.date, data.color || colorValue);
+      const normalized = normalizeHexColor(data.color || colorValue);
+      if (normalized) {
+        highlightedDates.set(data.date, normalized);
+      }
     }
 
     async function removeDateHighlight(dateKey) {
@@ -5191,6 +5384,15 @@ document.addEventListener("click", () => {
         closeAdminOverlay();
       });
     }
+    if (adminTabButtons.length) {
+      adminTabButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const targetPanel = btn.dataset.panel || "users";
+          if (targetPanel === activeAdminPanelTab) return;
+          setActiveAdminPanelTab(targetPanel);
+        });
+      });
+    }
 
     if (colorDescriptionSaveBtn) {
       colorDescriptionSaveBtn.addEventListener("click", () => {
@@ -5228,9 +5430,25 @@ document.addEventListener("click", () => {
     if (copyConfirmBtn) {
       copyConfirmBtn.addEventListener("click", () => handleCopyConfirm());
     }
+    if (copyPopoverBackdrop) {
+      copyPopoverBackdrop.addEventListener("click", (event) => {
+        if (event.target === copyPopoverBackdrop) {
+          closeCopyPopover();
+        }
+      });
+    }
     if (copyPopover) {
       copyPopover.addEventListener("click", (event) => event.stopPropagation());
     }
+    document.addEventListener("keydown", (event) => {
+      if (
+        event.key === "Escape" &&
+        copyPopoverBackdrop &&
+        copyPopoverBackdrop.classList.contains("active")
+      ) {
+        closeCopyPopover();
+      }
+    });
 
     if (excelUploadBtn && excelFileInput) {
       excelUploadBtn.addEventListener("click", () => {

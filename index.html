@@ -2461,7 +2461,6 @@ let activeItemId = null;
 let isRegisterMode = false;
 let currentUser = null;
 let adminSelectedUserId = null;
-setActiveAdminPanelTab("users");
 let modalForcePlanMode = false;
 let copySourceEntry = null;
 const excelUploadDefaultText = excelUploadBtn ? excelUploadBtn.textContent : "Excel yükle";
@@ -5420,6 +5419,7 @@ document.addEventListener("click", () => {
       });
     });
     updateReportFilterLabel();
+    setActiveAdminPanelTab("users");
 
     if (copyCancelBtn) {
       copyCancelBtn.addEventListener("click", () => closeCopyPopover());

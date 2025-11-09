@@ -735,6 +735,29 @@
       font-size: 12px;
       outline: none;
     }
+    .schedule-view-toggle {
+      margin: 10px 0 6px;
+      display: inline-flex;
+      gap: 6px;
+      background: #f1f5f9;
+      border-radius: 999px;
+      padding: 4px;
+    }
+    .schedule-view-btn {
+      border: none;
+      background: transparent;
+      padding: 6px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 999px;
+      color: #475569;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .schedule-view-btn.active {
+      background: #0f172a;
+      color: #ffffff;
+    }
     .schedule-item.summary {
       --summary-surface: #ffffff;
       --summary-text: #0f172a;
@@ -754,6 +777,77 @@
     }
     .schedule-item.summary:hover {
       box-shadow: 0 6px 16px var(--summary-shadow, rgba(15, 23, 42, 0.08));
+    }
+    .daily-entry-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .daily-entry-heading {
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 12px;
+      margin: 4px 0;
+    }
+    .daily-entry-row {
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #ffffff;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      cursor: pointer;
+      transition: box-shadow 0.12s ease, border-color 0.12s ease;
+    }
+    .daily-entry-row:hover {
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      border-color: #cbd5f5;
+    }
+    .daily-entry-row:focus-visible {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+    .daily-entry-status {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 2px;
+      font-size: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .daily-entry-status.status-done {
+      background: #16a34a;
+      color: #ffffff;
+    }
+    .daily-entry-status.status-missed {
+      background: #dc2626;
+      color: #ffffff;
+    }
+    .daily-entry-status.status-planned {
+      background: #cbd5f5;
+      color: #1e293b;
+    }
+    .daily-entry-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .daily-entry-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f172a;
+      margin: 0;
+    }
+    .daily-entry-meta {
+      font-size: 12px;
+      color: #475569;
+      margin: 0;
     }
     .schedule-summary-header {
       display: flex;
@@ -1790,6 +1884,30 @@
       background: #1e3a8a;
       color: #c7d2fe;
     }
+    body.dark .schedule-view-toggle {
+      background: #1f2937;
+    }
+    body.dark .schedule-view-btn {
+      color: #cbd5f5;
+    }
+    body.dark .schedule-view-btn.active {
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    body.dark .daily-entry-row {
+      background: #111827;
+      border-color: #1f2937;
+    }
+    body.dark .daily-entry-row:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.6);
+    }
+    body.dark .daily-entry-title {
+      color: #f8fafc;
+    }
+    body.dark .daily-entry-meta {
+      color: #cbd5f5;
+    }
 
     body.dark button {
       background: #0f172a;
@@ -1979,6 +2097,7 @@
           <button type="button" class="channel-filter-btn" data-channel="tiktok">TikTok</button>
           <button type="button" class="channel-filter-btn" data-channel="discord">Discord</button>
           <button type="button" class="channel-filter-btn" data-channel="reddit">Reddit</button>
+          <button type="button" class="channel-filter-btn" data-channel="website">Website</button>
           <button type="button" class="channel-filter-btn" data-channel="medium">Medium</button>
         </div>
         <div class="calendar-header">
@@ -2008,6 +2127,10 @@
               placeholder="Tarih veya platform ara"
               aria-label="Takvim araması"
             />
+          </div>
+          <div class="schedule-view-toggle" id="scheduleViewToggle">
+            <button type="button" class="schedule-view-btn" data-view="daily">Günlük</button>
+            <button type="button" class="schedule-view-btn active" data-view="weekly">Haftalık</button>
           </div>
           <div id="scheduleList" class="schedule-list small"></div>
           <div class="excel-upload-container">
@@ -2364,6 +2487,10 @@ const colorTabBtn = document.getElementById("colorTabBtn");
       platformInputMap.set(cb.value, cb);
     });
     const scheduleList = document.getElementById("scheduleList");
+    const scheduleViewToggle = document.getElementById("scheduleViewToggle");
+    const scheduleViewButtons = scheduleViewToggle
+      ? Array.from(scheduleViewToggle.querySelectorAll("button[data-view]"))
+      : [];
 const scheduleSearchInput = document.getElementById("scheduleSearchInput");
 const entryColorInput = document.getElementById("entryColorInput");
 const highlightColorInput = document.getElementById("highlightColorInput");
@@ -2465,6 +2592,8 @@ let modalForcePlanMode = false;
 let copySourceEntry = null;
 const excelUploadDefaultText = excelUploadBtn ? excelUploadBtn.textContent : "Excel yükle";
 let scheduleSearchQuery = "";
+let scheduleViewMode = "weekly";
+let scheduleDailyDateKey = null;
 let highlightedDates = new Map();
 const DEFAULT_ENTRY_COLOR = "#2563eb";
 const DEFAULT_HIGHLIGHT_COLOR = "#fee2e2";
@@ -2596,6 +2725,10 @@ const CHANNEL_FILTER_DEFINITIONS = {
   reddit: {
     label: "Reddit",
     matcher: (value) => value.toLowerCase().includes("reddit")
+  },
+  website: {
+    label: "Website",
+    matcher: (value) => value.toLowerCase().includes("website")
   },
   medium: {
     label: "Medium",
@@ -2860,8 +2993,23 @@ function setActiveChannelFilter(nextFilter) {
     btn.classList.toggle("active", target === activeChannelFilter);
   });
   renderCalendar();
+  updateScheduleList();
   if (viewReports.style.display !== "none") renderReports();
   updateReportFilterLabel();
+}
+
+function setScheduleViewMode(nextMode) {
+  const normalized = nextMode === "daily" ? "daily" : "weekly";
+  if (scheduleViewMode === normalized) return;
+  scheduleViewMode = normalized;
+  if (scheduleViewMode === "daily") {
+    scheduleDailyDateKey = selectedDateKey || null;
+  }
+  scheduleViewButtons.forEach((btn) => {
+    const target = btn.dataset.view || "weekly";
+    btn.classList.toggle("active", target === scheduleViewMode);
+  });
+  updateScheduleList();
 }
 
 function updateReportFilterLabel() {
@@ -3966,6 +4114,7 @@ document.addEventListener("click", () => {
       if (key.includes("tiktok")) return "TikTok";
       if (key.includes("reddit")) return "Reddit";
       if (key.includes("discord")) return "Discord";
+      if (key.includes("website") || key.includes("landing")) return "Website";
       if (key.includes("medium")) return "Medium";
       if (key.includes("blog")) return "Blog";
       if (key.includes("twitter") || key === "x") return "X";
@@ -3998,24 +4147,165 @@ document.addEventListener("click", () => {
     }
 
     function updateScheduleList() {
+      if (!scheduleList) return;
       scheduleList.innerHTML = "";
+      if (scheduleViewMode === "daily") {
+        renderDailySchedule();
+      } else {
+        renderWeeklySchedule();
+      }
+    }
+
+    function isDateBeforeToday(dateObj) {
+      if (!dateObj) return false;
+      const today = normalizeToMidnight(new Date());
+      const candidate = normalizeToMidnight(dateObj);
+      return candidate.getTime() < today.getTime();
+    }
+
+    function isKeyBeforeToday(key) {
+      if (!key) return false;
+      const dateObj = parseDateKeyString(key);
+      return isDateBeforeToday(dateObj);
+    }
+
+    function entryMatchesSearchQuery(entry) {
+      if (!scheduleSearchQuery) return true;
+      const ownerLabel = entry.owner_id ? getOwnerLabel(entry.owner_id) : "";
+      const haystack = (
+        (entry.text || "") +
+        " " +
+        (entry.files || "") +
+        " " +
+        (entry.time || "") +
+        " " +
+        formatPlatformsLabel(entry.platforms || []) +
+        " " +
+        ownerLabel
+      )
+        .toLowerCase();
+      return haystack.includes(scheduleSearchQuery);
+    }
+
+    function getDailyFocusDateKey() {
+      const candidates = [scheduleDailyDateKey, selectedDateKey];
+      for (const key of candidates) {
+        if (key && !isKeyBeforeToday(key)) {
+          return key;
+        }
+      }
+      const todayKey = formatDateKey(new Date());
+      if (!isKeyBeforeToday(todayKey)) {
+        return todayKey;
+      }
+      const futureKeys = Array.from(entriesByDate.keys())
+        .filter((key) => !isKeyBeforeToday(key))
+        .sort();
+      return futureKeys.length ? futureKeys[0] : null;
+    }
+
+    function renderDailySchedule() {
+      const focusKey = getDailyFocusDateKey();
+      if (!focusKey || isKeyBeforeToday(focusKey)) {
+        const empty = document.createElement("p");
+        empty.className = "small";
+        empty.textContent = "Yaklaşan içerik bulunamadı.";
+        scheduleList.appendChild(empty);
+        return;
+      }
+      scheduleDailyDateKey = focusKey;
+      const dateObj = parseDateKeyString(focusKey);
+      const dayData = loadDayData(focusKey);
+      const items = (dayData.items || []).filter((item) =>
+        entryMatchesChannelFilter(item, activeChannelFilter)
+      );
+      const filtered = sortItemsByTime(
+        items.filter((item) => entryMatchesSearchQuery(item))
+      );
+
+      const heading = document.createElement("p");
+      heading.className = "daily-entry-heading";
+      heading.textContent = `${formatHumanDate(dateObj)} · ${
+        filtered.length ? `${filtered.length} paylaşım` : "İçerik bulunamadı"
+      }`;
+      scheduleList.appendChild(heading);
+
+      if (!filtered.length) {
+        const empty = document.createElement("p");
+        empty.className = "small";
+        empty.textContent = scheduleSearchQuery
+          ? "Aramanızla eşleşen paylaşım yok."
+          : "Bu gün için yaklaşan içerik yok.";
+        scheduleList.appendChild(empty);
+        return;
+      }
+
+      const list = document.createElement("div");
+      list.className = "daily-entry-list";
+      filtered.forEach((entry) => {
+        const statusKey =
+          entry.status === "done" || entry.status === "missed"
+            ? entry.status
+            : "planned";
+        const row = document.createElement("div");
+        row.className = "daily-entry-row";
+        row.tabIndex = 0;
+        row.dataset.entryId = String(entry.id);
+
+        const statusIcon = document.createElement("span");
+        statusIcon.className = `daily-entry-status status-${statusKey}`;
+        statusIcon.textContent =
+          statusKey === "done" ? "✓" : statusKey === "missed" ? "!" : "•";
+        row.appendChild(statusIcon);
+
+        const body = document.createElement("div");
+        body.className = "daily-entry-body";
+
+        const title = document.createElement("p");
+        title.className = "daily-entry-title";
+        title.textContent = formatEntryPreviewText(entry, 90);
+        body.appendChild(title);
+
+        const timeLine = document.createElement("p");
+        timeLine.className = "daily-entry-meta";
+        timeLine.textContent = entry.time ? entry.time : "Saat seçilmedi";
+        body.appendChild(timeLine);
+
+        const metaLine = document.createElement("p");
+        metaLine.className = "daily-entry-meta";
+        const ownerLabel = getOwnerLabel(entry.owner_id);
+        const parts = [
+          formatPlatformsLabel(entry.platforms || []),
+          ownerLabel ? `Sorumlu: ${ownerLabel}` : ""
+        ].filter(Boolean);
+        metaLine.textContent = parts.join(" · ");
+        body.appendChild(metaLine);
+
+        row.appendChild(body);
+        row.addEventListener("click", () => selectEntryById(entry.id));
+        row.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectEntryById(entry.id);
+          }
+        });
+        list.appendChild(row);
+      });
+      scheduleList.appendChild(list);
+    }
+
+    function renderWeeklySchedule() {
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
       let any = false;
       const query = scheduleSearchQuery;
 
       for (let day = 1; day <= daysInMonth; day++) {
         const dateObj = new Date(currentYear, currentMonth, day);
+        if (isDateBeforeToday(dateObj)) continue;
         const key = formatDateKey(dateObj);
         const dayData = loadDayData(key);
         const items = dayData.items || [];
         if (!items.length) continue;
-
-        if (
-          activeChannelFilter !== "all" &&
-          !dayMatchesChannelFilter(items, activeChannelFilter)
-        ) {
-          continue;
-        }
 
         const summary = buildDaySummary(items, { filterId: activeChannelFilter });
         if (!summary.total) continue;
@@ -4110,7 +4400,7 @@ document.addEventListener("click", () => {
         empty.className = "small";
         const baseMessage =
           activeChannelFilter === "all"
-            ? "Bu ay için kayıtlı paylaşım yok."
+            ? "Yaklaşan içerik bulunamadı."
             : `${getChannelFilterLabel(activeChannelFilter)} için içerik bulunamadı.`;
         empty.textContent = query
           ? "Aramanızla eşleşen gün bulunamadı."
@@ -4611,6 +4901,7 @@ document.addEventListener("click", () => {
     function openModalForDate(dateObj, key, initialItemId = null) {
       closeCopyPopover();
       selectedDateKey = key;
+      scheduleDailyDateKey = key;
       const dayData = loadDayData(key);
       currentDayItems = dayData.items || [];
       activeItemId = initialItemId;
@@ -4647,6 +4938,9 @@ document.addEventListener("click", () => {
       }
       renderModalSummaryList();
       dayModal.style.display = "flex";
+      if (scheduleViewMode === "daily") {
+        updateScheduleList();
+      }
     }
 
     function closeModal() {
@@ -5416,6 +5710,15 @@ document.addEventListener("click", () => {
         setActiveChannelFilter(channelId);
       });
     });
+    if (scheduleViewButtons.length) {
+      scheduleViewButtons.forEach((btn) => {
+        const view = btn.dataset.view || "weekly";
+        btn.classList.toggle("active", view === scheduleViewMode);
+        btn.addEventListener("click", () => {
+          setScheduleViewMode(view);
+        });
+      });
+    }
     updateReportFilterLabel();
     setActiveAdminPanelTab("users");
     if (modalSummary) {
@@ -5893,6 +6196,7 @@ document.addEventListener("click", () => {
         const updatedEntry = entriesById.get(activeItemId);
         modalForcePlanMode = false;
         setModalViewForEntry(updatedEntry);
+        updateScheduleList();
       } catch (err) {
         alert(err.message || "Durum güncellenemedi.");
       } finally {

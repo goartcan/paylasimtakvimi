@@ -561,10 +561,10 @@
       grid-template-columns: repeat(7, 1fr);
       gap: 5px;
     }
+    .days {
+      grid-auto-rows: 140px;
+    }
     #daysContainer {
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
       padding-bottom: 8px;
       padding-right: 4px;
     }
@@ -588,12 +588,14 @@
       border-radius: 8px;
       border: 1px solid var(--day-border);
       padding: 7px;
-      min-height: 108px;
+      height: 100%;
       font-size: 12px;
       cursor: pointer;
       background: var(--day-surface);
       color: var(--day-text);
       transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+      display: flex;
+      flex-direction: column;
     }
     .day:hover {
       border-color: #3b5bdb;
@@ -624,15 +626,29 @@
       font-size: 10px;
       color: #33415c;
     }
+    .day-body {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-right: 2px;
+      scrollbar-width: none;
+    }
+    .day-body::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
     .day-summary + .day-summary { margin-top: 2px; }
     .day-summary.excel {
       color: #0369a1;
     }
     .day-summary-chip {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      padding: 1px 5px;
-      margin: 2px 3px 0 0;
+      width: 100%;
+      padding: 2px 6px;
+      margin-top: 2px;
       border-radius: 999px;
       background: var(--day-chip-bg);
       border: 1px solid var(--day-chip-border);
@@ -893,8 +909,12 @@
       background: #dc2626;
       color: #ffffff;
     }
-    .daily-entry-status.status-planned {
-      background: #cbd5f5;
+    .daily-entry-status.status-scheduled {
+      background: #2563eb;
+      color: #ffffff;
+    }
+    .daily-entry-status.status-pending {
+      background: #e2e8f0;
       color: #1e293b;
     }
     .daily-entry-body {
@@ -2017,6 +2037,14 @@
     body.dark .daily-entry-meta {
       color: #cbd5f5;
     }
+    body.dark .daily-entry-status.status-pending {
+      background: #334155;
+      color: #f1f5f9;
+    }
+    body.dark .daily-entry-status.status-scheduled {
+      background: #38bdf8;
+      color: #0f172a;
+    }
     body.dark .daily-entry-time-icon {
       color: #facc15;
     }
@@ -2714,6 +2742,7 @@ let scheduleDailyDateKey = todayDateKey;
 let highlightedDates = new Map();
 let saveSuccessTimeout = null;
 let activeScheduleSummaryKey = null;
+let panelHeightRaf = null;
 const DEFAULT_ENTRY_COLOR = "#2563eb";
 const DEFAULT_HIGHLIGHT_COLOR = "#fee2e2";
 const COLOR_PALETTE = [
@@ -2938,9 +2967,26 @@ function formatStatusLabel(status) {
   return "Planlandı";
 }
 
-function formatPlatformsLabel(platforms = []) {
-  if (!Array.isArray(platforms) || !platforms.length) return "Platform seçilmedi";
-  return platforms.join(", ");
+function filterPlatformsByChannel(platforms = [], filterId = "all") {
+  if (!Array.isArray(platforms) || !platforms.length) return [];
+  if (!filterId || filterId === "all") return platforms.slice();
+  const definition = CHANNEL_FILTER_DEFINITIONS[filterId];
+  if (!definition) return platforms.slice();
+  return platforms.filter((platform) =>
+    definition.matcher(String(platform || ""))
+  );
+}
+
+function formatPlatformsLabel(platforms = [], options = {}) {
+  const filterId = options.filterId || "all";
+  const scoped =
+    filterPlatformsByChannel(platforms, filterId) || [];
+  if (!scoped.length) {
+    return filterId !== "all"
+      ? getChannelFilterLabel(filterId)
+      : "Platform seçilmedi";
+  }
+  return scoped.join(", ");
 }
 
 function formatEntryPreviewText(entry, limit = 120) {
@@ -3128,6 +3174,10 @@ function setScheduleViewMode(nextMode) {
   scheduleViewMode = normalized;
   if (scheduleViewMode === "daily") {
     scheduleDailyDateKey = selectedDateKey || scheduleDailyDateKey || todayDateKey;
+    activeScheduleSummaryKey = null;
+  } else {
+    activeScheduleSummaryKey =
+      selectedDateKey || scheduleDailyDateKey || todayDateKey;
   }
   scheduleViewButtons.forEach((btn) => {
     const target = btn.dataset.view || "daily";
@@ -4216,10 +4266,11 @@ if (modalFormSection) {
     }
 
     /* Veri okuma / yazma */
-    function loadDayData(dateKey) {
+function loadDayData(dateKey) {
       const items = entriesByDate.get(dateKey) || [];
     const clones = items.map((item) => ({
       id: item.id,
+      date: item.date || dateKey,
       files: item.files || "",
       text: item.text || "",
       time: item.time || "",
@@ -4276,26 +4327,16 @@ function summarizePlatformLabel(platform) {
       const counts = {};
       scopedItems.forEach((item) => {
         const entryColor = item.color || DEFAULT_ENTRY_COLOR;
-      let list =
-        item.platforms && item.platforms.length
-          ? item.platforms
-          : ["Platform seçilmedi"];
-      if (filterId !== "all") {
-        const definition = CHANNEL_FILTER_DEFINITIONS[filterId];
-        if (definition) {
-          const scopedPlatforms = list.filter((platform) =>
-            definition.matcher(String(platform || ""))
-          );
-          if (scopedPlatforms.length) {
-            list = scopedPlatforms;
-          } else {
-            list = [getChannelFilterLabel(filterId)];
-          }
+        let list = filterPlatformsByChannel(item.platforms || [], filterId);
+        if (!list.length) {
+          list =
+            filterId !== "all"
+              ? [getChannelFilterLabel(filterId)]
+              : ["Platform seçilmedi"];
         }
-      }
-      list.forEach((platform) => {
-        const label = summarizePlatformLabel(platform);
-        if (!counts[label]) {
+        list.forEach((platform) => {
+          const label = summarizePlatformLabel(platform);
+          if (!counts[label]) {
             counts[label] = { count: 0, color: entryColor };
           }
           counts[label].count += 1;
@@ -4318,6 +4359,30 @@ function summarizePlatformLabel(platform) {
       } else {
         renderWeeklySchedule();
       }
+      schedulePanelHeightSync();
+    }
+
+    function syncSidePanelHeight() {
+      if (!viewCalendar || getComputedStyle(viewCalendar).display === "none") {
+        return;
+      }
+      const calendarEl = viewCalendar.querySelector(".calendar");
+      const sideForm = viewCalendar.querySelector(".side .form");
+      if (!calendarEl || !sideForm) return;
+      const calendarHeight = calendarEl.getBoundingClientRect().height;
+      if (!calendarHeight) return;
+      const heightValue = `${Math.round(calendarHeight)}px`;
+      sideForm.style.minHeight = heightValue;
+      sideForm.style.maxHeight = heightValue;
+      sideForm.style.height = heightValue;
+    }
+
+    function schedulePanelHeightSync() {
+      if (panelHeightRaf) cancelAnimationFrame(panelHeightRaf);
+      panelHeightRaf = requestAnimationFrame(() => {
+        panelHeightRaf = null;
+        syncSidePanelHeight();
+      });
     }
 
     function focusDayFromSchedule(dateKey, entryId = null) {
@@ -4379,6 +4444,23 @@ function summarizePlatformLabel(platform) {
       return futureKeys.length ? futureKeys[0] : null;
     }
 
+    function getDailyRowStatus(entry) {
+      if (!entry) {
+        return { key: "pending", symbol: "•" };
+      }
+      if (entry.status === "done") {
+        return { key: "done", symbol: "✓" };
+      }
+      const pastEntry = isEntryPast(entry);
+      if (entry.status === "missed" || (pastEntry && entry.status !== "done")) {
+        return { key: "missed", symbol: "!" };
+      }
+      if (entry.time) {
+        return { key: "scheduled", symbol: "⏰" };
+      }
+      return { key: "pending", symbol: "•" };
+    }
+
     function renderDailySchedule() {
       const focusKey = getDailyFocusDateKey();
       if (!focusKey) {
@@ -4421,10 +4503,7 @@ function summarizePlatformLabel(platform) {
       const list = document.createElement("div");
       list.className = "daily-entry-list";
       filtered.forEach((entry) => {
-        const statusKey =
-          entry.status === "done" || entry.status === "missed"
-            ? entry.status
-            : "planned";
+        const statusState = getDailyRowStatus(entry);
         const row = document.createElement("div");
         row.className = "daily-entry-row";
         row.tabIndex = 0;
@@ -4440,15 +4519,8 @@ function summarizePlatformLabel(platform) {
         }
 
         const statusIcon = document.createElement("span");
-        statusIcon.className = `daily-entry-status status-${statusKey}`;
-        const plannedSymbol =
-          entry.time && statusKey === "planned" ? "⏰" : "•";
-        statusIcon.textContent =
-          statusKey === "done"
-            ? "✓"
-            : statusKey === "missed"
-            ? "!"
-            : plannedSymbol;
+        statusIcon.className = `daily-entry-status status-${statusState.key}`;
+        statusIcon.textContent = statusState.symbol;
         statusIcon.title = formatStatusLabel(entry.status);
         row.appendChild(statusIcon);
 
@@ -4481,7 +4553,9 @@ function summarizePlatformLabel(platform) {
         metaLine.className = "daily-entry-meta";
         const ownerLabel = getOwnerLabel(entry.owner_id);
         const parts = [
-          formatPlatformsLabel(entry.platforms || []),
+          formatPlatformsLabel(entry.platforms || [], {
+            filterId: activeChannelFilter
+          }),
           ownerLabel ? `Sorumlu: ${ownerLabel}` : ""
         ].filter(Boolean);
         metaLine.textContent = parts.join(" · ");
@@ -4497,18 +4571,21 @@ function summarizePlatformLabel(platform) {
         }
 
         row.appendChild(body);
-        const activateRow = () => {
+        const openEntry = () => {
           if (entry.date) {
-            focusDayFromSchedule(entry.date, entry.id);
-          } else {
-            selectEntryById(entry.id);
+            const parsed = parseDateKeyString(entry.date);
+            if (parsed) {
+              openModalForDate(parsed, entry.date, entry.id);
+              return;
+            }
           }
+          selectEntryById(entry.id);
         };
-        row.addEventListener("click", activateRow);
+        row.addEventListener("click", openEntry);
         row.addEventListener("keydown", (event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            activateRow();
+            openEntry();
           }
         });
         list.appendChild(row);
@@ -4747,10 +4824,14 @@ function summarizePlatformLabel(platform) {
         numSpan.textContent = day;
         cell.appendChild(numSpan);
 
-        const dateObj = new Date(currentYear, currentMonth, day);
-        const key = formatDateKey(dateObj);
-        const dayData = loadDayData(key);
-        const items = dayData.items || [];
+      const body = document.createElement("div");
+      body.className = "day-body";
+      cell.appendChild(body);
+
+      const dateObj = new Date(currentYear, currentMonth, day);
+      const key = formatDateKey(dateObj);
+      const dayData = loadDayData(key);
+      const items = dayData.items || [];
         const highlightColor = highlightedDates.get(key);
         if (highlightColor) {
           const normalizedHighlight =
@@ -4818,12 +4899,12 @@ function summarizePlatformLabel(platform) {
                 activeChannelFilter
               )} ${summary.total} içerik`;
             }
-            cell.appendChild(counter);
+            body.appendChild(counter);
             summary.entries.slice(0, 3).forEach(([label, count]) => {
               const chip = document.createElement("div");
               chip.className = "day-summary-chip";
               chip.textContent = `${label} ${count}`;
-              cell.appendChild(chip);
+              body.appendChild(chip);
             });
           }
         }
@@ -5824,6 +5905,7 @@ function summarizePlatformLabel(platform) {
       tabReports.classList.remove("active");
       viewCalendar.style.display = "";
       viewReports.style.display = "none";
+      schedulePanelHeightSync();
     });
 
     tabReports.addEventListener("click", () => {
@@ -6037,6 +6119,7 @@ function summarizePlatformLabel(platform) {
         setActiveChannelFilter(channelId);
       });
     });
+    window.addEventListener("resize", schedulePanelHeightSync);
     if (scheduleViewButtons.length) {
       scheduleViewButtons.forEach((btn) => {
         const view = btn.dataset.view || "daily";

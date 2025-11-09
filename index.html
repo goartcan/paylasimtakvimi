@@ -4257,6 +4257,7 @@ document.addEventListener("click", () => {
         wrap.setAttribute("role", "button");
         wrap.setAttribute("tabindex", "0");
         if (item.id === activeItemId) wrap.classList.add("active");
+        wrap.dataset.entryId = String(item.id);
         if (item.source === "excel") wrap.classList.add("excel");
         const statusKey =
           item.status === "done" || item.status === "missed"
@@ -4317,9 +4318,6 @@ document.addEventListener("click", () => {
         actionsRow.appendChild(copyBtn);
         wrap.appendChild(actionsRow);
 
-        wrap.addEventListener("click", () => {
-          selectEntryById(item.id);
-        });
         wrap.addEventListener("keydown", (event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
@@ -4387,7 +4385,7 @@ document.addEventListener("click", () => {
     }
 
     function showPlanningView(entry, options = {}) {
-      if (modalFormSection) modalFormSection.style.display = "";
+      if (modalFormSection) modalFormSection.style.display = "flex";
       if (modalControlSection) modalControlSection.style.display = "none";
       if (modalCheckedSection) modalCheckedSection.style.display = "none";
       setPlanReturnBannerVisible(Boolean(options.showReturnBanner));
@@ -4484,7 +4482,7 @@ document.addEventListener("click", () => {
       }
       modalForcePlanMode = false;
       if (modalFormSection) modalFormSection.style.display = "none";
-      if (modalControlSection) modalControlSection.style.display = "";
+      if (modalControlSection) modalControlSection.style.display = "block";
       if (modalCheckedSection) modalCheckedSection.style.display = "none";
       setPlanReturnBannerVisible(false);
       fillControlSummary(entry);
@@ -4498,7 +4496,7 @@ document.addEventListener("click", () => {
       modalForcePlanMode = false;
       if (modalFormSection) modalFormSection.style.display = "none";
       if (modalControlSection) modalControlSection.style.display = "none";
-      if (modalCheckedSection) modalCheckedSection.style.display = "";
+      if (modalCheckedSection) modalCheckedSection.style.display = "block";
       setPlanReturnBannerVisible(false);
       fillCheckedSummary(entry);
     }
@@ -5420,6 +5418,16 @@ document.addEventListener("click", () => {
     });
     updateReportFilterLabel();
     setActiveAdminPanelTab("users");
+    if (modalSummary) {
+      modalSummary.addEventListener("click", (event) => {
+        if (event.target.closest(".summary-item-copy-btn")) return;
+        const card = event.target.closest(".summary-item");
+        if (!card || !card.dataset.entryId) return;
+        const entryId = Number(card.dataset.entryId);
+        if (!Number.isFinite(entryId)) return;
+        selectEntryById(entryId);
+      });
+    }
 
     if (copyCancelBtn) {
       copyCancelBtn.addEventListener("click", () => closeCopyPopover());

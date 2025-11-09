@@ -142,7 +142,13 @@
       flex-direction: column;
       gap: 12px;
     }
-    #viewCalendar,
+    #viewCalendar {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 0;
+    }
     #viewReports {
       display: block;
     }
@@ -419,10 +425,12 @@
     }
 
 .container {
+  flex: 1;
   display: grid;
   grid-template-columns: minmax(0, 2.35fr) minmax(0, 1fr);
   gap: 16px;
-  align-items: flex-start;
+  align-items: stretch;
+  min-height: 0;
   width: 100%;
 }
 .calendar {
@@ -433,6 +441,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-height: 0;
+  height: 100%;
 }
 .channel-filter {
   display: flex;
@@ -552,6 +562,9 @@
       gap: 5px;
     }
     #daysContainer {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
       padding-bottom: 8px;
       padding-right: 4px;
     }
@@ -692,6 +705,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-height: 0;
+  height: 100%;
 }
 .form {
   border: 1px solid #dde2ff;
@@ -701,6 +716,9 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 .excel-upload-container {
   margin-top: auto;
@@ -749,6 +767,9 @@
   margin-top: 10px;
   border-top: 1px solid #eef0ff;
   padding-top: 10px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 .schedule-search {
   margin-top: 6px;
@@ -798,13 +819,21 @@
   margin-bottom: 8px;
   border-radius: 9px;
   border: 1px solid rgba(226, 232, 240, 0.8);
-  border-left: 4px solid var(--summary-border);
+  border-left: 4px solid var(--summary-border, rgba(226, 232, 240, 0.9));
   background: var(--summary-surface);
   color: var(--summary-text);
-  transition: border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+  transition: border-color 0.12s ease, border-left-color 0.12s ease,
+    background 0.12s ease, box-shadow 0.12s ease;
 }
     .schedule-item.summary:hover {
-      box-shadow: 0 6px 16px var(--summary-shadow, rgba(15, 23, 42, 0.08));
+      box-shadow: 0 6px 16px var(--summary-shadow, rgba(15, 23, 42, 0.12));
+      border-color: #cbd5f5;
+      border-left-color: #2563eb;
+    }
+    .schedule-item.summary.active {
+      border-color: rgba(37, 99, 235, 0.45);
+      border-left-color: #2563eb;
+      box-shadow: 0 12px 26px rgba(37, 99, 235, 0.18);
     }
     .daily-entry-list {
       display: flex;
@@ -833,6 +862,7 @@
     .daily-entry-row:hover {
       box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
       border-color: #dbe3ff;
+      border-left-color: #2563eb;
     }
     .daily-entry-row.active {
       border-color: rgba(59, 91, 219, 0.3);
@@ -1426,9 +1456,6 @@
     .color-swatch.active {
       border-color: #111;
     }
-    .color-row {
-      align-items: center;
-    }
     .modal-columns {
       display: grid;
       grid-template-columns: minmax(230px, 320px) minmax(420px, 1fr);
@@ -1522,9 +1549,26 @@
     }
     .form-buttons {
       display: flex;
-      justify-content: flex-end;
-      gap: 6px;
+      align-items: center;
+      gap: 10px;
       margin-top: 6px;
+      flex-wrap: wrap;
+    }
+    .inline-color-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #111827;
+    }
+    .inline-color-control .color-picker-toggle {
+      margin-left: 2px;
+    }
+    .form-button-actions {
+      display: inline-flex;
+      gap: 6px;
+      margin-left: auto;
     }
     #toggleFormBtn {
       border-radius: 999px;
@@ -2389,18 +2433,6 @@
             </select>
           </div>
 
-          <div class="form-row color-row">
-            <label>Kart rengi</label>
-          <div class="color-picker-wrapper" id="entryColorWrapper">
-              <button type="button" class="color-picker-toggle" id="entryColorToggle" aria-label="Paylaşım rengini seç">
-                <span class="toggle-swatch"></span>
-                <span>Seç</span>
-              </button>
-              <div class="color-picker" id="entryColorPicker"></div>
-              <input type="hidden" id="entryColorInput" value="#2563eb" />
-            </div>
-          </div>
-
           <div class="form-row">
             <label>Hangi sosyal medya?</label>
             <div class="platform-presets">
@@ -2426,9 +2458,20 @@
           </div>
 
           <div class="form-buttons">
-            <button id="deleteBtn">Sil</button>
-            <button id="clearBtn">Temizle</button>
-            <button id="saveBtn">Kaydet</button>
+            <div class="inline-color-control color-picker-wrapper" id="entryColorWrapper">
+              <span>Kart rengi</span>
+              <button type="button" class="color-picker-toggle" id="entryColorToggle" aria-label="Paylaşım rengini seç">
+                <span class="toggle-swatch"></span>
+                <span>Seç</span>
+              </button>
+              <div class="color-picker" id="entryColorPicker"></div>
+              <input type="hidden" id="entryColorInput" value="#2563eb" />
+            </div>
+            <div class="form-button-actions">
+              <button id="deleteBtn">Sil</button>
+              <button id="clearBtn">Temizle</button>
+              <button id="saveBtn">Kaydet</button>
+            </div>
           </div>
           <p class="form-success-message" id="saveSuccessMessage">Değişiklikler kaydedildi.</p>
 
@@ -2670,6 +2713,7 @@ let scheduleViewMode = "daily";
 let scheduleDailyDateKey = todayDateKey;
 let highlightedDates = new Map();
 let saveSuccessTimeout = null;
+let activeScheduleSummaryKey = null;
 const DEFAULT_ENTRY_COLOR = "#2563eb";
 const DEFAULT_HIGHLIGHT_COLOR = "#fee2e2";
 const COLOR_PALETTE = [
@@ -4282,6 +4326,7 @@ function summarizePlatformLabel(platform) {
       if (!dateObj) return;
       selectedDateKey = dateKey;
       scheduleDailyDateKey = dateKey;
+      activeScheduleSummaryKey = dateKey;
       currentYear = dateObj.getFullYear();
       currentMonth = dateObj.getMonth();
       renderCalendar();
@@ -4567,6 +4612,8 @@ function summarizePlatformLabel(platform) {
     function createScheduleSummaryRow(dateObj, key, summary, humanDate) {
       const row = document.createElement("div");
       row.className = "schedule-item summary";
+      row.dataset.dateKey = key;
+      row.tabIndex = 0;
       const highlightColor = highlightedDates.get(key);
       if (highlightColor) {
         row.classList.add("has-highlight");
@@ -4615,6 +4662,9 @@ function summarizePlatformLabel(platform) {
         row.style.removeProperty("--summary-chip-color");
         row.style.removeProperty("--summary-chip-border");
       }
+      if (activeScheduleSummaryKey === key) {
+        row.classList.add("active");
+      }
 
       const header = document.createElement("div");
       header.className = "schedule-summary-header";
@@ -4635,8 +4685,15 @@ function summarizePlatformLabel(platform) {
       });
       row.appendChild(chips);
 
-      row.addEventListener("click", () => {
+      const activateSummaryRow = () => {
         focusDayFromSchedule(key);
+      };
+      row.addEventListener("click", activateSummaryRow);
+      row.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          activateSummaryRow();
+        }
       });
 
       return row;
@@ -5172,6 +5229,7 @@ function summarizePlatformLabel(platform) {
       closeCopyPopover();
       selectedDateKey = key;
       scheduleDailyDateKey = key;
+      activeScheduleSummaryKey = key;
       const dayData = loadDayData(key);
       currentDayItems = dayData.items || [];
       activeItemId = initialItemId;
@@ -5208,9 +5266,7 @@ function summarizePlatformLabel(platform) {
       }
       renderModalSummaryList();
       dayModal.style.display = "flex";
-      if (scheduleViewMode === "daily") {
-        updateScheduleList();
-      }
+      updateScheduleList();
     }
 
     function closeModal() {
@@ -6231,6 +6287,7 @@ function summarizePlatformLabel(platform) {
       activeItemId = null;
       scheduleViewMode = "daily";
       scheduleDailyDateKey = todayDateKey;
+      activeScheduleSummaryKey = null;
       if (scheduleViewButtons.length) {
         scheduleViewButtons.forEach((btn) => {
           const view = btn.dataset.view || "daily";

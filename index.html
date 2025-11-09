@@ -6,9 +6,8 @@
   <style>
     * { box-sizing: border-box; }
     html, body {
-      height: 100%;
+      min-height: 100%;
       margin: 0;
-      overflow: hidden;
     }
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -17,8 +16,6 @@
       background: #ffffff;
       color: #111827;
       font-size: 14px;
-      display: flex;
-      flex-direction: column;
     }
     h1, h2, h3, label { font-weight: 700; }
 
@@ -137,23 +134,17 @@
     }
     #appRoot {
       min-height: 100vh;
-      flex: 1;
       width: 100%;
       max-width: 1360px;
       margin: 0 auto;
-      padding: 12px 20px 16px;
+      padding: 16px 20px 20px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      overflow: hidden;
+      gap: 12px;
     }
     #viewCalendar,
     #viewReports {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      min-height: 0;
+      display: block;
     }
     .admin-overlay {
       position: fixed;
@@ -431,12 +422,8 @@
   display: grid;
   grid-template-columns: minmax(0, 2.35fr) minmax(0, 1fr);
   gap: 16px;
-  align-items: stretch;
-  flex: 1;
+  align-items: flex-start;
   width: 100%;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
 }
 .calendar {
   border: 1px solid #dde2ff;
@@ -445,16 +432,14 @@
   background: #f9faff;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
+  gap: 12px;
 }
 .channel-filter {
   display: flex;
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   font-size: 12px;
   color: #475569;
 }
@@ -567,9 +552,6 @@
       gap: 5px;
     }
     #daysContainer {
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
       padding-bottom: 8px;
       padding-right: 4px;
     }
@@ -710,9 +692,6 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
 }
 .form {
   border: 1px solid #dde2ff;
@@ -721,9 +700,6 @@
   background: #ffffff;
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  flex: 1;
-  overflow: hidden;
   gap: 10px;
 }
 .excel-upload-container {
@@ -773,10 +749,6 @@
   margin-top: 10px;
   border-top: 1px solid #eef0ff;
   padding-top: 10px;
-  flex: 1;
-  min-height: 0;
-  max-height: none;
-  overflow-y: auto;
 }
 .schedule-search {
   margin-top: 6px;
@@ -848,7 +820,7 @@
     .daily-entry-row {
       --daily-card-color: rgba(15, 23, 42, 0.12);
       border: 1px solid rgba(15, 23, 42, 0.08);
-      border-left: 4px solid var(--daily-card-color, rgba(15, 23, 42, 0.12));
+      border-left: 4px solid rgba(226, 232, 240, 0.9);
       border-radius: 12px;
       padding: 10px 12px;
       background: #ffffff;
@@ -859,8 +831,8 @@
       transition: box-shadow 0.12s ease, border-color 0.12s ease;
     }
     .daily-entry-row:hover {
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-      border-color: #cbd5f5;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+      border-color: #dbe3ff;
     }
     .daily-entry-row.active {
       border-color: rgba(59, 91, 219, 0.3);
@@ -911,6 +883,16 @@
       font-size: 12px;
       color: #475569;
       margin: 0;
+    }
+    .daily-entry-meta.daily-entry-time {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .daily-entry-time-icon {
+      font-size: 12px;
+      color: #2563eb;
+      line-height: 1;
     }
     .daily-entry-badges {
       margin-top: 4px;
@@ -1975,6 +1957,7 @@
     body.dark .daily-entry-row {
       background: #111827;
       border-color: #1f2937;
+      border-left-color: rgba(30, 41, 59, 0.9);
     }
     body.dark .daily-entry-row:hover {
       border-color: #3b82f6;
@@ -1989,6 +1972,9 @@
     }
     body.dark .daily-entry-meta {
       color: #cbd5f5;
+    }
+    body.dark .daily-entry-time-icon {
+      color: #facc15;
     }
 
     body.dark button {
@@ -2165,7 +2151,7 @@
 
   <!-- TAKVİM GÖRÜNÜMÜ -->
   <div id="viewCalendar">
-    <div class="container" style="gap:12px;">
+    <div class="container">
       <div class="calendar">
         <div class="channel-filter" id="channelFilter">
           <span>Kanallar:</span>
@@ -4290,6 +4276,18 @@ function summarizePlatformLabel(platform) {
       }
     }
 
+    function focusDayFromSchedule(dateKey, entryId = null) {
+      if (!dateKey) return;
+      const dateObj = parseDateKeyString(dateKey);
+      if (!dateObj) return;
+      selectedDateKey = dateKey;
+      scheduleDailyDateKey = dateKey;
+      currentYear = dateObj.getFullYear();
+      currentMonth = dateObj.getMonth();
+      renderCalendar();
+      openModalForDate(dateObj, dateKey, entryId);
+    }
+
     function isDateBeforeToday(dateObj) {
       if (!dateObj) return false;
       const candidate = normalizeToMidnight(dateObj);
@@ -4418,8 +4416,20 @@ function summarizePlatformLabel(platform) {
         body.appendChild(title);
 
         const timeLine = document.createElement("p");
-        timeLine.className = "daily-entry-meta";
-        timeLine.textContent = entry.time ? entry.time : "Saat seçilmedi";
+        const hasTime = Boolean(entry.time);
+        timeLine.className = hasTime
+          ? "daily-entry-meta daily-entry-time"
+          : "daily-entry-meta";
+        if (hasTime) {
+          const clockIcon = document.createElement("span");
+          clockIcon.className = "daily-entry-time-icon";
+          clockIcon.textContent = "⏰";
+          clockIcon.setAttribute("aria-hidden", "true");
+          timeLine.appendChild(clockIcon);
+          timeLine.appendChild(document.createTextNode(entry.time));
+        } else {
+          timeLine.textContent = "Saat seçilmedi";
+        }
         body.appendChild(timeLine);
 
         const metaLine = document.createElement("p");
@@ -4442,11 +4452,18 @@ function summarizePlatformLabel(platform) {
         }
 
         row.appendChild(body);
-        row.addEventListener("click", () => selectEntryById(entry.id));
+        const activateRow = () => {
+          if (entry.date) {
+            focusDayFromSchedule(entry.date, entry.id);
+          } else {
+            selectEntryById(entry.id);
+          }
+        };
+        row.addEventListener("click", activateRow);
         row.addEventListener("keydown", (event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            selectEntryById(entry.id);
+            activateRow();
           }
         });
         list.appendChild(row);
@@ -4619,8 +4636,7 @@ function summarizePlatformLabel(platform) {
       row.appendChild(chips);
 
       row.addEventListener("click", () => {
-        const clone = new Date(dateObj.getTime());
-        openModalForDate(clone, key);
+        focusDayFromSchedule(key);
       });
 
       return row;

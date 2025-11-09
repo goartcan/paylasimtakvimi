@@ -5,16 +5,20 @@
   <title>Paylaşım Takvimi</title>
   <style>
     * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
-      padding: 16px;
+      padding: 0;
       background: #ffffff;
-      max-width: 1360px;
-      margin-left: auto;
-      margin-right: auto;
       color: #111827;
       font-size: 14px;
+      display: flex;
+      flex-direction: column;
     }
     h1, h2, h3, label { font-weight: 700; }
 
@@ -22,9 +26,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 8px;
-      padding-top: 4px;
-      padding-bottom: 4px;
+      min-height: 64px;
+      padding: 6px 0;
+      margin-bottom: 4px;
     }
     .header-left {
       display: flex;
@@ -130,6 +134,26 @@
     }
     body.dark .login-card .secondary-btn:hover {
       background: #2c3a52;
+    }
+    #appRoot {
+      min-height: 100vh;
+      flex: 1;
+      width: 100%;
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 12px 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+    }
+    #viewCalendar,
+    #viewReports {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
     }
     .admin-overlay {
       position: fixed;
@@ -379,7 +403,7 @@
 .tabs {
   display: flex;
   gap: 6px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
     #adminViewInfo {
       margin: -8px 0 16px 0;
@@ -405,15 +429,25 @@
 
 .container {
   display: grid;
-  grid-template-columns: 3fr 1.1fr;
-  gap: 18px;
+  grid-template-columns: minmax(0, 2.35fr) minmax(0, 1fr);
+  gap: 16px;
   align-items: stretch;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 .calendar {
   border: 1px solid #dde2ff;
   border-radius: 12px;
-  padding: 14px;
+  padding: 12px;
   background: #f9faff;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 .channel-filter {
   display: flex;
@@ -531,6 +565,13 @@
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 5px;
+    }
+    #daysContainer {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-bottom: 8px;
+      padding-right: 4px;
     }
     .weekday {
       text-align: center;
@@ -665,21 +706,26 @@
       --summary-chip-border: rgba(255, 255, 255, 0.45);
     }
 
-    .side {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      height: 100%;
-    }
-    .form {
-      border: 1px solid #dde2ff;
-      border-radius: 12px;
-      padding: 16px;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+.form {
+  border: 1px solid #dde2ff;
+  border-radius: 12px;
+  padding: 14px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+  gap: 10px;
+}
 .excel-upload-container {
   margin-top: auto;
   padding-top: 10px;
@@ -723,19 +769,20 @@
       font-size: 11px;
       color: #4b5563;
     }
-    .schedule-list {
-      margin-top: 12px;
-      border-top: 1px solid #eef0ff;
-      padding-top: 12px;
-      flex: 0 0 340px;
-      max-height: 340px;
-      overflow-y: auto;
-    }
-    .schedule-search {
-      margin-top: 12px;
-      display: flex;
-      align-items: center;
-    }
+.schedule-list {
+  margin-top: 10px;
+  border-top: 1px solid #eef0ff;
+  padding-top: 10px;
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+}
+.schedule-search {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+}
 .schedule-search input {
   width: 100%;
   padding: 6px 9px;
@@ -2117,7 +2164,7 @@
   <p class="small" id="adminViewInfo" style="display:none;"></p>
 
   <!-- TAKVİM GÖRÜNÜMÜ -->
-  <div id="viewCalendar" style="margin-top:8px;">
+  <div id="viewCalendar">
     <div class="container" style="gap:12px;">
       <div class="calendar">
         <div class="channel-filter" id="channelFilter">
@@ -2164,8 +2211,8 @@
             />
           </div>
           <div class="schedule-view-toggle" id="scheduleViewToggle">
-            <button type="button" class="schedule-view-btn" data-view="daily">Günlük</button>
-            <button type="button" class="schedule-view-btn active" data-view="weekly">Haftalık</button>
+            <button type="button" class="schedule-view-btn active" data-view="daily">Günlük</button>
+            <button type="button" class="schedule-view-btn" data-view="weekly">Haftalık</button>
             <button type="button" class="schedule-view-btn" data-view="monthly">Aylık</button>
           </div>
           <div id="scheduleList" class="schedule-list small"></div>
@@ -2618,6 +2665,9 @@ const checkedSummaryOwner = document.getElementById("checkedSummaryOwner");
       "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"
     ];
 
+    const todayReferenceDate = normalizeToMidnight(new Date());
+    const todayDateKey = formatDateKey(todayReferenceDate);
+
     let currentYear;
     let currentMonth;
     let selectedDateKey = null;
@@ -2630,8 +2680,8 @@ let modalForcePlanMode = false;
 let copySourceEntry = null;
 const excelUploadDefaultText = excelUploadBtn ? excelUploadBtn.textContent : "Excel yükle";
 let scheduleSearchQuery = "";
-let scheduleViewMode = "weekly";
-let scheduleDailyDateKey = null;
+let scheduleViewMode = "daily";
+let scheduleDailyDateKey = todayDateKey;
 let highlightedDates = new Map();
 let saveSuccessTimeout = null;
 const DEFAULT_ENTRY_COLOR = "#2563eb";
@@ -3042,14 +3092,15 @@ function setActiveChannelFilter(nextFilter) {
 }
 
 function setScheduleViewMode(nextMode) {
-  const normalized = nextMode === "daily" ? "daily" : "weekly";
+  const allowedViews = ["daily", "weekly", "monthly"];
+  const normalized = allowedViews.includes(nextMode) ? nextMode : "daily";
   if (scheduleViewMode === normalized) return;
   scheduleViewMode = normalized;
   if (scheduleViewMode === "daily") {
-    scheduleDailyDateKey = selectedDateKey || null;
+    scheduleDailyDateKey = selectedDateKey || scheduleDailyDateKey || todayDateKey;
   }
   scheduleViewButtons.forEach((btn) => {
-    const target = btn.dataset.view || "weekly";
+    const target = btn.dataset.view || "daily";
     btn.classList.toggle("active", target === scheduleViewMode);
   });
   updateScheduleList();
@@ -4195,13 +4246,26 @@ function summarizePlatformLabel(platform) {
       const counts = {};
       scopedItems.forEach((item) => {
         const entryColor = item.color || DEFAULT_ENTRY_COLOR;
-        const list =
-          item.platforms && item.platforms.length
-            ? item.platforms
-            : ["Platform seçilmedi"];
-        list.forEach((platform) => {
-          const label = summarizePlatformLabel(platform);
-          if (!counts[label]) {
+      let list =
+        item.platforms && item.platforms.length
+          ? item.platforms
+          : ["Platform seçilmedi"];
+      if (filterId !== "all") {
+        const definition = CHANNEL_FILTER_DEFINITIONS[filterId];
+        if (definition) {
+          const scopedPlatforms = list.filter((platform) =>
+            definition.matcher(String(platform || ""))
+          );
+          if (scopedPlatforms.length) {
+            list = scopedPlatforms;
+          } else {
+            list = [getChannelFilterLabel(filterId)];
+          }
+        }
+      }
+      list.forEach((platform) => {
+        const label = summarizePlatformLabel(platform);
+        if (!counts[label]) {
             counts[label] = { count: 0, color: entryColor };
           }
           counts[label].count += 1;
@@ -4228,9 +4292,8 @@ function summarizePlatformLabel(platform) {
 
     function isDateBeforeToday(dateObj) {
       if (!dateObj) return false;
-      const today = normalizeToMidnight(new Date());
       const candidate = normalizeToMidnight(dateObj);
-      return candidate.getTime() < today.getTime();
+      return candidate.getTime() < todayReferenceDate.getTime();
     }
 
     function isKeyBeforeToday(key) {
@@ -4258,15 +4321,14 @@ function summarizePlatformLabel(platform) {
     }
 
     function getDailyFocusDateKey() {
-      const candidates = [scheduleDailyDateKey, selectedDateKey];
-      for (const key of candidates) {
-        if (key && !isKeyBeforeToday(key)) {
-          return key;
-        }
+      if (selectedDateKey) {
+        return selectedDateKey;
       }
-      const todayKey = formatDateKey(new Date());
-      if (!isKeyBeforeToday(todayKey)) {
-        return todayKey;
+      if (scheduleDailyDateKey && !isKeyBeforeToday(scheduleDailyDateKey)) {
+        return scheduleDailyDateKey;
+      }
+      if (!isKeyBeforeToday(todayDateKey)) {
+        return todayDateKey;
       }
       const futureKeys = Array.from(entriesByDate.keys())
         .filter((key) => !isKeyBeforeToday(key))
@@ -4276,7 +4338,14 @@ function summarizePlatformLabel(platform) {
 
     function renderDailySchedule() {
       const focusKey = getDailyFocusDateKey();
-      if (!focusKey || isKeyBeforeToday(focusKey)) {
+      if (!focusKey) {
+        renderEmptySchedule("Yaklaşan içerik bulunamadı.");
+        return;
+      }
+      const isPastFocus = isKeyBeforeToday(focusKey);
+      const isExplicitSelection =
+        Boolean(selectedDateKey) && focusKey === selectedDateKey;
+      if (isPastFocus && !isExplicitSelection) {
         renderEmptySchedule("Yaklaşan içerik bulunamadı.");
         return;
       }
@@ -4329,8 +4398,15 @@ function summarizePlatformLabel(platform) {
 
         const statusIcon = document.createElement("span");
         statusIcon.className = `daily-entry-status status-${statusKey}`;
+        const plannedSymbol =
+          entry.time && statusKey === "planned" ? "⏰" : "•";
         statusIcon.textContent =
-          statusKey === "done" ? "✓" : statusKey === "missed" ? "!" : "•";
+          statusKey === "done"
+            ? "✓"
+            : statusKey === "missed"
+            ? "!"
+            : plannedSymbol;
+        statusIcon.title = formatStatusLabel(entry.status);
         row.appendChild(statusIcon);
 
         const body = document.createElement("div");
@@ -4378,21 +4454,33 @@ function summarizePlatformLabel(platform) {
       scheduleList.appendChild(list);
     }
 
-    function getEffectiveRangeStartDate() {
-      const today = normalizeToMidnight(new Date());
+    function getWeeklyRangeStartDate() {
       const selected =
         selectedDateKey && parseDateKeyString(selectedDateKey);
-      if (selected && !isDateBeforeToday(selected)) {
+      if (selected) {
         return normalizeToMidnight(selected);
       }
-      return today;
+      if (scheduleDailyDateKey) {
+        const fallback = parseDateKeyString(scheduleDailyDateKey);
+        if (fallback) {
+          return normalizeToMidnight(fallback);
+        }
+      }
+      return todayReferenceDate;
     }
 
-    function getSelectedMonthEndDate() {
+    function getSelectedMonthStartDate() {
       const selected =
         selectedDateKey && parseDateKeyString(selectedDateKey);
       const base = selected || new Date(currentYear, currentMonth, 1);
-      return normalizeToMidnight(new Date(base.getFullYear(), base.getMonth() + 1, 0));
+      return normalizeToMidnight(new Date(base.getFullYear(), base.getMonth(), 1));
+    }
+
+    function getSelectedMonthEndDate() {
+      const monthStart = getSelectedMonthStartDate();
+      return normalizeToMidnight(
+        new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0)
+      );
     }
 
     function addDays(date, amount) {
@@ -4403,13 +4491,13 @@ function summarizePlatformLabel(platform) {
     }
 
     function renderMonthlySchedule() {
-      const start = getEffectiveRangeStartDate();
+      const monthStart = getSelectedMonthStartDate();
       const monthEnd = getSelectedMonthEndDate();
-      if (start.getTime() > monthEnd.getTime()) {
-        renderEmptySchedule("Yaklaşan içerik bulunamadı.");
+      if (monthStart.getTime() > monthEnd.getTime()) {
+        renderEmptySchedule("Bu ay için içerik bulunamadı.");
         return;
       }
-      renderRangeSchedule(start, monthEnd, "Bu ay için içerik bulunamadı.");
+      renderRangeSchedule(monthStart, monthEnd, "Bu ay için içerik bulunamadı.");
     }
 
     function renderRangeSchedule(rangeStart, rangeEnd, emptyMessage) {
@@ -4548,7 +4636,7 @@ function summarizePlatformLabel(platform) {
     }
 
     function renderWeeklySchedule() {
-      const start = getEffectiveRangeStartDate();
+      const start = getWeeklyRangeStartDate();
       const monthEnd = getSelectedMonthEndDate();
       if (start.getTime() > monthEnd.getTime()) {
         renderEmptySchedule("Yaklaşan içerik bulunamadı.");
@@ -4795,7 +4883,7 @@ function summarizePlatformLabel(platform) {
       setModalViewForEntry(entry);
       setControlActionsEnabled(Boolean(authToken) && isViewingOwnData());
       if (scheduleViewMode === "daily") {
-        scheduleDailyDateKey = selectedDateKey;
+        scheduleDailyDateKey = entry.date || scheduleDailyDateKey || todayDateKey;
         updateScheduleList();
       }
     }
@@ -5879,7 +5967,7 @@ function summarizePlatformLabel(platform) {
     });
     if (scheduleViewButtons.length) {
       scheduleViewButtons.forEach((btn) => {
-        const view = btn.dataset.view || "weekly";
+        const view = btn.dataset.view || "daily";
         btn.classList.toggle("active", view === scheduleViewMode);
         btn.addEventListener("click", () => {
           setScheduleViewMode(view);
@@ -6125,6 +6213,14 @@ function summarizePlatformLabel(platform) {
       selectedDateKey = null;
       currentDayItems = [];
       activeItemId = null;
+      scheduleViewMode = "daily";
+      scheduleDailyDateKey = todayDateKey;
+      if (scheduleViewButtons.length) {
+        scheduleViewButtons.forEach((btn) => {
+          const view = btn.dataset.view || "daily";
+          btn.classList.toggle("active", view === scheduleViewMode);
+        });
+      }
       clearFormOnly();
       closeModal();
       modalFormSection.style.display = "none";

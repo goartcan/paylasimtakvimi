@@ -191,6 +191,63 @@
       border: 1px solid #d1d5db;
       font-size: 12px;
     }
+    .admin-section {
+      border-top: 1px solid #e2e8f0;
+      padding-top: 16px;
+      margin-top: 8px;
+    }
+    .admin-section h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+    }
+    .color-description-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
+      align-items: center;
+    }
+    .color-description-row:last-child {
+      border-bottom: none;
+    }
+    .pending-count-badge {
+      font-weight: 600;
+      color: #9a3412;
+      margin-left: 4px;
+    }
+    .pending-count-badge.has-pending {
+      color: #b91c1c;
+    }
+    .color-description-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid rgba(15, 23, 42, 0.15);
+    }
+    .color-description-fields {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 8px;
+    }
+    .color-description-fields input,
+    .color-description-fields textarea {
+      font-size: 12px;
+      padding: 6px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-family: inherit;
+    }
+    .color-description-fields textarea {
+      resize: vertical;
+      min-height: 48px;
+    }
+    .color-description-actions {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
     .admin-user-row > div:first-child {
       word-break: break-all;
     }
@@ -304,12 +361,35 @@
       gap: 24px;
       align-items: stretch;
     }
-    .calendar {
-      border: 1px solid #dde2ff;
-      border-radius: 12px;
-      padding: 20px;
-      background: #f9faff;
-    }
+.calendar {
+  border: 1px solid #dde2ff;
+  border-radius: 12px;
+  padding: 20px;
+  background: #f9faff;
+}
+.channel-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #475569;
+}
+.channel-filter-btn {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #d5dbf5;
+  background: #ffffff;
+  color: #1f2937;
+}
+.channel-filter-btn.active {
+  background: #1d4ed8;
+  border-color: #1e40af;
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(30, 64, 175, 0.25);
+}
     .calendar-header {
       display: flex;
       justify-content: space-between;
@@ -319,6 +399,7 @@
       background: #eef2ff;
       border-bottom: 1px solid #dde2ff;
       border-radius: 12px 12px 0 0;
+      gap: 12px;
     }
     button {
       cursor: pointer;
@@ -327,6 +408,10 @@
       padding: 4px 12px;
       background: #f2f5ff;
       font-size: 12px;
+      font-weight: 600;
+      color: #152052;
+      transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease,
+        box-shadow 0.12s ease;
     }
     button:hover { background: #e4ebff; }
     .secondary-btn {
@@ -336,6 +421,45 @@
     }
     .secondary-btn:hover {
       background: #d1d5db;
+    }
+    .primary-btn {
+      background: #2563eb;
+      border-color: #1d4ed8;
+      color: #ffffff;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+    }
+    .primary-btn:hover {
+      background: #1d4ed8;
+    }
+    .month-nav-btn {
+      min-width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      border-radius: 10px;
+      background: #ffffff;
+      border-color: #c4d0ff;
+      color: #1a275a;
+    }
+    .month-nav-btn:hover {
+      background: #dde5ff;
+    }
+    .month-nav-btn {
+      min-width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      border-radius: 10px;
+      background: #ffffff;
+      border-color: #c4d0ff;
+      color: #1a275a;
+    }
+    .month-nav-btn:hover {
+      background: #dde5ff;
     }
     .danger-btn {
       background: #fee2e2;
@@ -391,15 +515,24 @@
       box-shadow: 0 0 0 1px rgba(59, 91, 219, 0.12);
       background: #f4f6ff;
     }
+    .day.filtered-out {
+      opacity: 0.35;
+    }
     .day-number {
       font-weight: 700;
       font-size: 14px;
       margin-bottom: 4px;
       color: var(--day-text);
     }
+    .day-counter {
+      font-size: 11px;
+      font-weight: 600;
+      color: #6b21a8;
+      margin-bottom: 4px;
+    }
     .day.has-data:not([data-color]) {
-      --day-border: #00b3c6;
-      --day-surface: #f0fcff;
+      --day-border: #7c3aed;
+      --day-surface: #f5f0ff;
     }
     .day.day-highlighted {
       --day-border: #f87171;
@@ -431,6 +564,7 @@
       color: var(--day-text);
     }
     .day[data-color="yellow"],
+    .day[data-color="white"],
     .day[data-color="amber"],
     .day[data-color="orange"],
     .day[data-color="green"],
@@ -703,6 +837,124 @@
       font-size: 11px;
       padding: 4px 10px;
     }
+    .report-content-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 0 0 14px 0;
+    }
+    .report-view-btn {
+      border-radius: 999px;
+      padding: 6px 14px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
+    }
+    .report-view-btn.active {
+      background: #2563eb;
+      border-color: #1d4ed8;
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+    }
+    .report-view-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .report-summary-line {
+      font-size: 13px;
+      color: #0f172a;
+    }
+    .report-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #475569;
+      cursor: pointer;
+    }
+    .report-table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+    }
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      min-width: 640px;
+    }
+    .report-table thead {
+      background: #f8fafc;
+    }
+    .report-table th,
+    .report-table td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .report-table th {
+      font-weight: 600;
+      color: #0f172a;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .report-table td {
+      color: #0f172a;
+    }
+    .report-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .report-status-done {
+      background: rgba(34, 197, 94, 0.18);
+      color: #166534;
+    }
+    .report-status-missed {
+      background: rgba(248, 113, 113, 0.2);
+      color: #991b1b;
+    }
+    .report-status-planned {
+      background: rgba(15, 23, 42, 0.05);
+      color: #0f172a;
+    }
+    @media (max-width: 768px) {
+      .report-table {
+        min-width: 100%;
+      }
+      .report-table thead {
+        display: none;
+      }
+      .report-table tr {
+        display: block;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        padding: 10px 12px;
+      }
+      .report-table td {
+        border: none;
+        padding: 6px 0;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .report-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #475569;
+        margin-right: 8px;
+      }
+    }
     body.dark .report-range-inputs input[type="date"] {
       background: #111827;
       border-color: #374151;
@@ -710,6 +962,28 @@
     }
     body.dark .quick-range-buttons span {
       color: #9ca3af;
+    }
+    body.dark .report-view-btn {
+      background: #111827;
+      color: #f3f4f6;
+      border-color: #374151;
+    }
+    body.dark .report-view-btn.active {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #1d4ed8;
+    }
+    body.dark .report-table thead {
+      background: #111827;
+    }
+    body.dark .report-table th,
+    body.dark .report-table td {
+      color: #f1f5f9;
+      border-bottom-color: #1f2937;
+    }
+    body.dark .report-status-planned {
+      background: rgba(248, 250, 252, 0.08);
+      color: #f1f5f9;
     }
     .report-chart-wrapper {
       margin-top: 12px;
@@ -741,8 +1015,8 @@
       background: #ffffff;
       border-radius: 16px;
       padding: 20px;
-      max-width: 780px;
-      width: 100%;
+      max-width: 960px;
+      width: min(96vw, 960px);
       max-height: 92vh;
       overflow-y: auto;
       box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
@@ -777,12 +1051,114 @@
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
+      position: relative;
     }
     .highlight-picker {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       font-size: 12px;
+    }
+    .highlight-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .highlight-help-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      color: #0f172a;
+      cursor: pointer;
+    }
+    .highlight-help-btn:hover {
+      background: #f3f4f6;
+    }
+    .color-help-panel {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 280px;
+      border-radius: 14px;
+      border: 1px solid #e4e7f5;
+      background: #ffffff;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+      padding: 12px;
+      display: none;
+      z-index: 40;
+    }
+    .color-help-panel.active {
+      display: block;
+    }
+    .color-help-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .color-help-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .color-help-close {
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      cursor: pointer;
+      color: #0f172a;
+    }
+    .color-help-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .color-help-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: #0f172a;
+    }
+    .color-help-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      flex-shrink: 0;
+    }
+    .copy-popover {
+      display: none;
+      margin-top: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px;
+      background: #f9fafb;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+    }
+    .copy-popover.active {
+      display: block;
+    }
+    .copy-popover-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      color: #0f172a;
+    }
+    .copy-popover-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 10px;
     }
     .color-picker-wrapper {
       display: inline-flex;
@@ -903,6 +1279,15 @@
       border: 1px solid #d1d5db;
       border-radius: 8px;
     }
+    select {
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 12px;
+      font-family: inherit;
+      background: #ffffff;
+      color: #0f172a;
+    }
     input[type="text"],
     input[type="time"] {
       padding: 6px;
@@ -910,6 +1295,9 @@
       font-family: inherit;
       border: 1px solid #d1d5db;
       border-radius: 8px;
+    }
+    #filesInput {
+      min-height: 48px;
     }
     .platforms {
       display: grid;
@@ -922,6 +1310,19 @@
       display: flex;
       align-items: center;
       gap: 4px;
+    }
+    .platform-presets {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      font-size: 11px;
+      color: #475569;
+    }
+    .platform-presets .preset-btn {
+      font-size: 11px;
+      padding: 4px 10px;
     }
     .form-buttons {
       display: flex;
@@ -944,47 +1345,237 @@
       gap: 6px;
     }
     .summary-item {
-      padding: 6px 10px;
-      border-radius: 8px;
-      background: #f3f4ff;
-      border: 1px solid #e0e3ff;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
       cursor: pointer;
-      opacity: 0.85; /* daha okunaklı */
+      color: #0f172a;
+    }
+    .summary-item + .summary-item {
+      margin-top: 2px;
     }
     .summary-item.excel {
-      background: #e0f2fe;
-      border-color: #bae6fd;
-      opacity: 1;
+      background: #f0f9ff;
+      border-color: rgba(14, 165, 233, 0.45);
     }
     .summary-item.active {
-      opacity: 1;
-      background: #e7ebff;
-      border-color: #c4d0ff;
+      border-color: #3b82f6;
+      box-shadow: 0 22px 45px rgba(37, 99, 235, 0.12);
     }
     .summary-item-title {
-      font-size: 12px;
-      color: #111827;
-      margin-bottom: 2px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0f172a;
+      margin-bottom: 4px;
+      line-height: 1.4;
     }
     .summary-item-time {
-      font-size: 11px;
-      color: #4b5563;
-      margin-bottom: 1px;
+      font-size: 14px;
+      color: #475569;
+      margin-bottom: 2px;
+      line-height: 1.4;
     }
     .summary-item-platforms {
-      font-size: 11px;
-      color: #4b5563;
+      font-size: 14px;
+      color: #475569;
+      line-height: 1.4;
+    }
+    .summary-item-owner {
+      font-size: 12px;
+      color: #1f2937;
+      margin-top: 2px;
     }
     .summary-item-badge {
-      font-size: 10px;
-      color: #075985;
-      background: #e0f2fe;
-      border: 1px solid #bae6fd;
+      font-size: 12px;
+      color: #0f172a;
+      background: #f8fafc;
+      border: 1px solid rgba(15, 23, 42, 0.08);
       border-radius: 999px;
-      padding: 2px 6px;
+      padding: 4px 10px;
       display: inline-flex;
       align-items: center;
       gap: 4px;
+    }
+    .summary-item-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .summary-item-copy-btn {
+      font-size: 11px;
+      border: 1px dashed #c7d2fe;
+      background: #eef2ff;
+      color: #4338ca;
+      padding: 4px 10px;
+    }
+    .summary-item-copy-btn:hover {
+      background: #e0e7ff;
+    }
+    .summary-item-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .summary-item-status {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.08);
+      color: #0f172a;
+      white-space: nowrap;
+    }
+    .summary-item-status.status-done {
+      background: rgba(34, 197, 94, 0.15);
+      color: #166534;
+    }
+    .summary-item-status.status-missed {
+      background: rgba(248, 113, 113, 0.2);
+      color: #991b1b;
+    }
+    .summary-item-status.status-planned {
+      background: rgba(248, 250, 252, 1);
+      color: #0f172a;
+    }
+    .modal-control-section {
+      display: none;
+    }
+    .control-card {
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      border-radius: 18px;
+      padding: 16px;
+      background: #ffffff;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .control-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      margin-bottom: 2px;
+    }
+    .control-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #0f172a;
+      margin: 0;
+    }
+    .control-meta {
+      font-size: 14px;
+      color: #475569;
+      line-height: 1.4;
+      margin: 0;
+    }
+    .control-note label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f172a;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .control-note textarea {
+      width: 100%;
+      min-height: 80px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      padding: 8px 10px;
+      font-size: 13px;
+      resize: vertical;
+    }
+    .control-note textarea:read-only {
+      background: #f8fafc;
+      cursor: not-allowed;
+    }
+    .control-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .success-btn,
+    .link-btn {
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .success-btn {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+    .success-btn:hover {
+      background: #bbf7d0;
+    }
+    .control-actions .danger-btn {
+      flex: none;
+    }
+    .link-btn {
+      background: transparent;
+      border: none;
+      color: #2563eb;
+      padding: 0;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .link-btn:disabled {
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+    .control-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(34, 197, 94, 0.15);
+      color: #166534;
+    }
+    .control-status-badge.missed {
+      background: rgba(248, 113, 113, 0.2);
+      color: #991b1b;
+    }
+    .control-note-display {
+      font-size: 14px;
+      color: #334155;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 10px 12px;
+      white-space: pre-wrap;
+    }
+    .control-checked-at {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .plan-return-banner {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      font-size: 12px;
+      color: #9a3412;
+      margin-bottom: 10px;
+    }
+    .plan-return-banner span {
+      flex: 1;
     }
     .summary-empty {
       padding: 20px;
@@ -1034,6 +1625,9 @@
     }
     body.dark .day-number { color: var(--day-text); }
     body.dark .day-summary { color: #cbd5f5; }
+    body.dark .day-counter {
+      color: #c4b5fd;
+    }
 
     /* Koyu mod modal daha aydınlık ve kontrastlı */
     body.dark .modal {
@@ -1053,20 +1647,31 @@
       color: #f9fafb;
       border-color: #475569;
     }
+    body.dark .color-help-panel {
+      background: #111827;
+      border-color: #1f2937;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+    }
+    body.dark .color-help-title {
+      color: #f9fafb;
+    }
+    body.dark .color-help-row {
+      color: #f9fafb;
+    }
 
     body.dark .summary-item {
-      background: #020617;
-      border-color: #1f2937;
-      opacity: 0.9;
+      background: #ffffff;
+      border-color: rgba(15, 23, 42, 0.12);
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.2);
+      color: #0f172a;
     }
     body.dark .summary-item.excel {
-      background: rgba(14, 165, 233, 0.2);
-      border-color: rgba(59, 130, 246, 0.4);
+      background: #f0f9ff;
+      border-color: rgba(14, 165, 233, 0.5);
     }
     body.dark .summary-item.active {
-      background: #1d4ed8;
-      border-color: #60a5fa;
-      opacity: 1;
+      border-color: #3b82f6;
+      box-shadow: 0 24px 55px rgba(37, 99, 235, 0.25);
     }
     body.dark .summary-empty {
       background: #020617;
@@ -1076,13 +1681,28 @@
     body.dark .summary-item-title,
     body.dark .summary-item-time,
     body.dark .summary-item-platforms {
-      color: #e5e7eb;
+      color: #0f172a;
     }
     body.dark .summary-item-badge,
     body.dark .excel-chip {
-      background: rgba(59, 130, 246, 0.4);
-      border-color: rgba(59, 130, 246, 0.8);
-      color: #e0f2fe;
+      background: #f8fafc;
+      border-color: rgba(15, 23, 42, 0.12);
+      color: #0f172a;
+    }
+    body.dark .copy-popover {
+      background: #111827;
+      border-color: #1f2937;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+      color: #f9fafb;
+    }
+    body.dark .control-card {
+      background: #ffffff;
+      color: #0f172a;
+    }
+    body.dark .control-note textarea {
+      background: #f8fafc;
+      color: #0f172a;
+      border-color: rgba(15, 23, 42, 0.15);
     }
     body.dark .excel-upload-container {
       border-top-color: #374151;
@@ -1133,6 +1753,14 @@
     body.dark button:hover {
       background: #1e293b;
     }
+    body.dark .primary-btn {
+      background: #2563eb;
+      border-color: #3b82f6;
+      color: #ffffff;
+    }
+    body.dark .primary-btn:hover {
+      background: #1d4ed8;
+    }
     body.dark .secondary-btn {
       background: #1e293b;
       border-color: #475569;
@@ -1142,6 +1770,18 @@
       background: #2c3a52;
     }
     body.dark .admin-user-row .role-select {
+      background: #0f172a;
+      border-color: #374151;
+      color: #f9fafb;
+    }
+    body.dark .admin-section {
+      border-top-color: #1f2937;
+    }
+    body.dark .color-description-row {
+      border-bottom-color: #1f2937;
+    }
+    body.dark .color-description-fields input,
+    body.dark .color-description-fields textarea {
       background: #0f172a;
       border-color: #374151;
       color: #f9fafb;
@@ -1196,14 +1836,14 @@
       <form id="loginForm">
         <div class="form-row">
           <label for="loginEmail">E-posta</label>
-          <input type="email" id="loginEmail" autocomplete="email" required />
+          <input type="email" id="loginEmail" autocomplete="email" placeholder="ornek@site.com" required />
         </div>
         <div class="form-row">
           <label for="loginPassword">Şifre</label>
-          <input type="password" id="loginPassword" autocomplete="current-password" required />
+          <input type="password" id="loginPassword" autocomplete="current-password" placeholder="••••••••" required />
         </div>
         <div class="login-card-footer">
-          <button type="submit" id="loginSubmitBtn">Giriş yap</button>
+          <button type="submit" id="loginSubmitBtn" class="primary-btn">Giriş yap</button>
           <button type="button" id="switchAuthModeBtn" class="secondary-btn">Kayıt olmak istiyorum</button>
           <span id="loginError"></span>
         </div>
@@ -1218,11 +1858,23 @@
       </div>
       <p class="small">
         Bekleyen kullanıcı kayıtlarını onaylayabilir, herhangi bir kullanıcının takvimini görüntüleyebilirsin.
+        <span id="pendingCountBadge" class="pending-count-badge">(0 bekleyen kayıt)</span>
       </p>
       <div class="admin-panel-actions">
-        <button type="button" id="adminViewSelfBtn" class="secondary-btn">Kendi takvimimi göster</button>
+        <button type="button" id="adminViewSelfBtn" class="primary-btn">Kendi takvimimi göster</button>
       </div>
       <div class="admin-user-list" id="adminUserList"></div>
+      <div class="admin-section" id="colorDescriptionsSection" style="display:none;">
+        <h3>Renk açıklamaları</h3>
+        <p class="small">
+          Gün rengi panelinde görünen metinleri burada düzenleyebilirsin. Bu ayarlar tüm kullanıcılar için geçerlidir.
+        </p>
+        <div id="colorDescriptionsForm"></div>
+        <div class="color-description-actions">
+          <button type="button" id="colorDescriptionSaveBtn" class="secondary-btn">Kaydet</button>
+          <span class="small" id="colorDescriptionSaveStatus"></span>
+        </div>
+      </div>
     </div>
   </div>
   <div id="appRoot">
@@ -1248,10 +1900,24 @@
   <div id="viewCalendar">
     <div class="container">
       <div class="calendar">
+        <div class="channel-filter" id="channelFilter">
+          <span>Kanallar:</span>
+          <button type="button" class="channel-filter-btn" data-channel="all">Tümü</button>
+          <button type="button" class="channel-filter-btn" data-channel="instagram">Instagram</button>
+          <button type="button" class="channel-filter-btn" data-channel="x">X</button>
+          <button type="button" class="channel-filter-btn" data-channel="telegram">Telegram</button>
+          <button type="button" class="channel-filter-btn" data-channel="facebook">Facebook</button>
+          <button type="button" class="channel-filter-btn" data-channel="linkedin">LinkedIn</button>
+          <button type="button" class="channel-filter-btn" data-channel="youtube">YouTube</button>
+          <button type="button" class="channel-filter-btn" data-channel="tiktok">TikTok</button>
+          <button type="button" class="channel-filter-btn" data-channel="discord">Discord</button>
+          <button type="button" class="channel-filter-btn" data-channel="reddit">Reddit</button>
+          <button type="button" class="channel-filter-btn" data-channel="medium">Medium</button>
+        </div>
         <div class="calendar-header">
-          <button id="prevMonthBtn">&lt;</button>
+          <button id="prevMonthBtn" class="month-nav-btn" aria-label="Önceki ay">&larr;</button>
           <div class="month-label" id="monthLabel"></div>
-          <button id="nextMonthBtn">&gt;</button>
+          <button id="nextMonthBtn" class="month-nav-btn" aria-label="Sonraki ay">&rarr;</button>
         </div>
         <div class="weekdays">
           <div class="weekday">Pzt</div>
@@ -1288,6 +1954,7 @@
             <div id="resetOptions" class="reset-options">
               <button type="button" class="danger-btn" data-scope="excel">Excel girişlerini sıfırla</button>
               <button type="button" class="danger-btn" data-scope="manual">Manuel girişleri sıfırla</button>
+              <button type="button" class="danger-btn" data-scope="highlights">Gün renklerini sıfırla</button>
               <button type="button" class="danger-btn" data-scope="all">Tüm kayıtları sıfırla</button>
               <button type="button" class="secondary-btn" id="resetCancelBtn">Vazgeç</button>
             </div>
@@ -1302,6 +1969,7 @@
   <div id="viewReports" style="display:none;">
     <h2>Raporlar</h2>
     <p class="small" id="reportMonthLabel"></p>
+    <p class="small" id="reportFilterLabel"></p>
 
     <div class="report-controls">
       <span>Görünüm:</span>
@@ -1327,30 +1995,65 @@
       <button type="button" data-range="90">Son 90 gün</button>
     </div>
 
-    <div class="report-section">
-      <h3>Toplam içerik</h3>
-      <p class="small" id="reportTotal"></p>
+    <div class="report-content-toggle" id="reportContentToggle">
+      <span>İçerik görünümü:</span>
+      <button type="button" class="report-view-btn active" data-report-view="summary">Özet</button>
+      <button type="button" class="report-view-btn" data-report-view="executed">Paylaşılan içerikler</button>
     </div>
 
-    <div class="report-section">
-      <h3>Platforma göre içerik sayısı</h3>
-      <div class="report-chart-wrapper" id="platformChartWrapper" style="display:none;">
-        <canvas id="platformChart"></canvas>
+    <div id="reportsSummaryContainer">
+      <div class="report-section">
+        <h3>Toplam içerik</h3>
+        <p class="small" id="reportTotal"></p>
       </div>
-      <ul class="report-list" id="reportPlatforms"></ul>
-    </div>
 
-    <div class="report-section">
-      <h3>Saat aralığına göre dağılım</h3>
-      <div class="report-chart-wrapper" id="timeChartWrapper" style="display:none;">
-        <canvas id="timeChart"></canvas>
+      <div class="report-section">
+        <h3>Platforma göre içerik sayısı</h3>
+        <div class="report-chart-wrapper" id="platformChartWrapper" style="display:none;">
+          <canvas id="platformChart"></canvas>
+        </div>
+        <ul class="report-list" id="reportPlatforms"></ul>
       </div>
-      <ul class="report-list" id="reportTimes"></ul>
+
+      <div class="report-section">
+        <h3>Saat aralığına göre dağılım</h3>
+        <div class="report-chart-wrapper" id="timeChartWrapper" style="display:none;">
+          <canvas id="timeChart"></canvas>
+        </div>
+        <ul class="report-list" id="reportTimes"></ul>
+      </div>
+
+      <div class="report-section">
+        <h3>İçerik olan gün sayısı</h3>
+        <p class="small" id="reportDays"></p>
+      </div>
     </div>
 
-    <div class="report-section">
-      <h3>İçerik olan gün sayısı</h3>
-      <p class="small" id="reportDays"></p>
+    <div class="report-section" id="reportsExecutedSection" style="display:none;">
+      <div class="report-executed-header">
+        <p class="report-summary-line" id="executedSummaryLine"></p>
+        <label class="report-checkbox">
+          <input type="checkbox" id="executedShowMissedToggle" />
+          Kaçanları da göster
+        </label>
+      </div>
+      <div class="report-table-wrapper">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Tarih</th>
+              <th>Saat</th>
+              <th>Metin</th>
+              <th>Platformlar</th>
+              <th>Durum</th>
+              <th>Sorumlu</th>
+              <th>Not</th>
+            </tr>
+          </thead>
+          <tbody id="executedTableBody"></tbody>
+        </table>
+        <p class="small" id="executedEmptyMessage" style="display:none;">Bu aralıkta paylaşılan içerik bulunamadı.</p>
+      </div>
     </div>
   </div>
 
@@ -1365,13 +2068,23 @@
       <div class="modal-toolbar">
         <button id="toggleFormBtn">Paylaşım oluştur +</button>
         <div class="highlight-picker color-picker-wrapper" id="highlightColorWrapper">
-          <span>Gün rengi</span>
+          <div class="highlight-actions">
+            <span>Gün rengi</span>
+            <button type="button" class="highlight-help-btn" id="colorHelpBtn" aria-label="Gün rengi açıklamalarını göster">?</button>
+          </div>
           <button type="button" class="color-picker-toggle" id="highlightColorToggle" aria-label="Gün rengini seç">
             <span class="toggle-swatch"></span>
             <span>Seç</span>
           </button>
           <div class="color-picker" id="highlightColorPicker"></div>
           <input type="hidden" id="highlightColorInput" value="#fee2e2" />
+          <div class="color-help-panel" id="colorHelpPanel">
+            <div class="color-help-header">
+              <span class="color-help-title">Gün rengi açıklamaları</span>
+              <button type="button" class="color-help-close" id="colorHelpCloseBtn" aria-label="Kapat">×</button>
+            </div>
+            <div class="color-help-list" id="colorHelpList"></div>
+          </div>
         </div>
       </div>
 
@@ -1379,6 +2092,10 @@
           <div id="modalSummary" class="modal-summary small"></div>
 
           <div id="modalFormSection" class="modal-form-section" style="display: none;">
+            <div class="plan-return-banner" id="planReturnBanner">
+              <span>Bu paylaşım geçmiş. Şu anda planlama formunu düzenliyorsun.</span>
+              <button type="button" class="link-btn" id="returnToControlBtn">Kontrol moduna dön</button>
+            </div>
             <div class="form-row">
               <label for="filesInput">Paylaşılacak dosyalar / linkler</label>
               <textarea
@@ -1400,8 +2117,23 @@
             <input type="time" id="timeInput" />
           </div>
 
+          <div class="form-row">
+            <label for="noteInput">Not (isteğe bağlı)</label>
+            <textarea
+              id="noteInput"
+              placeholder="Örn: görsel güncellenmeli, farklı link kullanılacak"
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <label for="ownerSelect">Sorumlu kişi</label>
+            <select id="ownerSelect">
+              <option value="">Seçilmedi</option>
+            </select>
+          </div>
+
           <div class="form-row color-row">
-            <label>Paylaşım rengi</label>
+            <label>Kart rengi</label>
           <div class="color-picker-wrapper" id="entryColorWrapper">
               <button type="button" class="color-picker-toggle" id="entryColorToggle" aria-label="Paylaşım rengini seç">
                 <span class="toggle-swatch"></span>
@@ -1414,6 +2146,12 @@
 
           <div class="form-row">
             <label>Hangi sosyal medya?</label>
+            <div class="platform-presets">
+              <span>Hızlı seçim:</span>
+              <button type="button" class="preset-btn secondary-btn" data-platforms="Instagram Post|Instagram Story|Instagram Reels">Instagram paketi</button>
+              <button type="button" class="preset-btn secondary-btn" data-platforms="Instagram Post|Instagram Story|Instagram Reels|Facebook|X|Telegram">Çoklu sosyal</button>
+              <button type="button" class="preset-btn secondary-btn" data-platforms="">Temizle</button>
+            </div>
             <div class="platforms">
               <label><input type="checkbox" value="Instagram Post" />Instagram Post</label>
               <label><input type="checkbox" value="Instagram Story" />Instagram Story</label>
@@ -1439,6 +2177,60 @@
           <p class="small">
             Not: Veriler hesabınıza bağlı olarak sunucuda saklanır.
           </p>
+        </div>
+          <div id="modalControlSection" class="modal-control-section" style="display:none;">
+            <div class="control-card">
+              <div class="control-header">
+                <div>
+                  <p class="control-label">Planlanan paylaşım</p>
+                  <p class="control-title" id="controlSummaryTitle"></p>
+                </div>
+                <button type="button" class="link-btn" id="controlEditBtn">Düzenle</button>
+              </div>
+              <p class="control-meta" id="controlSummaryMeta"></p>
+              <p class="control-meta" id="controlSummaryPlatforms"></p>
+              <p class="control-meta" id="controlSummaryOwner"></p>
+              <div class="control-note">
+                <label for="controlNoteInput">Not ekle (isteğe bağlı)</label>
+                <textarea id="controlNoteInput" placeholder="Örn: Link güncellendi, farklı dosya paylaşıldı..."></textarea>
+              </div>
+              <div class="control-actions">
+                <button type="button" class="success-btn" id="markDoneBtn">✅ Paylaşıldı</button>
+                <button type="button" class="danger-btn" id="markMissedBtn">❌ Paylaşılmadı</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="modalCheckedSection" class="modal-control-section" style="display:none;">
+            <div class="control-card">
+              <div class="control-header">
+                <div>
+                  <p class="control-label">Durum</p>
+                  <span class="control-status-badge" id="checkedStatusBadge">Paylaşıldı</span>
+                </div>
+                <button type="button" class="secondary-btn" id="checkedEditBtn">Düzenle</button>
+              </div>
+              <p class="control-meta" id="checkedSummaryMeta"></p>
+              <p class="control-meta" id="checkedSummaryPlatforms"></p>
+              <p class="control-meta" id="checkedSummaryOwner"></p>
+              <div class="control-note-display" id="checkedNoteText" style="display:none;"></div>
+              <p class="control-checked-at" id="checkedInfoText"></p>
+            </div>
+          </div>
+        </div>
+        <div class="copy-popover" id="copyPopover">
+          <div class="copy-popover-header">
+            <span>Bu paylaşımı kopyala</span>
+            <button type="button" class="color-help-close" id="copyPopoverCloseBtn" aria-label="Kapat">×</button>
+          </div>
+          <div class="form-row" style="margin-bottom:0;">
+            <label for="copyDateInput">Hedef tarih</label>
+            <input type="date" id="copyDateInput" />
+          </div>
+          <div class="copy-popover-actions">
+            <button type="button" class="secondary-btn" id="copyCancelBtn">Vazgeç</button>
+            <button type="button" class="primary-btn" id="copyConfirmBtn">Kopyala</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1469,11 +2261,16 @@
       : [];
     const resetCancelBtn = document.getElementById("resetCancelBtn");
     const excelFileInput = document.getElementById("excelInput");
-    const adminOverlay = document.getElementById("adminOverlay");
-    const adminCloseBtn = document.getElementById("adminCloseBtn");
-    const adminUserList = document.getElementById("adminUserList");
-    const adminViewSelfBtn = document.getElementById("adminViewSelfBtn");
-    const adminViewInfo = document.getElementById("adminViewInfo");
+const adminOverlay = document.getElementById("adminOverlay");
+const adminCloseBtn = document.getElementById("adminCloseBtn");
+const adminUserList = document.getElementById("adminUserList");
+const adminViewSelfBtn = document.getElementById("adminViewSelfBtn");
+const adminViewInfo = document.getElementById("adminViewInfo");
+const pendingCountBadge = document.getElementById("pendingCountBadge");
+const colorDescriptionsSection = document.getElementById("colorDescriptionsSection");
+const colorDescriptionsForm = document.getElementById("colorDescriptionsForm");
+const colorDescriptionSaveBtn = document.getElementById("colorDescriptionSaveBtn");
+const colorDescriptionSaveStatus = document.getElementById("colorDescriptionSaveStatus");
 
     const monthLabel = document.getElementById("monthLabel");
     const daysContainer = document.getElementById("daysContainer");
@@ -1490,21 +2287,61 @@
     const platformInputs = document.querySelectorAll(
       ".platforms input[type='checkbox']"
     );
+    const platformPresetButtons = document.querySelectorAll(".preset-btn[data-platforms]");
+    const platformInputMap = new Map();
+    platformInputs.forEach((cb) => {
+      platformInputMap.set(cb.value, cb);
+    });
     const scheduleList = document.getElementById("scheduleList");
 const scheduleSearchInput = document.getElementById("scheduleSearchInput");
 const entryColorInput = document.getElementById("entryColorInput");
 const highlightColorInput = document.getElementById("highlightColorInput");
+const noteInput = document.getElementById("noteInput");
+const ownerSelect = document.getElementById("ownerSelect");
 const entryColorPicker = document.getElementById("entryColorPicker");
 const highlightColorPicker = document.getElementById("highlightColorPicker");
 const entryColorToggle = document.getElementById("entryColorToggle");
 const highlightColorToggle = document.getElementById("highlightColorToggle");
 const entryColorWrapper = document.getElementById("entryColorWrapper");
 const highlightColorWrapper = document.getElementById("highlightColorWrapper");
+const channelFilter = document.getElementById("channelFilter");
+const channelFilterButtons = channelFilter
+  ? Array.from(channelFilter.querySelectorAll("button[data-channel]"))
+  : [];
+const copyPopover = document.getElementById("copyPopover");
+const copyDateInput = document.getElementById("copyDateInput");
+const copyConfirmBtn = document.getElementById("copyConfirmBtn");
+const copyCancelBtn = document.getElementById("copyCancelBtn");
+const copyPopoverCloseBtn = document.getElementById("copyPopoverCloseBtn");
+const colorHelpBtn = document.getElementById("colorHelpBtn");
+const colorHelpPanel = document.getElementById("colorHelpPanel");
+const colorHelpList = document.getElementById("colorHelpList");
+const colorHelpCloseBtn = document.getElementById("colorHelpCloseBtn");
+const reportFilterLabel = document.getElementById("reportFilterLabel");
 
     const dayModal = document.getElementById("dayModal");
     const modalDateTitle = document.getElementById("modalDateTitle");
     const modalCloseBtn = document.getElementById("modalCloseBtn");
     const modalFormSection = document.getElementById("modalFormSection");
+    const modalControlSection = document.getElementById("modalControlSection");
+    const modalCheckedSection = document.getElementById("modalCheckedSection");
+const controlSummaryTitle = document.getElementById("controlSummaryTitle");
+const controlSummaryMeta = document.getElementById("controlSummaryMeta");
+const controlSummaryPlatforms = document.getElementById("controlSummaryPlatforms");
+const controlSummaryOwner = document.getElementById("controlSummaryOwner");
+const controlNoteInput = document.getElementById("controlNoteInput");
+    const markDoneBtn = document.getElementById("markDoneBtn");
+    const markMissedBtn = document.getElementById("markMissedBtn");
+    const controlEditBtn = document.getElementById("controlEditBtn");
+    const checkedEditBtn = document.getElementById("checkedEditBtn");
+    const checkedStatusBadge = document.getElementById("checkedStatusBadge");
+    const checkedSummaryMeta = document.getElementById("checkedSummaryMeta");
+const checkedSummaryPlatforms = document.getElementById("checkedSummaryPlatforms");
+const checkedSummaryOwner = document.getElementById("checkedSummaryOwner");
+    const checkedNoteText = document.getElementById("checkedNoteText");
+    const checkedInfoText = document.getElementById("checkedInfoText");
+    const planReturnBanner = document.getElementById("planReturnBanner");
+    const returnToControlBtn = document.getElementById("returnToControlBtn");
     const toggleFormBtn = document.getElementById("toggleFormBtn");
     const modalSummary = document.getElementById("modalSummary");
     const themeToggleBtn = document.getElementById("themeToggleBtn");
@@ -1528,6 +2365,16 @@ const highlightColorWrapper = document.getElementById("highlightColorWrapper");
     const platformChartCanvas = document.getElementById("platformChart");
     const timeChartWrapper = document.getElementById("timeChartWrapper");
     const timeChartCanvas = document.getElementById("timeChart");
+    const reportContentToggle = document.getElementById("reportContentToggle");
+    const reportViewButtons = reportContentToggle
+      ? Array.from(reportContentToggle.querySelectorAll("button[data-report-view]"))
+      : [];
+    const reportsSummaryContainer = document.getElementById("reportsSummaryContainer");
+    const reportsExecutedSection = document.getElementById("reportsExecutedSection");
+    const executedSummaryLine = document.getElementById("executedSummaryLine");
+    const executedTableBody = document.getElementById("executedTableBody");
+    const executedEmptyMessage = document.getElementById("executedEmptyMessage");
+    const executedShowMissedToggle = document.getElementById("executedShowMissedToggle");
 
     const monthNames = [
       "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
@@ -1537,17 +2384,21 @@ const highlightColorWrapper = document.getElementById("highlightColorWrapper");
     let currentYear;
     let currentMonth;
     let selectedDateKey = null;
-    let currentDayItems = []; // {id, files, text, time, platforms}[]
-    let activeItemId = null;
-    let isRegisterMode = false;
-    let currentUser = null;
-    let adminSelectedUserId = null;
+let currentDayItems = []; // {id, files, text, time, platforms}[]
+let activeItemId = null;
+let isRegisterMode = false;
+let currentUser = null;
+let adminSelectedUserId = null;
+let modalForcePlanMode = false;
+let copySourceEntry = null;
 const excelUploadDefaultText = excelUploadBtn ? excelUploadBtn.textContent : "Excel yükle";
 let scheduleSearchQuery = "";
 let highlightedDates = new Map();
 const DEFAULT_ENTRY_COLOR = "#2563eb";
 const DEFAULT_HIGHLIGHT_COLOR = "#fee2e2";
 const COLOR_PALETTE = [
+  DEFAULT_HIGHLIGHT_COLOR,
+  "#ffffff",
   "#000000",
   "#dc2626",
   "#f97316",
@@ -1565,6 +2416,8 @@ const COLOR_PALETTE = [
   "#ef4444"
 ];
 const COLOR_TOKEN_MAP = {
+  "#fee2e2": "default",
+  "#ffffff": "white",
   "#000000": "black",
   "#dc2626": "red",
   "#f97316": "orange",
@@ -1579,9 +2432,111 @@ const COLOR_TOKEN_MAP = {
   "#34d399": "emerald",
   "#38bdf8": "cyan",
   "#a855f7": "violet",
-  "#ef4444": "rose",
-  "#fee2e2": "default"
+  "#ef4444": "rose"
 };
+const COLOR_TOKENS_IN_ORDER = [
+  "default",
+  "white",
+  "black",
+  "red",
+  "orange",
+  "yellow",
+  "amber",
+  "green",
+  "emerald",
+  "cyan",
+  "sky",
+  "blue",
+  "purple",
+  "violet",
+  "pink",
+  "rose",
+  "gray"
+];
+const COLOR_DESCRIPTION_DEFAULTS = {
+  default: { label: "Açık pembe", description: "Varsayılan gün rengi" },
+  white: { label: "Beyaz", description: "Genel içerikler" },
+  black: { label: "Siyah", description: "Sistem duyuruları" },
+  red: { label: "Kırmızı", description: "Airdrop günleri" },
+  orange: { label: "Turuncu", description: "Video içerikleri" },
+  yellow: { label: "Sarı", description: "Hediye saatleri" },
+  amber: { label: "Kehribar", description: "Yayın hatırlatmaları" },
+  green: { label: "Yeşil", description: "Önemli duyurular" },
+  emerald: { label: "Zümrüt", description: "B2B etkinlikleri" },
+  cyan: { label: "Turkuaz", description: "Eğitim içerikleri" },
+  sky: { label: "Açık mavi", description: "USDT etkinlikleri" },
+  blue: { label: "Mavi", description: "Topluluk canlı yayınları" },
+  purple: { label: "Mor", description: "Influencer iş birlikleri" },
+  violet: { label: "Menekşe", description: "Özel seri" },
+  pink: { label: "Pembe", description: "Kadın topluluğu içerikleri" },
+  rose: { label: "Pudra", description: "PR paylaşımları" },
+  gray: { label: "Gri", description: "Hazırlık aşamasında" }
+};
+const COLOR_HEX_BY_TOKEN = Object.fromEntries(
+  Object.entries(COLOR_TOKEN_MAP).map(([hex, token]) => [token, hex])
+);
+function cloneColorDescriptionDefaults() {
+  return JSON.parse(JSON.stringify(COLOR_DESCRIPTION_DEFAULTS));
+}
+let colorDescriptions = cloneColorDescriptionDefaults();
+let colorDescriptionsLoaded = false;
+let colorHelpPanelOpen = false;
+const CHANNEL_FILTER_DEFINITIONS = {
+  all: {
+    label: "Tümü",
+    matcher: () => true
+  },
+  instagram: {
+    label: "Instagram",
+    matcher: (value) => value.toLowerCase().includes("instagram")
+  },
+  x: {
+    label: "X",
+    matcher: (value) =>
+      value.trim().toLowerCase() === "x" ||
+      value.toLowerCase().includes("twitter")
+  },
+  telegram: {
+    label: "Telegram",
+    matcher: (value) => value.toLowerCase().includes("telegram")
+  },
+  facebook: {
+    label: "Facebook",
+    matcher: (value) => value.toLowerCase().includes("facebook")
+  },
+  linkedin: {
+    label: "LinkedIn",
+    matcher: (value) => value.toLowerCase().includes("linkedin")
+  },
+  youtube: {
+    label: "YouTube",
+    matcher: (value) => value.toLowerCase().includes("youtube")
+  },
+  tiktok: {
+    label: "TikTok",
+    matcher: (value) => value.toLowerCase().includes("tiktok")
+  },
+  discord: {
+    label: "Discord",
+    matcher: (value) => value.toLowerCase().includes("discord")
+  },
+  reddit: {
+    label: "Reddit",
+    matcher: (value) => value.toLowerCase().includes("reddit")
+  },
+  medium: {
+    label: "Medium",
+    matcher: (value) => value.toLowerCase().includes("medium")
+  }
+};
+const CHANNEL_FILTER_STORAGE_KEY = "calendar_channel_filter";
+let activeChannelFilter =
+  localStorage.getItem(CHANNEL_FILTER_STORAGE_KEY) || "all";
+if (!CHANNEL_FILTER_DEFINITIONS[activeChannelFilter]) {
+  activeChannelFilter = "all";
+}
+let responsibleUsers = [];
+const responsibleUserMap = new Map();
 
 function hexToRgb(hex) {
   const value = hex.replace("#", "");
@@ -1632,6 +2587,422 @@ function getColorTokenFromHex(value) {
   const normalized = normalizeHexColor(value);
   if (!normalized) return null;
   return COLOR_TOKEN_MAP[normalized] || null;
+}
+
+function getEntryDateTime(entry) {
+  if (!entry || !entry.date) return null;
+  const timeValue =
+    entry.time && /^\d{2}:\d{2}$/.test(entry.time) ? entry.time : "23:59";
+  const timestamp = new Date(`${entry.date}T${timeValue}:00`);
+  return Number.isNaN(timestamp.getTime()) ? null : timestamp;
+}
+
+function isEntryPast(entry) {
+  const dt = getEntryDateTime(entry);
+  if (!dt) return false;
+  return dt.getTime() < Date.now();
+}
+
+function formatStatusLabel(status) {
+  if (status === "done") return "Paylaşıldı";
+  if (status === "missed") return "Paylaşılmadı";
+  return "Planlandı";
+}
+
+function formatPlatformsLabel(platforms = []) {
+  if (!Array.isArray(platforms) || !platforms.length) return "Platform seçilmedi";
+  return platforms.join(", ");
+}
+
+function formatEntryPreviewText(entry, limit = 120) {
+  if (!entry) return "Metin yok";
+  const raw = (entry.text || entry.files || "").trim();
+  if (!raw) return "Metin yok";
+  if (raw.length <= limit) return raw;
+  return raw.slice(0, Math.max(0, limit - 3)) + "...";
+}
+
+function getColorDescriptionForKey(key) {
+  return (
+    colorDescriptions[key] ||
+    COLOR_DESCRIPTION_DEFAULTS[key] || {
+      label: key,
+      description: ""
+    }
+  );
+}
+
+function renderColorHelpList() {
+  if (!colorHelpList) return;
+  colorHelpList.innerHTML = "";
+  COLOR_TOKENS_IN_ORDER.forEach((token) => {
+    if (!COLOR_HEX_BY_TOKEN[token]) return;
+    const info = getColorDescriptionForKey(token);
+    const row = document.createElement("div");
+    row.className = "color-help-row";
+    const dot = document.createElement("span");
+    dot.className = "color-help-dot";
+    dot.style.backgroundColor = COLOR_HEX_BY_TOKEN[token];
+    row.appendChild(dot);
+    const text = document.createElement("span");
+    text.textContent = `${info.label} – ${info.description || "Açıklama eklenmemiş"}`;
+    row.appendChild(text);
+    colorHelpList.appendChild(row);
+  });
+}
+
+renderColorHelpList();
+
+function applyPlatformPreset(values = []) {
+  platformInputs.forEach((cb) => {
+    cb.checked = false;
+  });
+  values.forEach((value) => {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    const input = platformInputMap.get(trimmed);
+    if (input) input.checked = true;
+  });
+}
+
+function openCopyPopover(entry) {
+  if (!copyPopover || !copyDateInput) return;
+  copySourceEntry = entry;
+  copyDateInput.value = entry.date || "";
+  copyPopover.classList.add("active");
+}
+
+function closeCopyPopover() {
+  if (!copyPopover) return;
+  copySourceEntry = null;
+  copyPopover.classList.remove("active");
+}
+
+async function handleCopyConfirm() {
+  if (!copySourceEntry) return;
+  if (!authToken) {
+    showLoginOverlay();
+    return;
+  }
+  if (!isViewingOwnData()) {
+    alert("Diğer kullanıcıların takviminde değişiklik yapamazsın.");
+    return;
+  }
+  if (!copyDateInput || !copyDateInput.value) {
+    alert("Lütfen hedef tarihi seç.");
+    return;
+  }
+  const targetDate = copyDateInput.value;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(targetDate)) {
+    alert("Tarih formatı geçersiz.");
+    return;
+  }
+
+  const source = copySourceEntry;
+  const payload = {
+    date: targetDate,
+    time: source.time || "",
+    text: source.text || "",
+    files: source.files || "",
+    communication: source.communication || "",
+    communicationType:
+      source.communication_type || source.communicationType || "",
+    status: "planned",
+    platforms: Array.isArray(source.platforms) ? [...source.platforms] : [],
+    color: source.color || DEFAULT_ENTRY_COLOR,
+    note: source.note || "",
+    checkedAt: null,
+    ownerId: source.owner_id || null
+  };
+
+  if (copyConfirmBtn) copyConfirmBtn.disabled = true;
+  try {
+    await createEntry(payload);
+    renderCalendar();
+    updateScheduleList();
+    if (selectedDateKey) {
+      currentDayItems = loadDayData(selectedDateKey).items;
+      renderModalSummaryList();
+    }
+    closeCopyPopover();
+    alert("Paylaşım kopyalandı.");
+  } catch (err) {
+    alert(err.message || "Paylaşım kopyalanamadı.");
+  } finally {
+    if (copyConfirmBtn) copyConfirmBtn.disabled = false;
+  }
+}
+
+function toggleColorHelpPanel(forceOpen = null) {
+  if (!colorHelpPanel) return;
+  const shouldOpen =
+    forceOpen !== null ? forceOpen : !colorHelpPanel.classList.contains("active");
+  if (shouldOpen) {
+    colorHelpPanel.classList.add("active");
+    colorHelpPanelOpen = true;
+  } else {
+    colorHelpPanel.classList.remove("active");
+    colorHelpPanelOpen = false;
+  }
+}
+
+function entryMatchesChannelFilter(entry, filterId = "all") {
+  if (!entry || !entry.platforms) return filterId === "all";
+  const definition = CHANNEL_FILTER_DEFINITIONS[filterId];
+  if (!definition) return true;
+  return entry.platforms.some((platform) =>
+    definition.matcher(String(platform || ""))
+  );
+}
+
+function dayMatchesChannelFilter(items, filterId = "all") {
+  if (filterId === "all") return true;
+  return items.some((item) => entryMatchesChannelFilter(item, filterId));
+}
+
+function getChannelFilterLabel(filterId) {
+  return CHANNEL_FILTER_DEFINITIONS[filterId]
+    ? CHANNEL_FILTER_DEFINITIONS[filterId].label
+    : CHANNEL_FILTER_DEFINITIONS.all.label;
+}
+
+function setActiveChannelFilter(nextFilter) {
+  if (!CHANNEL_FILTER_DEFINITIONS[nextFilter]) {
+    nextFilter = "all";
+  }
+  activeChannelFilter = nextFilter;
+  try {
+    localStorage.setItem(CHANNEL_FILTER_STORAGE_KEY, activeChannelFilter);
+  } catch {}
+  channelFilterButtons.forEach((btn) => {
+    const target = btn.dataset.channel || "all";
+    btn.classList.toggle("active", target === activeChannelFilter);
+  });
+  renderCalendar();
+  if (viewReports.style.display !== "none") renderReports();
+  updateReportFilterLabel();
+}
+
+function updateReportFilterLabel() {
+  if (!reportFilterLabel) return;
+  reportFilterLabel.textContent = `Kanal filtresi: ${getChannelFilterLabel(
+    activeChannelFilter
+  )}`;
+}
+
+async function ensureColorDescriptionsLoaded(force = false) {
+  if (colorDescriptionsLoaded && !force) return;
+  await loadColorDescriptions();
+}
+
+async function loadColorDescriptions() {
+  try {
+    const response = await apiFetch("/calendar/color-descriptions");
+    const data = await response.json();
+    const merged = cloneColorDescriptionDefaults();
+    if (data && typeof data === "object") {
+      Object.entries(data).forEach(([key, value]) => {
+        if (!merged[key]) return;
+        merged[key] = {
+          label:
+            value && typeof value.label === "string" && value.label.trim()
+              ? value.label.trim()
+              : merged[key].label,
+          description:
+            value && typeof value.description === "string"
+              ? value.description
+              : merged[key].description
+        };
+      });
+    }
+    colorDescriptions = merged;
+    colorDescriptionsDraft = cloneColorDescriptionDefaults();
+    colorDescriptionsLoaded = true;
+  } catch (err) {
+    console.warn("Renk açıklamaları yüklenemedi:", err.message);
+    colorDescriptions = cloneColorDescriptionDefaults();
+  }
+  renderColorHelpList();
+  refreshColorDescriptionSection();
+}
+
+async function loadResponsibleUsers() {
+  if (!authToken) {
+    responsibleUsers = [];
+    responsibleUserMap.clear();
+    populateOwnerSelectOptions();
+    return;
+  }
+  try {
+    const response = await apiFetch("/users/approved");
+    const data = await response.json();
+    responsibleUsers = Array.isArray(data) ? data : [];
+    responsibleUserMap.clear();
+    responsibleUsers.forEach((user) => {
+      if (user && typeof user.id !== "undefined") {
+        responsibleUserMap.set(Number(user.id), user.email || "");
+      }
+    });
+    populateOwnerSelectOptions();
+  } catch (err) {
+    console.warn("Sorumlu kişi listesi yüklenemedi:", err.message);
+  }
+  if (
+    selectedDateKey &&
+    dayModal &&
+    dayModal.style.display === "flex" &&
+    currentDayItems.length
+  ) {
+    currentDayItems = loadDayData(selectedDateKey).items;
+    renderModalSummaryList();
+  }
+}
+
+function populateOwnerSelectOptions() {
+  if (!ownerSelect) return;
+  const previousValue = ownerSelect.value;
+  ownerSelect.innerHTML = '<option value=\"\">Seçilmedi</option>';
+  responsibleUsers.forEach((user) => {
+    if (!user || typeof user.id === "undefined") return;
+    const opt = document.createElement("option");
+    opt.value = String(user.id);
+    opt.textContent = user.email || `#${user.id}`;
+    ownerSelect.appendChild(opt);
+  });
+  if (previousValue && responsibleUserMap.has(Number(previousValue))) {
+    ownerSelect.value = previousValue;
+  } else if (currentUser && responsibleUserMap.has(currentUser.id)) {
+    ownerSelect.value = String(currentUser.id);
+  } else {
+    ownerSelect.value = "";
+  }
+}
+
+function getOwnerLabel(ownerId) {
+  if (!ownerId) return "";
+  return responsibleUserMap.get(Number(ownerId)) || "";
+}
+
+function setHighlightInputValue(value) {
+  const finalValue = value || DEFAULT_HIGHLIGHT_COLOR;
+  if (highlightColorInput) {
+    highlightColorInput.value = finalValue;
+  }
+  if (highlightColorPicker && highlightColorInput) {
+    setColorPickerValue(highlightColorPicker, highlightColorInput, finalValue);
+  }
+  updateColorToggle(highlightColorToggle, finalValue);
+}
+
+function updateDayHighlightLocally(dateKey, colorValue) {
+  if (!dateKey) return;
+  if (colorValue) {
+    highlightedDates.set(dateKey, colorValue);
+  } else {
+    highlightedDates.delete(dateKey);
+  }
+  if (selectedDateKey === dateKey) {
+    updateHighlightStateUI();
+  }
+  renderCalendar();
+  updateScheduleList();
+}
+
+function refreshColorDescriptionSection() {
+  if (!colorDescriptionsSection) return;
+  const canEdit = Boolean(currentUser && currentUser.role === "admin");
+  const shouldShow = canEdit && colorDescriptionsLoaded;
+  colorDescriptionsSection.style.display = shouldShow ? "" : "none";
+  if (shouldShow) {
+    renderColorDescriptionsForm();
+  }
+}
+
+function renderColorDescriptionsForm() {
+  if (!colorDescriptionsForm) return;
+  colorDescriptionsForm.innerHTML = "";
+  COLOR_TOKENS_IN_ORDER.forEach((token) => {
+    if (!COLOR_HEX_BY_TOKEN[token]) return;
+    const info = getColorDescriptionForKey(token);
+    const row = document.createElement("div");
+    row.className = "color-description-row";
+
+    const dot = document.createElement("span");
+    dot.className = "color-description-dot";
+    dot.style.backgroundColor = COLOR_HEX_BY_TOKEN[token];
+    row.appendChild(dot);
+
+    const fields = document.createElement("div");
+    fields.className = "color-description-fields";
+
+    const labelInput = document.createElement("input");
+    labelInput.type = "text";
+    labelInput.value = info.label || "";
+    labelInput.placeholder = "Etiket";
+    labelInput.dataset.colorKey = token;
+    labelInput.dataset.field = "label";
+    fields.appendChild(labelInput);
+
+    const descriptionInput = document.createElement("textarea");
+    descriptionInput.value = info.description || "";
+    descriptionInput.placeholder = "Açıklama";
+    descriptionInput.dataset.colorKey = token;
+    descriptionInput.dataset.field = "description";
+    fields.appendChild(descriptionInput);
+
+    row.appendChild(fields);
+    colorDescriptionsForm.appendChild(row);
+  });
+}
+
+async function saveColorDescriptions() {
+  if (!colorDescriptionSaveBtn) return;
+  const descriptionsPayload = {};
+  if (colorDescriptionsForm) {
+    const inputs = colorDescriptionsForm.querySelectorAll(
+      "[data-color-key][data-field]"
+    );
+    inputs.forEach((input) => {
+      const key = input.dataset.colorKey;
+      const field = input.dataset.field;
+      if (!descriptionsPayload[key]) {
+        descriptionsPayload[key] = { label: "", description: "" };
+      }
+      descriptionsPayload[key][field] = input.value;
+    });
+  }
+
+  colorDescriptionSaveBtn.disabled = true;
+  if (colorDescriptionSaveStatus) colorDescriptionSaveStatus.textContent = "Kaydediliyor...";
+  try {
+    await apiFetch("/calendar/color-descriptions", {
+      method: "PUT",
+      body: JSON.stringify({ descriptions: descriptionsPayload })
+    });
+    await loadColorDescriptions(true);
+    if (colorDescriptionSaveStatus) {
+      colorDescriptionSaveStatus.textContent = "Kaydedildi.";
+      setTimeout(() => {
+        if (colorDescriptionSaveStatus) colorDescriptionSaveStatus.textContent = "";
+      }, 3000);
+    }
+  } catch (err) {
+    if (colorDescriptionSaveStatus) {
+      colorDescriptionSaveStatus.textContent = err.message || "Kaydedilemedi.";
+    }
+  } finally {
+    colorDescriptionSaveBtn.disabled = false;
+  }
+}
+
+function formatDateTimeHuman(value) {
+  if (!value) return "";
+  const dt = new Date(value);
+  if (Number.isNaN(dt.getTime())) return "";
+  return dt.toLocaleString("tr-TR", {
+    dateStyle: "medium",
+    timeStyle: "short"
+  });
 }
 
 function renderColorPicker(container, input, palette, onChange) {
@@ -1705,36 +3076,51 @@ function setColorPickerEnabled(wrapper, toggle, enabled) {
 
 function handleHighlightSelection(color) {
   if (!selectedDateKey || !isViewingOwnData()) return;
+  const normalizedColor = normalizeHexColor(color);
+  if (!normalizedColor) return;
   const current = highlightedDates.get(selectedDateKey);
-  const action =
-    current && current === color
-      ? removeDateHighlight(selectedDateKey)
-      : setDateHighlight(selectedDateKey, color);
-  action
+  const normalizedCurrent = current ? normalizeHexColor(current) : null;
+  const willRemove =
+    normalizedCurrent && normalizedColor === normalizedCurrent;
+  const nextColor = willRemove ? null : normalizedColor;
+  const previousColor = current || null;
+
+  updateDayHighlightLocally(selectedDateKey, nextColor);
+
+  const action = nextColor
+    ? () => setDateHighlight(selectedDateKey, nextColor)
+    : () => removeDateHighlight(selectedDateKey);
+
+  action()
     .then(() => {
-      renderCalendar();
-      updateScheduleList();
-      updateHighlightStateUI();
+      if (viewReports.style.display !== "none") renderReports();
     })
-    .catch((err) => alert(err.message || "Gün işaretlenemedi."));
+    .catch((err) => {
+      alert(err.message || "Gün işaretlenemedi.");
+      updateDayHighlightLocally(selectedDateKey, previousColor);
+    });
 }
     const resetScopeLabels = {
       excel: "Excel girişlerini sıfırla",
       manual: "Manuel girişleri sıfırla",
+      highlights: "Gün renklerini sıfırla",
       all: "Tüm kayıtları sıfırla"
     };
     const resetConfirmMessages = {
       excel: "Excel'den gelen kayıtların tamamı silinecek. Emin misin?",
       manual: "Manuel eklediğin kayıtların tamamı silinecek. Emin misin?",
-      all: "Tüm kayıtların tamamı silinecek. Emin misin?"
+      highlights: "Tüm gün renkleri kaldırılacak. Emin misin?",
+      all: "Tüm içerikler ve gün renkleri silinecek. Emin misin?"
     };
     const resetSuccessMessages = {
       excel: "Excel girişleri başarıyla silindi.",
       manual: "Manuel girişler başarıyla silindi.",
-      all: "Tüm kayıtlar başarıyla silindi."
+      highlights: "Gün renkleri başarıyla temizlendi.",
+      all: "Tüm kayıtlar ve gün renkleri başarıyla silindi."
     };
 
     let reportMode = "month"; // "month" | "range"
+    let reportsContentView = "summary"; // "summary" | "executed"
     let platformChartInstance = null;
     let timeChartInstance = null;
 const quickRangeButtonsList = quickRangeButtons
@@ -1842,7 +3228,18 @@ document.addEventListener("click", () => {
 
     function setCurrentUser(user) {
       currentUser = user;
+      if (currentUser && currentUser.id) {
+        responsibleUserMap.set(
+          Number(currentUser.id),
+          currentUser.email || responsibleUserMap.get(Number(currentUser.id)) || ""
+        );
+      }
       updateAuthUI();
+      if (!currentUser) {
+        responsibleUsers = [];
+        responsibleUserMap.clear();
+        populateOwnerSelectOptions();
+      }
     }
 
     function updateAuthUI() {
@@ -1880,6 +3277,8 @@ document.addEventListener("click", () => {
         }
       }
       updateEditingPermissions();
+      refreshColorDescriptionSection();
+      populateOwnerSelectOptions();
     }
 
     function setAuthMode(registerMode) {
@@ -1956,6 +3355,10 @@ document.addEventListener("click", () => {
       const normalizedSource = (entry.source || "manual").toLowerCase() === "excel"
         ? "excel"
         : entry.source || "manual";
+      const normalizedStatus =
+        entry.status === "done" || entry.status === "missed"
+          ? entry.status
+          : "planned";
 
       return {
         id: entry.id,
@@ -1966,7 +3369,10 @@ document.addEventListener("click", () => {
         files: entry.files || "",
         communication: entry.communication || "",
         communication_type: entry.communication_type || entry.communicationType || "",
-        status: entry.status || "",
+        status: normalizedStatus,
+        note: entry.note || "",
+        checkedAt: entry.checked_at || entry.checkedAt || null,
+        owner_id: entry.owner_id || entry.ownerId || null,
         platforms: platformsRaw,
         source: normalizedSource,
         color: entry.color || ""
@@ -2039,14 +3445,19 @@ document.addEventListener("click", () => {
       saveBtn.disabled = !canEdit;
       clearBtn.disabled = !canEdit;
       setColorPickerEnabled(entryColorWrapper, entryColorToggle, canEdit);
+      if (ownerSelect) ownerSelect.disabled = !canEdit;
       if (!canEdit) {
         deleteBtn.disabled = true;
         modalFormSection.style.display = "none";
         activeItemId = null;
         clearFormOnly();
+        modalForcePlanMode = false;
+        setModalViewForEntry(null);
+        modalFormSection.style.display = "none";
       } else {
         deleteBtn.disabled = !activeItemId;
       }
+      setControlActionsEnabled(canEdit);
     }
 
     async function loadHighlightsFromServer(targetUserId = null) {
@@ -2075,6 +3486,9 @@ document.addEventListener("click", () => {
       activeItemId = null;
       modalFormSection.style.display = "none";
       clearFormOnly();
+      modalForcePlanMode = false;
+      setModalViewForEntry(null);
+      closeCopyPopover();
       renderCalendar();
       if (viewReports.style.display !== "none") renderReports();
       if (selectedDateKey) {
@@ -2107,6 +3521,7 @@ document.addEventListener("click", () => {
         renderAdminUsers(data);
       } catch (err) {
         adminUserList.innerHTML = `<p class="small" style="color:#dc2626;">${err.message}</p>`;
+        updatePendingCountBadge(0);
       }
     }
 
@@ -2119,6 +3534,13 @@ document.addEventListener("click", () => {
     }
 
     function renderAdminUsers(users) {
+      if (!Array.isArray(users)) {
+        updatePendingCountBadge(0);
+        adminUserList.innerHTML = `<p class="small">Kayıt bulunamadı.</p>`;
+        return;
+      }
+      const pendingCount = users.filter((user) => !user.approved).length;
+      updatePendingCountBadge(pendingCount);
       adminUserList.innerHTML = "";
       if (!users.length) {
         const empty = document.createElement("p");
@@ -2268,10 +3690,14 @@ document.addEventListener("click", () => {
       if (!currentUser || currentUser.role !== "admin") return;
       adminOverlay.classList.add("active");
       loadAdminUsers();
+      ensureColorDescriptionsLoaded().then(() => {
+        renderColorDescriptionsForm();
+      });
     }
 
     function closeAdminOverlay() {
       adminOverlay.classList.remove("active");
+      if (colorDescriptionSaveStatus) colorDescriptionSaveStatus.textContent = "";
     }
 
     async function createEntry(payload) {
@@ -2327,6 +3753,23 @@ document.addEventListener("click", () => {
       const d = String(date.getDate()).padStart(2, "0");
       return y + "-" + m + "-" + d;
     }
+    function parseDateKeyString(value) {
+      if (!value) return null;
+      const parts = value.split("-");
+      if (parts.length !== 3) return null;
+      const year = Number(parts[0]);
+      const month = Number(parts[1]);
+      const day = Number(parts[2]);
+      if (
+        Number.isNaN(year) ||
+        Number.isNaN(month) ||
+        Number.isNaN(day)
+      ) {
+        return null;
+      }
+      const dt = new Date(year, month - 1, day);
+      return Number.isNaN(dt.getTime()) ? null : dt;
+    }
     function formatHumanDate(date) {
       const day = String(date.getDate());
       const monthName = monthNames[date.getMonth()];
@@ -2360,7 +3803,9 @@ document.addEventListener("click", () => {
       platforms: Array.isArray(item.platforms) ? [...item.platforms] : [],
       communication: item.communication || "",
       communicationType: item.communication_type || item.communicationType || "",
-      status: item.status || "",
+      status: item.status || "planned",
+      note: item.note || "",
+      checkedAt: item.checkedAt || item.checked_at || null,
       source: item.source || "manual",
       color: item.color || ""
     }));
@@ -2574,8 +4019,22 @@ document.addEventListener("click", () => {
           delete cell.dataset.color;
         }
 
+        const matchesFilter = dayMatchesChannelFilter(items, activeChannelFilter);
+        if (!matchesFilter && activeChannelFilter !== "all") {
+          cell.classList.add("filtered-out");
+        } else {
+          cell.classList.remove("filtered-out");
+        }
+
         if (items.length) {
           cell.classList.add("has-data");
+          const counter = document.createElement("div");
+          counter.className = "day-counter";
+          counter.textContent =
+            items.length === 1
+              ? "1 içerik"
+              : `+${items.length} içerik`;
+          cell.appendChild(counter);
           const summary = buildDaySummary(items);
           summary.entries.slice(0, 3).forEach(([label, count, color]) => {
             const chip = document.createElement("div");
@@ -2616,66 +4075,67 @@ document.addEventListener("click", () => {
         wrap.className = "summary-item";
         if (item.id === activeItemId) wrap.classList.add("active");
         if (item.source === "excel") wrap.classList.add("excel");
-        const entryColor = item.color || DEFAULT_ENTRY_COLOR;
-        wrap.style.backgroundColor = hexToRgba(entryColor, 0.18);
-        wrap.style.border = `1px solid ${hexToRgba(entryColor, 0.35)}`;
-        wrap.style.color = getContrastingTextColor(entryColor);
-
+        const statusKey =
+          item.status === "done" || item.status === "missed"
+            ? item.status
+            : "planned";
+        wrap.dataset.status = statusKey;
         const { snippet, platforms, time } = makeItemSummary(item);
-        const textColor = getContrastingTextColor(entryColor);
+        const header = document.createElement("div");
+        header.className = "summary-item-head";
 
         const title = document.createElement("div");
         title.className = "summary-item-title";
         title.textContent = snippet || `İçerik ${index + 1}`;
-        title.style.color = textColor;
-        wrap.appendChild(title);
+        header.appendChild(title);
+
+        const statusBadge = document.createElement("span");
+        statusBadge.className = `summary-item-status status-${statusKey}`;
+        statusBadge.textContent = formatStatusLabel(item.status);
+        header.appendChild(statusBadge);
+
+        wrap.appendChild(header);
 
         const timeDiv = document.createElement("div");
         timeDiv.className = "summary-item-time";
         timeDiv.textContent = time ? "Saat: " + time : "Saat seçilmedi";
-        timeDiv.style.color = textColor;
         wrap.appendChild(timeDiv);
 
         const platformsDiv = document.createElement("div");
         platformsDiv.className = "summary-item-platforms";
         platformsDiv.textContent = platforms;
-        platformsDiv.style.color = textColor;
         if (item.source === "excel") {
           const badge = document.createElement("span");
           badge.className = "summary-item-badge";
           badge.textContent = "Excel";
-          badge.style.backgroundColor = hexToRgba(entryColor, 0.25);
-          badge.style.borderColor = hexToRgba(entryColor, 0.4);
           platformsDiv.appendChild(document.createTextNode(" "));
           platformsDiv.appendChild(badge);
         }
         wrap.appendChild(platformsDiv);
 
+        const ownerLabel = getOwnerLabel(item.owner_id);
+        const ownerDiv = document.createElement("div");
+        ownerDiv.className = "summary-item-owner";
+        ownerDiv.textContent = ownerLabel
+          ? `Sorumlu: ${ownerLabel}`
+          : "Sorumlu: Belirlenmedi";
+        wrap.appendChild(ownerDiv);
+
+        const actionsRow = document.createElement("div");
+        actionsRow.className = "summary-item-actions";
+        const copyBtn = document.createElement("button");
+        copyBtn.type = "button";
+        copyBtn.className = "summary-item-copy-btn";
+        copyBtn.textContent = "Bu paylaşımı kopyala";
+        copyBtn.addEventListener("click", (event) => {
+          event.stopPropagation();
+          openCopyPopover(item);
+        });
+        actionsRow.appendChild(copyBtn);
+        wrap.appendChild(actionsRow);
+
         wrap.addEventListener("click", () => {
-          activeItemId = item.id;
-          filesInput.value = item.files || "";
-          textInput.value = item.text || "";
-          timeInput.value = item.time || "";
-          if (entryColorInput) {
-            const colorValue = entryColor || DEFAULT_ENTRY_COLOR;
-            entryColorInput.value = colorValue;
-            updateColorToggle(entryColorToggle, colorValue);
-            if (entryColorPicker && entryColorInput) {
-              setColorPickerValue(
-                entryColorPicker,
-                entryColorInput,
-                colorValue
-              );
-            }
-          }
-          platformInputs.forEach((cb) => {
-            cb.checked = item.platforms
-              ? item.platforms.includes(cb.value)
-              : false;
-          });
-          modalFormSection.style.display = "";
-          deleteBtn.disabled = !activeItemId || !isViewingOwnData();
-          renderModalSummaryList();
+          selectEntryById(item.id);
         });
 
         modalSummary.appendChild(wrap);
@@ -2683,35 +4143,245 @@ document.addEventListener("click", () => {
       updateEditingPermissions();
     }
 
+    function selectEntryById(entryId, forcePlan = false) {
+      let entry = entriesById.get(entryId);
+      if (!entry && Array.isArray(currentDayItems)) {
+        entry = currentDayItems.find((it) => it.id === entryId) || null;
+        if (entry) {
+          entriesById.set(entry.id, entry);
+        }
+      }
+      if (!entry) return;
+      activeItemId = entryId;
+      modalForcePlanMode = Boolean(forcePlan);
+      populateFormWithEntry(entry);
+      deleteBtn.disabled = !activeItemId || !isViewingOwnData();
+      renderModalSummaryList();
+      setModalViewForEntry(entry);
+      setControlActionsEnabled(Boolean(authToken) && isViewingOwnData());
+    }
+
+    function populateFormWithEntry(entry) {
+      filesInput.value = entry.files || "";
+      textInput.value = entry.text || "";
+      timeInput.value = entry.time || "";
+      platformInputs.forEach((cb) => {
+        cb.checked = entry.platforms
+          ? entry.platforms.includes(cb.value)
+          : false;
+      });
+  if (entryColorInput) {
+    const entryColor = entry.color || DEFAULT_ENTRY_COLOR;
+    entryColorInput.value = entryColor;
+    updateColorToggle(entryColorToggle, entryColor);
+    if (entryColorPicker) {
+      setColorPickerValue(entryColorPicker, entryColorInput, entryColor);
+    }
+  }
+  if (noteInput) {
+    noteInput.value = entry.note || "";
+  }
+  if (controlNoteInput) {
+    controlNoteInput.value = entry.note || "";
+  }
+}
+    function updatePendingCountBadge(count) {
+      if (!pendingCountBadge) return;
+      pendingCountBadge.textContent = `(${count} bekleyen kayıt)`;
+      pendingCountBadge.classList.toggle("has-pending", count > 0);
+    }
+
+    function setPlanReturnBannerVisible(visible) {
+      if (!planReturnBanner) return;
+      planReturnBanner.style.display = visible ? "flex" : "none";
+      setControlActionsEnabled(Boolean(authToken) && isViewingOwnData());
+    }
+
+    function showPlanningView(entry, options = {}) {
+      if (modalFormSection) modalFormSection.style.display = "";
+      if (modalControlSection) modalControlSection.style.display = "none";
+      if (modalCheckedSection) modalCheckedSection.style.display = "none";
+      setPlanReturnBannerVisible(Boolean(options.showReturnBanner));
+    }
+
+    function fillControlSummary(entry) {
+      if (!entry) return;
+      const dateObj = parseDateKeyString(entry.date);
+      const dateLabel = dateObj ? formatHumanDate(dateObj) : entry.date;
+      if (controlSummaryTitle) {
+        controlSummaryTitle.textContent =
+          entry.text || entry.files || "İçerik detayı";
+      }
+      if (controlSummaryMeta) {
+        controlSummaryMeta.textContent = `${dateLabel} · ${
+          entry.time || "Saat seçilmedi"
+        }`;
+      }
+      if (controlSummaryPlatforms) {
+        controlSummaryPlatforms.textContent = formatPlatformsLabel(
+          entry.platforms
+        );
+      }
+      if (controlSummaryOwner) {
+        const ownerLabel = getOwnerLabel(entry.owner_id);
+        controlSummaryOwner.textContent = ownerLabel
+          ? `Sorumlu: ${ownerLabel}`
+          : "Sorumlu: Belirlenmedi";
+      }
+      if (controlNoteInput) {
+        controlNoteInput.value = entry.note || "";
+      }
+      if (ownerSelect) {
+        const ownerValue = entry.owner_id
+          ? String(entry.owner_id)
+          : "";
+        if (ownerValue && responsibleUserMap.has(Number(ownerValue))) {
+          ownerSelect.value = ownerValue;
+        } else if (currentUser && responsibleUserMap.has(currentUser.id)) {
+          ownerSelect.value = String(currentUser.id);
+        } else {
+          ownerSelect.value = "";
+        }
+      }
+    }
+
+    function fillCheckedSummary(entry) {
+      if (!entry) return;
+      const dateObj = parseDateKeyString(entry.date);
+      const dateLabel = dateObj ? formatHumanDate(dateObj) : entry.date;
+      if (checkedSummaryMeta) {
+        checkedSummaryMeta.textContent = `${dateLabel} · ${
+          entry.time || "Saat seçilmedi"
+        }`;
+      }
+      if (checkedSummaryPlatforms) {
+        checkedSummaryPlatforms.textContent = formatPlatformsLabel(
+          entry.platforms
+        );
+      }
+      if (checkedSummaryOwner) {
+        const ownerLabel = getOwnerLabel(entry.owner_id);
+        checkedSummaryOwner.textContent = ownerLabel
+          ? `Sorumlu: ${ownerLabel}`
+          : "Sorumlu: Belirlenmedi";
+      }
+      if (checkedStatusBadge) {
+        checkedStatusBadge.textContent = formatStatusLabel(entry.status);
+        checkedStatusBadge.classList.toggle(
+          "missed",
+          entry.status === "missed"
+        );
+      }
+      if (checkedNoteText) {
+        if (entry.note) {
+          checkedNoteText.style.display = "";
+          checkedNoteText.textContent = entry.note;
+        } else {
+          checkedNoteText.style.display = "none";
+          checkedNoteText.textContent = "";
+        }
+      }
+      if (checkedInfoText) {
+        checkedInfoText.textContent = entry.checkedAt
+          ? `Kontrol tarihi: ${formatDateTimeHuman(entry.checkedAt)}`
+          : "";
+      }
+    }
+
+    function showControlView(entry) {
+      if (!entry) {
+        showPlanningView(null, { showReturnBanner: false });
+        return;
+      }
+      modalForcePlanMode = false;
+      if (modalFormSection) modalFormSection.style.display = "none";
+      if (modalControlSection) modalControlSection.style.display = "";
+      if (modalCheckedSection) modalCheckedSection.style.display = "none";
+      setPlanReturnBannerVisible(false);
+      fillControlSummary(entry);
+    }
+
+    function showCheckedView(entry) {
+      if (!entry) {
+        showPlanningView(null, { showReturnBanner: false });
+        return;
+      }
+      modalForcePlanMode = false;
+      if (modalFormSection) modalFormSection.style.display = "none";
+      if (modalControlSection) modalControlSection.style.display = "none";
+      if (modalCheckedSection) modalCheckedSection.style.display = "";
+      setPlanReturnBannerVisible(false);
+      fillCheckedSummary(entry);
+    }
+
+    function setControlActionsEnabled(enabled) {
+      [markDoneBtn, markMissedBtn, controlEditBtn, checkedEditBtn].forEach(
+        (btn) => {
+          if (btn) btn.disabled = !enabled;
+        }
+      );
+      if (controlNoteInput) {
+        controlNoteInput.readOnly = !enabled;
+      }
+      if (returnToControlBtn) {
+        const bannerVisible =
+          planReturnBanner && planReturnBanner.style.display !== "none";
+        returnToControlBtn.disabled = !enabled || !bannerVisible;
+      }
+    }
+
+    function setModalViewForEntry(entry) {
+      if (!entry) {
+        modalForcePlanMode = false;
+        showPlanningView(null, { showReturnBanner: false });
+        return;
+      }
+      const past = isEntryPast(entry);
+      const status = entry.status || "planned";
+      if (!modalForcePlanMode && past && status === "planned") {
+        showControlView(entry);
+        return;
+      }
+      if (!modalForcePlanMode && (status === "done" || status === "missed")) {
+        showCheckedView(entry);
+        return;
+      }
+      showPlanningView(entry, {
+        showReturnBanner: modalForcePlanMode && (past || status !== "planned")
+      });
+    }
+
     function clearFormOnly() {
       filesInput.value = "";
       textInput.value = "";
       timeInput.value = "";
-      platformInputs.forEach((cb) => (cb.checked = false));
-      if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
-      if (entryColorPicker && entryColorInput) {
-        setColorPickerValue(
-          entryColorPicker,
+    platformInputs.forEach((cb) => (cb.checked = false));
+    if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
+    if (entryColorPicker && entryColorInput) {
+      setColorPickerValue(
+        entryColorPicker,
           entryColorInput,
           DEFAULT_ENTRY_COLOR
         );
       }
       updateColorToggle(entryColorToggle, DEFAULT_ENTRY_COLOR);
+      if (noteInput) noteInput.value = "";
+      if (controlNoteInput) controlNoteInput.value = "";
+      if (ownerSelect) {
+        if (currentUser && responsibleUserMap.has(currentUser.id)) {
+          ownerSelect.value = String(currentUser.id);
+        } else {
+          ownerSelect.value = "";
+        }
+      }
+      setPlanReturnBannerVisible(false);
     }
 
     function updateHighlightStateUI() {
+      if (!highlightColorInput) return;
       if (!selectedDateKey) {
-        if (highlightColorInput) {
-          highlightColorInput.disabled = true;
-          highlightColorInput.value = DEFAULT_HIGHLIGHT_COLOR;
-        }
-        if (highlightColorPicker && highlightColorInput) {
-          setColorPickerValue(
-            highlightColorPicker,
-            highlightColorInput,
-            DEFAULT_HIGHLIGHT_COLOR
-          );
-        }
+        highlightColorInput.disabled = true;
+        setHighlightInputValue(DEFAULT_HIGHLIGHT_COLOR);
         setColorPickerEnabled(
           highlightColorWrapper,
           highlightColorToggle,
@@ -2720,24 +4390,16 @@ document.addEventListener("click", () => {
         return;
       }
       const hasHighlight = highlightedDates.has(selectedDateKey);
-      if (highlightColorInput) {
-        highlightColorInput.disabled = !isViewingOwnData();
-        highlightColorInput.value = hasHighlight
-          ? highlightedDates.get(selectedDateKey) || DEFAULT_HIGHLIGHT_COLOR
-          : DEFAULT_HIGHLIGHT_COLOR;
-      }
-      if (highlightColorPicker && highlightColorInput) {
-        setColorPickerValue(
-          highlightColorPicker,
-          highlightColorInput,
-          highlightColorInput.value
-        );
-        setColorPickerEnabled(
-          highlightColorWrapper,
-          highlightColorToggle,
-          isViewingOwnData()
-        );
-      }
+      const colorValue = hasHighlight
+        ? highlightedDates.get(selectedDateKey)
+        : DEFAULT_HIGHLIGHT_COLOR;
+      highlightColorInput.disabled = !isViewingOwnData();
+      setHighlightInputValue(colorValue);
+      setColorPickerEnabled(
+        highlightColorWrapper,
+        highlightColorToggle,
+        isViewingOwnData()
+      );
     }
 
     async function setDateHighlight(dateKey, colorValue = DEFAULT_HIGHLIGHT_COLOR) {
@@ -2757,60 +4419,56 @@ document.addEventListener("click", () => {
 
 
     function openModalForDate(dateObj, key, initialItemId = null) {
+      closeCopyPopover();
       selectedDateKey = key;
       const dayData = loadDayData(key);
       currentDayItems = dayData.items || [];
       activeItemId = initialItemId;
+      modalForcePlanMode = false;
 
       modalDateTitle.textContent = formatHumanDate(dateObj);
       updateHighlightStateUI();
 
       clearFormOnly();
-      modalFormSection.style.display = "none";
       deleteBtn.disabled = !activeItemId;
 
+      let selectedEntry = null;
       if (activeItemId) {
-        const item = currentDayItems.find((it) => it.id === activeItemId);
-        if (item) {
-          filesInput.value = item.files || "";
-          textInput.value = item.text || "";
-          timeInput.value = item.time || "";
-          platformInputs.forEach((cb) => {
-            cb.checked = item.platforms
-              ? item.platforms.includes(cb.value)
-              : false;
-          });
-          if (entryColorInput) {
-            const entryColor = item.color || DEFAULT_ENTRY_COLOR;
-            entryColorInput.value = entryColor;
-            if (entryColorPicker) {
-              setColorPickerValue(
-                entryColorPicker,
-                entryColorInput,
-                entryColor
-              );
-            }
-          }
-          modalFormSection.style.display = "";
+        selectedEntry =
+          entriesById.get(activeItemId) ||
+          currentDayItems.find((it) => it.id === activeItemId) ||
+          null;
+        if (selectedEntry) {
+          entriesById.set(selectedEntry.id, selectedEntry);
+          populateFormWithEntry(selectedEntry);
         } else {
           activeItemId = null;
-          if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
-          if (entryColorPicker && entryColorInput) {
-            setColorPickerValue(
-              entryColorPicker,
-              entryColorInput,
-              DEFAULT_ENTRY_COLOR
-            );
-          }
         }
       }
 
+      if (!selectedEntry && activeItemId === null) {
+        clearFormOnly();
+        if (modalFormSection) modalFormSection.style.display = "none";
+        if (modalControlSection) modalControlSection.style.display = "none";
+        if (modalCheckedSection) modalCheckedSection.style.display = "none";
+        setPlanReturnBannerVisible(false);
+      } else {
+        setModalViewForEntry(selectedEntry);
+      }
       renderModalSummaryList();
       dayModal.style.display = "flex";
     }
 
     function closeModal() {
       dayModal.style.display = "none";
+      modalForcePlanMode = false;
+      setPlanReturnBannerVisible(false);
+      if (modalControlSection) modalControlSection.style.display = "none";
+      if (modalCheckedSection) modalCheckedSection.style.display = "none";
+      if (modalFormSection) modalFormSection.style.display = "none";
+      activeItemId = null;
+      toggleColorHelpPanel(false);
+      closeCopyPopover();
     }
 
     function normalizeToMidnight(date) {
@@ -2856,6 +4514,8 @@ document.addEventListener("click", () => {
       reportPlatforms.innerHTML = "";
       reportTimes.innerHTML = "";
       reportDays.textContent = "-";
+      if (reportsSummaryContainer) reportsSummaryContainer.style.display = "";
+      if (reportFilterLabel) reportFilterLabel.textContent = "";
       if (platformChartInstance) {
         platformChartInstance.destroy();
         platformChartInstance = null;
@@ -2866,10 +4526,20 @@ document.addEventListener("click", () => {
         timeChartInstance = null;
       }
       if (timeChartWrapper) timeChartWrapper.style.display = "none";
+      clearExecutedOutputs();
+    }
+
+    function clearExecutedOutputs() {
+      if (reportsExecutedSection) {
+        reportsExecutedSection.style.display = "none";
+      }
+      if (executedTableBody) executedTableBody.innerHTML = "";
+      if (executedEmptyMessage) executedEmptyMessage.style.display = "none";
+      if (executedSummaryLine) executedSummaryLine.textContent = "";
     }
 
     /* İstatistik hesaplama: seçilen tarih aralığı için */
-    function buildStatsForRange(rangeStartDate, rangeEndDate) {
+    function buildStatsForRange(rangeStartDate, rangeEndDate, filterId = "all") {
       const startDate = normalizeToMidnight(rangeStartDate);
       const endDate = normalizeToMidnight(rangeEndDate);
     const platformsList = [
@@ -2916,6 +4586,7 @@ document.addEventListener("click", () => {
           const hasContent =
             item.text || item.files || item.time || (item.platforms && item.platforms.length);
           if (!hasContent) return;
+          if (!entryMatchesChannelFilter(item, filterId)) return;
 
           dayHasContent = true;
           total++;
@@ -2979,66 +4650,68 @@ document.addEventListener("click", () => {
       if (reportMode === "range") renderReports();
     }
 
-    function readFileAsDataURL(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(new Error("Dosya okunurken hata oluştu."));
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function updateRangeControlsVisibility() {
-      if (!reportRangeInputs || !quickRangeButtons) return;
+    function getReportRangeInfo() {
       if (reportMode === "range") {
-        reportRangeInputs.style.display = "flex";
-        quickRangeButtons.style.display = "flex";
-      } else {
-        reportRangeInputs.style.display = "none";
-        quickRangeButtons.style.display = "none";
-      }
-    }
-
-    function renderReports() {
-      let rangeStart;
-      let rangeEnd;
-
-      if (reportMode === "range") {
-        const parsedStart = parseDateInput(reportRangeStartInput ? reportRangeStartInput.value : "");
-        const parsedEnd = parseDateInput(reportRangeEndInput ? reportRangeEndInput.value : "");
-
-        if (!parsedStart || !parsedEnd) {
-          reportMonthLabel.textContent = "Lütfen geçerli bir tarih aralığı seç.";
-          clearReportOutputs();
-          const li = document.createElement("li");
-          li.textContent = "Geçerli bir tarih aralığı seç.";
-          reportPlatforms.appendChild(li);
-          return;
-        }
-
-        if (parsedStart > parsedEnd) {
+        const parsedStart = parseDateInput(
+          reportRangeStartInput ? reportRangeStartInput.value : ""
+        );
+        const parsedEnd = parseDateInput(
+          reportRangeEndInput ? reportRangeEndInput.value : ""
+        );
+        if (!parsedStart || !parsedEnd) return null;
+        let rangeStart = parsedStart;
+        let rangeEnd = parsedEnd;
+        if (rangeStart > rangeEnd) {
           rangeStart = parsedEnd;
           rangeEnd = parsedStart;
           if (reportRangeStartInput && reportRangeEndInput) {
             reportRangeStartInput.value = formatDateInputValue(rangeStart);
             reportRangeEndInput.value = formatDateInputValue(rangeEnd);
           }
-        } else {
-          rangeStart = parsedStart;
-          rangeEnd = parsedEnd;
         }
-
-        reportMonthLabel.textContent =
-          formatHumanDate(rangeStart) + " - " + formatHumanDate(rangeEnd) + " arası özet";
-      } else {
-        rangeStart = normalizeToMidnight(new Date(currentYear, currentMonth, 1));
-        rangeEnd = normalizeToMidnight(new Date(currentYear, currentMonth + 1, 0));
-        reportMonthLabel.textContent =
-          monthNames[currentMonth] + " " + currentYear + " için aylık özet";
+        return {
+          start: rangeStart,
+          end: rangeEnd,
+          label: `${formatHumanDate(rangeStart)} - ${formatHumanDate(rangeEnd)} arası özet`
+        };
       }
+      const rangeStart = normalizeToMidnight(new Date(currentYear, currentMonth, 1));
+      const rangeEnd = normalizeToMidnight(new Date(currentYear, currentMonth + 1, 0));
+      return {
+        start: rangeStart,
+        end: rangeEnd,
+        label: `${monthNames[currentMonth]} ${currentYear} için aylık özet`
+      };
+    }
 
-      const stats = buildStatsForRange(rangeStart, rangeEnd);
+    function collectEntriesInRange(rangeStartDate, rangeEndDate, filterId = "all") {
+      const startDate = normalizeToMidnight(rangeStartDate);
+      const endDate = normalizeToMidnight(rangeEndDate);
+      if (!startDate || !endDate || startDate > endDate) return [];
+      const results = [];
+      const cursor = new Date(startDate);
+      while (cursor <= endDate) {
+        const key = formatDateKey(cursor);
+        const items = loadDayData(key).items || [];
+        items.forEach((item) => {
+          if (entryMatchesChannelFilter(item, filterId)) {
+            results.push(item);
+          }
+        });
+        cursor.setDate(cursor.getDate() + 1);
+        cursor.setHours(0, 0, 0, 0);
+      }
+      return results;
+    }
 
+    function renderReportsSummary(rangeInfo) {
+      if (reportsSummaryContainer) reportsSummaryContainer.style.display = "";
+      if (reportsExecutedSection) reportsExecutedSection.style.display = "none";
+      const stats = buildStatsForRange(
+        rangeInfo.start,
+        rangeInfo.end,
+        activeChannelFilter
+      );
       reportTotal.textContent = stats.total + " planlanmış içerik";
 
       reportPlatforms.innerHTML = "";
@@ -3074,6 +4747,146 @@ document.addEventListener("click", () => {
 
       reportDays.textContent =
         stats.daysWithContent + " günde en az bir içerik planlanmış.";
+      clearExecutedOutputs();
+    }
+
+    function renderReportsExecuted(rangeInfo, entries) {
+      if (reportsSummaryContainer) reportsSummaryContainer.style.display = "none";
+      if (reportsExecutedSection) reportsExecutedSection.style.display = "block";
+      if (!executedSummaryLine || !executedTableBody) return;
+
+      const doneCount = entries.filter((entry) => entry.status === "done").length;
+      const missedCount = entries.filter((entry) => entry.status === "missed").length;
+      const plannedCount = entries.length - doneCount - missedCount;
+      executedSummaryLine.textContent = `Seçilen aralıkta ${doneCount} paylaşılan, ${missedCount} kaçan, ${plannedCount} planlı içerik var.`;
+
+      const showMissed = Boolean(executedShowMissedToggle && executedShowMissedToggle.checked);
+      const rows = entries
+        .filter(
+          (entry) =>
+            entry.status === "done" || (showMissed && entry.status === "missed")
+        )
+        .sort((a, b) => {
+          const aDate = getEntryDateTime(a);
+          const bDate = getEntryDateTime(b);
+          return (bDate ? bDate.getTime() : 0) - (aDate ? aDate.getTime() : 0);
+        });
+
+      executedTableBody.innerHTML = "";
+      if (!rows.length) {
+        if (executedEmptyMessage) executedEmptyMessage.style.display = "block";
+        return;
+      }
+      if (executedEmptyMessage) executedEmptyMessage.style.display = "none";
+
+      rows.forEach((entry) => {
+        const tr = document.createElement("tr");
+
+        const dateCell = document.createElement("td");
+        dateCell.dataset.label = "Tarih";
+        const entryDate = parseDateInput(entry.date);
+        dateCell.textContent = entryDate ? formatHumanDate(entryDate) : entry.date;
+        tr.appendChild(dateCell);
+
+        const timeCell = document.createElement("td");
+        timeCell.dataset.label = "Saat";
+        timeCell.textContent = entry.time || "-";
+        tr.appendChild(timeCell);
+
+        const textCell = document.createElement("td");
+        textCell.dataset.label = "Metin";
+        const preview = formatEntryPreviewText(entry, 120);
+        textCell.textContent = preview;
+        const fullText = (entry.text || entry.files || "").trim();
+        if (fullText) textCell.title = fullText;
+        tr.appendChild(textCell);
+
+        const platformCell = document.createElement("td");
+        platformCell.dataset.label = "Platformlar";
+        platformCell.textContent = formatPlatformsLabel(entry.platforms);
+        tr.appendChild(platformCell);
+
+        const statusCell = document.createElement("td");
+        statusCell.dataset.label = "Durum";
+        const statusBadge = document.createElement("span");
+        statusBadge.classList.add(
+          "report-status-badge",
+          entry.status === "done"
+            ? "report-status-done"
+            : entry.status === "missed"
+            ? "report-status-missed"
+            : "report-status-planned"
+        );
+        statusBadge.textContent = formatStatusLabel(entry.status);
+        statusCell.appendChild(statusBadge);
+        tr.appendChild(statusCell);
+
+        const ownerCell = document.createElement("td");
+        ownerCell.dataset.label = "Sorumlu";
+        const ownerLabel = getOwnerLabel(entry.owner_id);
+        ownerCell.textContent = ownerLabel || "-";
+        tr.appendChild(ownerCell);
+
+        const noteCell = document.createElement("td");
+        noteCell.dataset.label = "Not";
+        if (entry.note) {
+          noteCell.textContent = entry.note;
+          noteCell.title = entry.note;
+        } else {
+          noteCell.textContent = "-";
+        }
+        tr.appendChild(noteCell);
+
+        executedTableBody.appendChild(tr);
+      });
+    }
+
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("Dosya okunurken hata oluştu."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function updateRangeControlsVisibility() {
+      if (!reportRangeInputs || !quickRangeButtons) return;
+      if (reportMode === "range") {
+        reportRangeInputs.style.display = "flex";
+        quickRangeButtons.style.display = "flex";
+      } else {
+        reportRangeInputs.style.display = "none";
+        quickRangeButtons.style.display = "none";
+      }
+    }
+
+    function renderReports() {
+      const rangeInfo = getReportRangeInfo();
+      if (!rangeInfo) {
+        reportMonthLabel.textContent = "Lütfen geçerli bir tarih aralığı seç.";
+        clearReportOutputs();
+        if (reportMode === "range" && reportPlatforms) {
+          const li = document.createElement("li");
+          li.textContent = "Geçerli bir tarih aralığı seç.";
+          reportPlatforms.appendChild(li);
+        }
+        return;
+      }
+
+      reportMonthLabel.textContent = rangeInfo.label;
+      updateReportFilterLabel();
+
+      if (reportsContentView === "executed") {
+        const entriesInRange = collectEntriesInRange(
+          rangeInfo.start,
+          rangeInfo.end,
+          activeChannelFilter
+        );
+        renderReportsExecuted(rangeInfo, entriesInRange);
+      } else {
+        renderReportsSummary(rangeInfo);
+      }
     }
     function renderPlatformChart(entries) {
       if (!platformChartWrapper || !platformChartCanvas || typeof Chart === "undefined") return;
@@ -3240,6 +5053,54 @@ document.addEventListener("click", () => {
       });
     });
 
+    reportViewButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const view = btn.dataset.reportView;
+        if (!view || reportsContentView === view) return;
+        reportsContentView = view;
+        reportViewButtons.forEach((button) => {
+          button.classList.toggle("active", button.dataset.reportView === view);
+        });
+        renderReports();
+      });
+    });
+
+    if (executedShowMissedToggle) {
+      executedShowMissedToggle.addEventListener("change", () => {
+        if (reportsContentView === "executed") renderReports();
+      });
+    }
+
+    if (colorHelpBtn) {
+      colorHelpBtn.addEventListener("click", async (event) => {
+        event.stopPropagation();
+        await ensureColorDescriptionsLoaded();
+        renderColorHelpList();
+        toggleColorHelpPanel();
+      });
+    }
+    if (colorHelpCloseBtn) {
+      colorHelpCloseBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        toggleColorHelpPanel(false);
+      });
+    }
+    if (colorHelpPanel) {
+      colorHelpPanel.addEventListener("click", (event) => {
+        event.stopPropagation();
+      });
+    }
+    document.addEventListener("click", (event) => {
+      if (!colorHelpPanelOpen) return;
+      if (
+        colorHelpPanel &&
+        !colorHelpPanel.contains(event.target) &&
+        event.target !== colorHelpBtn
+      ) {
+        toggleColorHelpPanel(false);
+      }
+    });
+
     updateRangeControlsVisibility();
 
     loginForm.addEventListener("submit", async (event) => {
@@ -3329,6 +5190,46 @@ document.addEventListener("click", () => {
         }
         closeAdminOverlay();
       });
+    }
+
+    if (colorDescriptionSaveBtn) {
+      colorDescriptionSaveBtn.addEventListener("click", () => {
+        if (!currentUser || currentUser.role !== "admin") return;
+        saveColorDescriptions();
+      });
+    }
+
+    platformPresetButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const data = btn.dataset.platforms || "";
+        const values = data
+          .split("|")
+          .map((item) => item.trim())
+          .filter(Boolean);
+        applyPlatformPreset(values);
+      });
+    });
+
+    channelFilterButtons.forEach((btn) => {
+      const channelId = btn.dataset.channel || "all";
+      btn.classList.toggle("active", channelId === activeChannelFilter);
+      btn.addEventListener("click", () => {
+        setActiveChannelFilter(channelId);
+      });
+    });
+    updateReportFilterLabel();
+
+    if (copyCancelBtn) {
+      copyCancelBtn.addEventListener("click", () => closeCopyPopover());
+    }
+    if (copyPopoverCloseBtn) {
+      copyPopoverCloseBtn.addEventListener("click", () => closeCopyPopover());
+    }
+    if (copyConfirmBtn) {
+      copyConfirmBtn.addEventListener("click", () => handleCopyConfirm());
+    }
+    if (copyPopover) {
+      copyPopover.addEventListener("click", (event) => event.stopPropagation());
     }
 
     if (excelUploadBtn && excelFileInput) {
@@ -3550,6 +5451,8 @@ document.addEventListener("click", () => {
           setCurrentUser(meData);
           adminSelectedUserId = null;
           await loadEntriesFromServer();
+          await loadResponsibleUsers();
+          await ensureColorDescriptionsLoaded();
           hideLoginOverlay();
         } catch (err) {
           console.error(err);
@@ -3563,6 +5466,7 @@ document.addEventListener("click", () => {
         setCurrentUser(null);
         updateAuthUI();
         showLoginOverlay();
+        await ensureColorDescriptionsLoaded();
       }
     }
 
@@ -3599,11 +5503,40 @@ document.addEventListener("click", () => {
         return;
       }
       activeItemId = null;
+      modalForcePlanMode = false;
       clearFormOnly();
-      modalFormSection.style.display = "";
+      setModalViewForEntry(null);
       deleteBtn.disabled = true;
       renderModalSummaryList();
     });
+
+    if (markDoneBtn) {
+      markDoneBtn.addEventListener("click", () => handleStatusDecision("done"));
+    }
+    if (markMissedBtn) {
+      markMissedBtn.addEventListener("click", () =>
+        handleStatusDecision("missed")
+      );
+    }
+    if (controlEditBtn) {
+      controlEditBtn.addEventListener("click", () => {
+        if (!activeItemId) return;
+        selectEntryById(activeItemId, true);
+      });
+    }
+    if (checkedEditBtn) {
+      checkedEditBtn.addEventListener("click", () => {
+        if (!activeItemId) return;
+        selectEntryById(activeItemId, true);
+      });
+    }
+    if (returnToControlBtn) {
+      returnToControlBtn.addEventListener("click", () => {
+        modalForcePlanMode = false;
+        const entry = activeItemId ? entriesById.get(activeItemId) : null;
+        setModalViewForEntry(entry);
+      });
+    }
 
     async function handleSave() {
       if (!authToken) {
@@ -3628,6 +5561,7 @@ document.addEventListener("click", () => {
       const filesVal = filesInput.value.trim();
       const textVal = textInput.value.trim();
       const timeVal = timeInput.value;
+      const noteVal = noteInput ? noteInput.value.trim() : null;
       const anyContent = filesVal || textVal || timeVal || selectedPlatforms.length;
 
       if (!anyContent) {
@@ -3636,6 +5570,12 @@ document.addEventListener("click", () => {
       }
 
       const existing = activeItemId ? entriesById.get(activeItemId) : null;
+      const ownerIdValue =
+        ownerSelect && ownerSelect.value
+          ? Number(ownerSelect.value)
+          : existing
+          ? existing.owner_id || null
+          : null;
       const payload = {
         date: selectedDateKey,
         time: timeVal,
@@ -3647,7 +5587,10 @@ document.addEventListener("click", () => {
         communicationType: existing
           ? existing.communication_type || existing.communicationType || ""
           : "",
-        status: existing ? existing.status || "" : ""
+        status: existing ? existing.status || "planned" : "planned",
+        note: noteVal !== null ? noteVal : existing ? existing.note || "" : "",
+        checkedAt: existing ? existing.checkedAt || null : null,
+        ownerId: ownerIdValue
       };
 
       saveBtn.disabled = true;
@@ -3662,8 +5605,9 @@ document.addEventListener("click", () => {
         renderCalendar();
         if (viewReports.style.display !== "none") renderReports();
         activeItemId = null;
+        modalForcePlanMode = false;
         clearFormOnly();
-        modalFormSection.style.display = "none";
+        setModalViewForEntry(null);
         renderModalSummaryList();
         deleteBtn.disabled = true;
       } catch (err) {
@@ -3676,6 +5620,58 @@ document.addEventListener("click", () => {
 
     function handleClear() {
       clearFormOnly();
+    }
+
+    async function handleStatusDecision(nextStatus) {
+      if (!authToken) {
+        alert("Lütfen önce giriş yap.");
+        showLoginOverlay();
+        return;
+      }
+      if (!isViewingOwnData()) {
+        alert("Diğer kullanıcıların takviminde değişiklik yapamazsın.");
+        return;
+      }
+      if (!selectedDateKey || !activeItemId) return;
+      const entry = entriesById.get(activeItemId);
+      if (!entry) return;
+
+      const noteValue = controlNoteInput
+        ? controlNoteInput.value.trim()
+        : entry.note || "";
+
+      const payload = {
+        date: entry.date,
+        time: entry.time || "",
+        text: entry.text || "",
+        files: entry.files || "",
+        communication: entry.communication || "",
+        communicationType:
+          entry.communication_type || entry.communicationType || "",
+        status: nextStatus,
+        platforms: Array.isArray(entry.platforms) ? entry.platforms : [],
+        color: entry.color || DEFAULT_ENTRY_COLOR,
+        note: noteValue,
+        checkedAt: new Date().toISOString(),
+        ownerId: entry.owner_id || null
+      };
+
+      const actionButtons = [markDoneBtn, markMissedBtn];
+      actionButtons.forEach((btn) => btn && (btn.disabled = true));
+      try {
+        await updateEntry(activeItemId, payload);
+        currentDayItems = loadDayData(selectedDateKey).items;
+        renderCalendar();
+        if (viewReports.style.display !== "none") renderReports();
+        renderModalSummaryList();
+        const updatedEntry = entriesById.get(activeItemId);
+        modalForcePlanMode = false;
+        setModalViewForEntry(updatedEntry);
+      } catch (err) {
+        alert(err.message || "Durum güncellenemedi.");
+      } finally {
+        actionButtons.forEach((btn) => btn && (btn.disabled = false));
+      }
     }
 
     async function handleDelete() {
@@ -3698,6 +5694,8 @@ document.addEventListener("click", () => {
         await deleteEntry(activeItemId);
         activeItemId = null;
         clearFormOnly();
+        modalForcePlanMode = false;
+        setModalViewForEntry(null);
         modalFormSection.style.display = "none";
         currentDayItems = loadDayData(selectedDateKey).items;
         renderCalendar();

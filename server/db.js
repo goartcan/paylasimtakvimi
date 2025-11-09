@@ -48,8 +48,11 @@ db.exec(`
     files TEXT,
     communication TEXT,
     communication_type TEXT,
-    status TEXT,
     platforms TEXT,
+    owner_id INTEGER,
+    note TEXT,
+    status TEXT NOT NULL DEFAULT 'planned',
+    checked_at TEXT,
     FOREIGN KEY (user_id) REFERENCES users(id)
   );
 
@@ -59,6 +62,12 @@ db.exec(`
     color TEXT NOT NULL DEFAULT '#fee2e2',
     PRIMARY KEY (user_id, date),
     FOREIGN KEY (user_id) REFERENCES users(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS color_descriptions (
+    key TEXT PRIMARY KEY,
+    label TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT ''
   );
 `);
 
@@ -83,12 +92,17 @@ ensureColumn("users", "approved", "INTEGER NOT NULL DEFAULT 0");
 ensureColumn("users", "created_at", "TEXT NOT NULL DEFAULT (datetime('now'))");
 ensureColumn("entries", "source", "TEXT NOT NULL DEFAULT 'manual'");
 ensureColumn("entries", "color", "TEXT");
+ensureColumn("entries", "note", "TEXT");
+ensureColumn("entries", "status", "TEXT NOT NULL DEFAULT 'planned'");
+ensureColumn("entries", "checked_at", "TEXT");
+ensureColumn("entries", "owner_id", "INTEGER");
 ensureColumn("day_flags", "color", "TEXT NOT NULL DEFAULT '#fee2e2'");
 
 try {
   db.prepare("UPDATE users SET role = 'user' WHERE role IS NULL OR role = ''").run();
   db.prepare("UPDATE users SET approved = 0 WHERE approved IS NULL").run();
   db.prepare("UPDATE entries SET source = 'manual' WHERE source IS NULL OR source = ''").run();
+  db.prepare("UPDATE entries SET status = 'planned' WHERE status IS NULL OR status = ''").run();
 } catch (err) {
   console.warn("Veritabanı sütunları güncellenirken hata oluştu:", err.message);
 }

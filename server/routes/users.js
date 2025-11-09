@@ -4,6 +4,20 @@ import { requireAuth, requireAdmin } from "../middleware/auth.js";
 
 const router = express.Router();
 
+router.get("/approved", requireAuth, (req, res) => {
+  const rows = db
+    .prepare(
+      `
+      SELECT id, email
+      FROM users
+      WHERE approved = 1
+      ORDER BY email ASC
+    `
+    )
+    .all();
+  res.json(rows);
+});
+
 router.get("/", requireAuth, requireAdmin, (req, res) => {
   const rows = db
     .prepare(

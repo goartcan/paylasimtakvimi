@@ -8,12 +8,13 @@
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
-      padding: 24px;
+      padding: 16px;
       background: #ffffff;
-      max-width: 1400px;
+      max-width: 1360px;
       margin-left: auto;
       margin-right: auto;
       color: #111827;
+      font-size: 14px;
     }
     h1, h2, h3, label { font-weight: 700; }
 
@@ -21,19 +22,25 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
+      padding-top: 4px;
+      padding-bottom: 4px;
     }
     .header-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
     .header-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
-    .logo { height: 40px; }
+    .header-right button {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+    .logo { height: 32px; }
     .login-overlay {
       position: fixed;
       inset: 0;
@@ -46,24 +53,24 @@
     }
     .login-overlay.active { display: flex; }
     .login-card {
-      width: min(360px, 96vw);
+      width: min(340px, 96vw);
       background: #ffffff;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.2);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
     .login-card h2 {
       margin: 0;
-      font-size: 20px;
+      font-size: 18px;
       text-align: center;
     }
     .login-card form {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
     .login-card .form-row {
       display: flex;
@@ -72,9 +79,9 @@
       margin: 0;
     }
     .login-card input {
-      padding: 8px 10px;
-      font-size: 14px;
-      border-radius: 10px;
+      padding: 7px 9px;
+      font-size: 13px;
+      border-radius: 8px;
       border: 1px solid #d1d5db;
       background: #ffffff;
       color: #111827;
@@ -82,6 +89,8 @@
     .login-card button {
       width: 100%;
       justify-content: center;
+      padding: 6px 10px;
+      font-size: 13px;
     }
     .login-card .secondary-btn {
       background: #e2e8f0;
@@ -134,14 +143,14 @@
     }
     .admin-overlay.active { display: flex; }
     .admin-panel {
-      width: min(720px, 96vw);
+      width: min(680px, 96vw);
       background: #ffffff;
-      border-radius: 18px;
-      padding: 20px;
+      border-radius: 16px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.3);
+      gap: 12px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.26);
     }
     .admin-panel-tabs {
       display: flex;
@@ -367,11 +376,11 @@
     }
 
     /* Sekmeler */
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
     #adminViewInfo {
       margin: -8px 0 16px 0;
       color: #1d4ed8;
@@ -380,44 +389,44 @@
     body.dark #adminViewInfo {
       color: #93c5fd;
     }
-    .tab-button {
-      cursor: pointer;
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      padding: 6px 14px;
-      background: #f3f4f6;
-      font-size: 13px;
-    }
+.tab-button {
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 5px 12px;
+  background: #f3f4f6;
+  font-size: 12px;
+}
     .tab-button.active {
       background: #1d4ed8;
       border-color: #1d4ed8;
       color: #ffffff;
     }
 
-    .container {
-      display: grid;
-      grid-template-columns: 3fr 1.2fr;
-      gap: 24px;
-      align-items: stretch;
-    }
+.container {
+  display: grid;
+  grid-template-columns: 3fr 1.1fr;
+  gap: 18px;
+  align-items: stretch;
+}
 .calendar {
   border: 1px solid #dde2ff;
   border-radius: 12px;
-  padding: 20px;
+  padding: 14px;
   background: #f9faff;
 }
 .channel-filter {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   font-size: 12px;
   color: #475569;
 }
 .channel-filter-btn {
   font-size: 11px;
-  padding: 4px 10px;
+  padding: 3px 9px;
   border-radius: 999px;
   border: 1px solid #d5dbf5;
   background: #ffffff;
@@ -433,18 +442,18 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: -20px -20px 16px -20px;
-      padding: 10px 16px;
+      margin: -14px -14px 10px -14px;
+      padding: 8px 12px;
       background: #eef2ff;
       border-bottom: 1px solid #dde2ff;
-      border-radius: 12px 12px 0 0;
-      gap: 12px;
+      border-radius: 10px 10px 0 0;
+      gap: 8px;
     }
     button {
       cursor: pointer;
       border-radius: 999px;
       border: 1px solid #c4d0ff;
-      padding: 4px 12px;
+      padding: 4px 10px;
       background: #f2f5ff;
       font-size: 12px;
       font-weight: 600;
@@ -514,20 +523,20 @@
     }
     .month-label {
       font-weight: 700;
-      font-size: 20px;
+      font-size: 18px;
       color: #152052;
     }
     .weekdays,
     .days {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
+      gap: 5px;
     }
     .weekday {
       text-align: center;
       font-weight: 700;
-      font-size: 12px;
-      padding: 4px 0;
+      font-size: 11px;
+      padding: 3px 0;
       background: #f0f3ff;
       border-radius: 6px;
       color: #1a275a;
@@ -542,9 +551,9 @@
       --day-highlight-shadow: rgba(15, 23, 42, 0.08);
       border-radius: 8px;
       border: 1px solid var(--day-border);
-      padding: 8px;
-      min-height: 120px;
-      font-size: 13px;
+      padding: 7px;
+      min-height: 108px;
+      font-size: 12px;
       cursor: pointer;
       background: var(--day-surface);
       color: var(--day-text);
@@ -560,15 +569,15 @@
     }
     .day-number {
       font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 4px;
+      font-size: 13px;
+      margin-bottom: 3px;
       color: var(--day-text);
     }
     .day-counter {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       color: #6b21a8;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
     .day.day-highlighted {
       background: var(--day-surface, #ffffff);
@@ -576,7 +585,7 @@
       box-shadow: 0 12px 28px var(--day-highlight-shadow, rgba(15, 23, 42, 0.12));
     }
     .day-summary {
-      font-size: 11px;
+      font-size: 10px;
       color: #33415c;
     }
     .day-summary + .day-summary { margin-top: 2px; }
@@ -586,12 +595,12 @@
     .day-summary-chip {
       display: inline-flex;
       align-items: center;
-      padding: 2px 6px;
-      margin: 2px 4px 0 0;
+      padding: 1px 5px;
+      margin: 2px 3px 0 0;
       border-radius: 999px;
       background: var(--day-chip-bg);
       border: 1px solid var(--day-chip-border);
-      font-size: 10px;
+      font-size: 9px;
       color: var(--day-chip-color);
       font-weight: 500;
     }
@@ -625,9 +634,9 @@
       --day-chip-color: #ffffff;
       --day-chip-border: rgba(255, 255, 255, 0.45);
     }
-    .schedule-item.summary[data-color] .schedule-summary-header {
-      color: var(--summary-text);
-    }
+.schedule-item.summary[data-color] .schedule-summary-header {
+  color: var(--summary-text);
+}
     .schedule-item.summary[data-color="yellow"],
     .schedule-item.summary[data-color="white"],
     .schedule-item.summary[data-color="amber"],
@@ -671,14 +680,14 @@
       flex-direction: column;
       min-height: 0;
     }
-    .excel-upload-container {
-      margin-top: auto;
-      padding-top: 12px;
-      border-top: 1px dashed #e5e7eb;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+.excel-upload-container {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px dashed #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
     .excel-upload-actions {
       display: flex;
       gap: 8px;
@@ -727,26 +736,26 @@
       display: flex;
       align-items: center;
     }
-    .schedule-search input {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: 12px;
-      outline: none;
-    }
+.schedule-search input {
+  width: 100%;
+  padding: 6px 9px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 12px;
+  outline: none;
+}
     .schedule-view-toggle {
-      margin: 10px 0 6px;
+      margin: 8px 0 6px;
       display: inline-flex;
       gap: 6px;
       background: #f1f5f9;
       border-radius: 999px;
-      padding: 4px;
+      padding: 3px;
     }
     .schedule-view-btn {
       border: none;
       background: transparent;
-      padding: 6px 14px;
+      padding: 4px 11px;
       font-size: 11px;
       font-weight: 600;
       border-radius: 999px;
@@ -758,23 +767,23 @@
       background: #0f172a;
       color: #ffffff;
     }
-    .schedule-item.summary {
-      --summary-surface: #ffffff;
-      --summary-text: #0f172a;
-      --summary-border: transparent;
-      --summary-chip-bg: rgba(15, 23, 42, 0.06);
-      --summary-chip-color: #0f172a;
-      --summary-chip-border: rgba(15, 23, 42, 0.16);
-      --summary-shadow: rgba(15, 23, 42, 0.08);
-      padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(226, 232, 240, 0.8);
-      border-left: 4px solid var(--summary-border);
-      background: var(--summary-surface);
-      color: var(--summary-text);
-      transition: border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
-    }
+.schedule-item.summary {
+  --summary-surface: #ffffff;
+  --summary-text: #0f172a;
+  --summary-border: transparent;
+  --summary-chip-bg: rgba(15, 23, 42, 0.06);
+  --summary-chip-color: #0f172a;
+  --summary-chip-border: rgba(15, 23, 42, 0.16);
+  --summary-shadow: rgba(15, 23, 42, 0.08);
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 9px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-left: 4px solid var(--summary-border);
+  background: var(--summary-surface);
+  color: var(--summary-text);
+  transition: border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+}
     .schedule-item.summary:hover {
       box-shadow: 0 6px 16px var(--summary-shadow, rgba(15, 23, 42, 0.08));
     }
@@ -790,7 +799,9 @@
       margin: 4px 0;
     }
     .daily-entry-row {
+      --daily-card-color: rgba(15, 23, 42, 0.12);
       border: 1px solid rgba(15, 23, 42, 0.08);
+      border-left: 4px solid var(--daily-card-color, rgba(15, 23, 42, 0.12));
       border-radius: 12px;
       padding: 10px 12px;
       background: #ffffff;
@@ -803,6 +814,11 @@
     .daily-entry-row:hover {
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
       border-color: #cbd5f5;
+    }
+    .daily-entry-row.active {
+      border-color: rgba(59, 91, 219, 0.3);
+      border-left-color: var(--daily-card-color, rgba(59, 91, 219, 0.3));
+      box-shadow: 0 12px 28px rgba(37, 99, 235, 0.15);
     }
     .daily-entry-row:focus-visible {
       outline: 2px solid #3b82f6;
@@ -849,32 +865,38 @@
       color: #475569;
       margin: 0;
     }
+    .daily-entry-badges {
+      margin-top: 4px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
     .schedule-summary-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
-      font-size: 12px;
+      gap: 6px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--summary-text);
     }
     .schedule-summary-chips {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
+      gap: 4px;
+      margin-top: 4px;
     }
     .summary-chip {
-      padding: 2px 8px;
+      padding: 1px 6px;
       border-radius: 999px;
       background: var(--summary-chip-bg);
       border: 1px solid var(--summary-chip-border);
       color: var(--summary-chip-color);
-      font-size: 11px;
-      font-weight: 500;
+      font-size: 10px;
+      font-weight: 600;
     }
     .schedule-item {
-      padding: 6px 0;
+      padding: 5px 0;
       border-bottom: 1px solid #f1f3ff;
       cursor: pointer;
     }
@@ -1427,6 +1449,12 @@
       background: #ffffff;
       color: #0f172a;
     }
+    .form-success-message {
+      font-size: 12px;
+      color: #16a34a;
+      margin-top: 6px;
+      display: none;
+    }
     input[type="text"],
     input[type="time"] {
       padding: 6px;
@@ -1466,8 +1494,8 @@
     .form-buttons {
       display: flex;
       justify-content: flex-end;
-      gap: 8px;
-      margin-top: 8px;
+      gap: 6px;
+      margin-top: 6px;
     }
     #toggleFormBtn {
       border-radius: 999px;
@@ -1484,54 +1512,55 @@
       gap: 6px;
     }
     .summary-item {
-      padding: 12px 14px;
-      border-radius: 18px;
+      --summary-card-color: rgba(15, 23, 42, 0.2);
+      padding: 10px 12px;
+      border-radius: 14px;
       background: #ffffff;
       border: 1px solid rgba(15, 23, 42, 0.08);
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+      border-left: 4px solid var(--summary-card-color, rgba(15, 23, 42, 0.12));
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
       cursor: pointer;
       color: #0f172a;
     }
     .summary-item:focus-visible {
-      outline: 2px solid #3b82f6;
+      outline: 2px solid rgba(59, 91, 219, 0.4);
       outline-offset: 2px;
     }
     .summary-item + .summary-item {
-      margin-top: 2px;
+      margin-top: 4px;
     }
     .summary-item.excel {
-      background: #f0f9ff;
-      border-color: rgba(14, 165, 233, 0.45);
+      background: #ffffff;
     }
     .summary-item.active {
-      border-color: #3b82f6;
-      box-shadow: 0 22px 45px rgba(37, 99, 235, 0.12);
+      border-color: rgba(59, 91, 219, 0.25);
+      box-shadow: 0 16px 32px rgba(37, 99, 235, 0.12);
     }
     .summary-item-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: #0f172a;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
       line-height: 1.4;
     }
     .summary-item-time {
-      font-size: 14px;
+      font-size: 12px;
       color: #475569;
-      margin-bottom: 2px;
-      line-height: 1.4;
+      margin-bottom: 1px;
+      line-height: 1.3;
     }
     .summary-item-platforms {
-      font-size: 14px;
+      font-size: 12px;
       color: #475569;
-      line-height: 1.4;
+      line-height: 1.3;
     }
     .summary-item-owner {
       font-size: 12px;
       color: #1f2937;
       margin-top: 2px;
     }
-    .summary-item-badge {
-      font-size: 12px;
+.summary-item-badge {
+  font-size: 11px;
       color: #0f172a;
       background: #f8fafc;
       border: 1px solid rgba(15, 23, 42, 0.08);
@@ -1800,18 +1829,17 @@
     }
 
     body.dark .summary-item {
-      background: #ffffff;
-      border-color: rgba(15, 23, 42, 0.12);
-      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.2);
-      color: #0f172a;
+      background: #111827;
+      border-color: #1f2937;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+      color: #f8fafc;
     }
     body.dark .summary-item.excel {
-      background: #f0f9ff;
-      border-color: rgba(14, 165, 233, 0.5);
+      background: #111827;
     }
     body.dark .summary-item.active {
-      border-color: #3b82f6;
-      box-shadow: 0 24px 55px rgba(37, 99, 235, 0.25);
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: 0 20px 45px rgba(59, 130, 246, 0.25);
     }
     body.dark .summary-empty {
       background: #020617;
@@ -1821,13 +1849,16 @@
     body.dark .summary-item-title,
     body.dark .summary-item-time,
     body.dark .summary-item-platforms {
-      color: #0f172a;
+      color: #f8fafc;
     }
     body.dark .summary-item-badge,
     body.dark .excel-chip {
-      background: #f8fafc;
-      border-color: rgba(15, 23, 42, 0.12);
-      color: #0f172a;
+      background: #1d4ed8;
+      border-color: transparent;
+      color: #f8fafc;
+    }
+    body.dark .form-success-message {
+      color: #4ade80;
     }
     body.dark .copy-popover-backdrop {
       background: rgba(0, 0, 0, 0.6);
@@ -1901,6 +1932,10 @@
     body.dark .daily-entry-row:hover {
       border-color: #3b82f6;
       box-shadow: 0 12px 28px rgba(15, 23, 42, 0.6);
+    }
+    body.dark .daily-entry-row.active {
+      border-color: rgba(59, 130, 246, 0.5);
+      border-left-color: var(--daily-card-color, rgba(59, 130, 246, 0.5));
     }
     body.dark .daily-entry-title {
       color: #f8fafc;
@@ -2075,15 +2110,15 @@
     </div>
   </div>
 
-  <div class="tabs">
+  <div class="tabs" style="margin-bottom:8px;">
     <button class="tab-button active" id="tabCalendar">Takvim</button>
     <button class="tab-button" id="tabReports">Raporlar</button>
   </div>
   <p class="small" id="adminViewInfo" style="display:none;"></p>
 
   <!-- TAKVİM GÖRÜNÜMÜ -->
-  <div id="viewCalendar">
-    <div class="container">
+  <div id="viewCalendar" style="margin-top:8px;">
+    <div class="container" style="gap:12px;">
       <div class="calendar">
         <div class="channel-filter" id="channelFilter">
           <span>Kanallar:</span>
@@ -2131,6 +2166,7 @@
           <div class="schedule-view-toggle" id="scheduleViewToggle">
             <button type="button" class="schedule-view-btn" data-view="daily">Günlük</button>
             <button type="button" class="schedule-view-btn active" data-view="weekly">Haftalık</button>
+            <button type="button" class="schedule-view-btn" data-view="monthly">Aylık</button>
           </div>
           <div id="scheduleList" class="schedule-list small"></div>
           <div class="excel-upload-container">
@@ -2315,7 +2351,7 @@
 
           <div class="form-row">
             <label for="ownerSelect">Sorumlu kişi</label>
-            <select id="ownerSelect">
+            <select id="ownerSelect" style="font-size:12px;padding:6px;border-radius:6px;">
               <option value="">Seçilmedi</option>
             </select>
           </div>
@@ -2361,6 +2397,7 @@
             <button id="clearBtn">Temizle</button>
             <button id="saveBtn">Kaydet</button>
           </div>
+          <p class="form-success-message" id="saveSuccessMessage">Değişiklikler kaydedildi.</p>
 
           <p class="small">
             Not: Veriler hesabınıza bağlı olarak sunucuda saklanır.
@@ -2487,10 +2524,11 @@ const colorTabBtn = document.getElementById("colorTabBtn");
       platformInputMap.set(cb.value, cb);
     });
     const scheduleList = document.getElementById("scheduleList");
-    const scheduleViewToggle = document.getElementById("scheduleViewToggle");
-    const scheduleViewButtons = scheduleViewToggle
-      ? Array.from(scheduleViewToggle.querySelectorAll("button[data-view]"))
-      : [];
+const scheduleViewToggle = document.getElementById("scheduleViewToggle");
+const scheduleViewButtons = scheduleViewToggle
+  ? Array.from(scheduleViewToggle.querySelectorAll("button[data-view]"))
+  : [];
+const saveSuccessMessage = document.getElementById("saveSuccessMessage");
 const scheduleSearchInput = document.getElementById("scheduleSearchInput");
 const entryColorInput = document.getElementById("entryColorInput");
 const highlightColorInput = document.getElementById("highlightColorInput");
@@ -2595,6 +2633,7 @@ let scheduleSearchQuery = "";
 let scheduleViewMode = "weekly";
 let scheduleDailyDateKey = null;
 let highlightedDates = new Map();
+let saveSuccessTimeout = null;
 const DEFAULT_ENTRY_COLOR = "#2563eb";
 const DEFAULT_HIGHLIGHT_COLOR = "#fee2e2";
 const COLOR_PALETTE = [
@@ -2728,7 +2767,11 @@ const CHANNEL_FILTER_DEFINITIONS = {
   },
   website: {
     label: "Website",
-    matcher: (value) => value.toLowerCase().includes("website")
+    matcher: (value) =>
+      value.trim().toLowerCase() === "website" ||
+      value.toLowerCase().includes("website") ||
+      value.toLowerCase().includes("landing") ||
+      value.toLowerCase().includes("web")
   },
   medium: {
     label: "Medium",
@@ -3373,6 +3416,24 @@ function handleHighlightSelection(color) {
       updateDayHighlightLocally(selectedDateKey, previousColor);
     });
 }
+
+function showSaveSuccessMessage() {
+  if (!saveSuccessMessage) return;
+  saveSuccessMessage.style.display = "block";
+  if (saveSuccessTimeout) clearTimeout(saveSuccessTimeout);
+  saveSuccessTimeout = setTimeout(() => {
+    hideSaveSuccessMessage();
+  }, 4000);
+}
+
+function hideSaveSuccessMessage() {
+  if (!saveSuccessMessage) return;
+  saveSuccessMessage.style.display = "none";
+  if (saveSuccessTimeout) {
+    clearTimeout(saveSuccessTimeout);
+    saveSuccessTimeout = null;
+  }
+}
     const resetScopeLabels = {
       excel: "Excel girişlerini sıfırla",
       manual: "Manuel girişleri sıfırla",
@@ -3482,12 +3543,17 @@ document.addEventListener("click", () => {
   closeAllColorPickers();
 });
 
-    if (scheduleSearchInput) {
-      scheduleSearchInput.addEventListener("input", (event) => {
-        scheduleSearchQuery = event.target.value.trim().toLowerCase();
-        updateScheduleList();
-      });
-    }
+if (scheduleSearchInput) {
+  scheduleSearchInput.addEventListener("input", (event) => {
+    scheduleSearchQuery = event.target.value.trim().toLowerCase();
+    updateScheduleList();
+  });
+}
+
+if (modalFormSection) {
+  modalFormSection.addEventListener("input", () => hideSaveSuccessMessage());
+  modalFormSection.addEventListener("change", () => hideSaveSuccessMessage());
+}
 
     function setAuthToken(token) {
       authToken = token || "";
@@ -4103,23 +4169,25 @@ document.addEventListener("click", () => {
     }
 
     /* Sağ panel: Gün Detayı / Takvim Özeti */
-    function summarizePlatformLabel(platform) {
-      const key = (platform || "").toLowerCase();
-      if (!key) return "Platform seçilmedi";
-      if (key.includes("instagram")) return "Instagram";
-      if (key.includes("facebook")) return "Facebook";
-      if (key.includes("telegram")) return "Telegram";
-      if (key.includes("linkedin")) return "LinkedIn";
-      if (key.includes("youtube")) return "YouTube";
-      if (key.includes("tiktok")) return "TikTok";
-      if (key.includes("reddit")) return "Reddit";
-      if (key.includes("discord")) return "Discord";
-      if (key.includes("website") || key.includes("landing")) return "Website";
-      if (key.includes("medium")) return "Medium";
-      if (key.includes("blog")) return "Blog";
-      if (key.includes("twitter") || key === "x") return "X";
-      return platform || "Platform seçilmedi";
-    }
+function summarizePlatformLabel(platform) {
+  const key = (platform || "").toLowerCase();
+  if (!key) return "Platform seçilmedi";
+  if (key.includes("instagram")) return "Instagram";
+  if (key.includes("facebook")) return "Facebook";
+  if (key.includes("telegram")) return "Telegram";
+  if (key.includes("linkedin")) return "LinkedIn";
+  if (key.includes("youtube")) return "YouTube";
+  if (key.includes("tiktok")) return "TikTok";
+  if (key.includes("reddit")) return "Reddit";
+  if (key.includes("discord")) return "Discord";
+  if (key === "website") return "Website";
+  if (key === "medium") return "Medium";
+  if (key.includes("landing")) return "Website";
+  if (key.includes("web")) return "Website";
+  if (key.includes("blog")) return "Blog";
+  if (key.includes("twitter") || key === "x") return "X";
+  return platform || "Platform seçilmedi";
+}
 
     function buildDaySummary(items, options = {}) {
       const filterId = options.filterId || "all";
@@ -4151,6 +4219,8 @@ document.addEventListener("click", () => {
       scheduleList.innerHTML = "";
       if (scheduleViewMode === "daily") {
         renderDailySchedule();
+      } else if (scheduleViewMode === "monthly") {
+        renderMonthlySchedule();
       } else {
         renderWeeklySchedule();
       }
@@ -4207,10 +4277,7 @@ document.addEventListener("click", () => {
     function renderDailySchedule() {
       const focusKey = getDailyFocusDateKey();
       if (!focusKey || isKeyBeforeToday(focusKey)) {
-        const empty = document.createElement("p");
-        empty.className = "small";
-        empty.textContent = "Yaklaşan içerik bulunamadı.";
-        scheduleList.appendChild(empty);
+        renderEmptySchedule("Yaklaşan içerik bulunamadı.");
         return;
       }
       scheduleDailyDateKey = focusKey;
@@ -4231,12 +4298,11 @@ document.addEventListener("click", () => {
       scheduleList.appendChild(heading);
 
       if (!filtered.length) {
-        const empty = document.createElement("p");
-        empty.className = "small";
-        empty.textContent = scheduleSearchQuery
-          ? "Aramanızla eşleşen paylaşım yok."
-          : "Bu gün için yaklaşan içerik yok.";
-        scheduleList.appendChild(empty);
+        renderEmptySchedule(
+          scheduleSearchQuery
+            ? "Aramanızla eşleşen paylaşım yok."
+            : "Bu gün için yaklaşan içerik yok."
+        );
         return;
       }
 
@@ -4251,6 +4317,15 @@ document.addEventListener("click", () => {
         row.className = "daily-entry-row";
         row.tabIndex = 0;
         row.dataset.entryId = String(entry.id);
+        const cardColor = normalizeHexColor(entry.color);
+        if (cardColor) {
+          row.style.setProperty("--daily-card-color", cardColor);
+        } else {
+          row.style.removeProperty("--daily-card-color");
+        }
+        if (entry.id === activeItemId) {
+          row.classList.add("active");
+        }
 
         const statusIcon = document.createElement("span");
         statusIcon.className = `daily-entry-status status-${statusKey}`;
@@ -4280,6 +4355,15 @@ document.addEventListener("click", () => {
         ].filter(Boolean);
         metaLine.textContent = parts.join(" · ");
         body.appendChild(metaLine);
+        if (entry.source && entry.source.toLowerCase() === "excel") {
+          const badgeWrap = document.createElement("div");
+          badgeWrap.className = "daily-entry-badges";
+          const badge = document.createElement("span");
+          badge.className = "summary-item-badge";
+          badge.textContent = "Excel";
+          badgeWrap.appendChild(badge);
+          body.appendChild(badgeWrap);
+        }
 
         row.appendChild(body);
         row.addEventListener("click", () => selectEntryById(entry.id));
@@ -4294,119 +4378,187 @@ document.addEventListener("click", () => {
       scheduleList.appendChild(list);
     }
 
-    function renderWeeklySchedule() {
-      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    function getEffectiveRangeStartDate() {
+      const today = normalizeToMidnight(new Date());
+      const selected =
+        selectedDateKey && parseDateKeyString(selectedDateKey);
+      if (selected && !isDateBeforeToday(selected)) {
+        return normalizeToMidnight(selected);
+      }
+      return today;
+    }
+
+    function getSelectedMonthEndDate() {
+      const selected =
+        selectedDateKey && parseDateKeyString(selectedDateKey);
+      const base = selected || new Date(currentYear, currentMonth, 1);
+      return normalizeToMidnight(new Date(base.getFullYear(), base.getMonth() + 1, 0));
+    }
+
+    function addDays(date, amount) {
+      const cloned = new Date(date);
+      cloned.setDate(cloned.getDate() + amount);
+      cloned.setHours(0, 0, 0, 0);
+      return cloned;
+    }
+
+    function renderMonthlySchedule() {
+      const start = getEffectiveRangeStartDate();
+      const monthEnd = getSelectedMonthEndDate();
+      if (start.getTime() > monthEnd.getTime()) {
+        renderEmptySchedule("Yaklaşan içerik bulunamadı.");
+        return;
+      }
+      renderRangeSchedule(start, monthEnd, "Bu ay için içerik bulunamadı.");
+    }
+
+    function renderRangeSchedule(rangeStart, rangeEnd, emptyMessage) {
+      if (!rangeStart || !rangeEnd || rangeStart.getTime() > rangeEnd.getTime()) {
+        renderEmptySchedule(emptyMessage);
+        return;
+      }
       let any = false;
       const query = scheduleSearchQuery;
+      const cursor = new Date(rangeStart);
+      cursor.setHours(0, 0, 0, 0);
 
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateObj = new Date(currentYear, currentMonth, day);
-        if (isDateBeforeToday(dateObj)) continue;
-        const key = formatDateKey(dateObj);
+      while (cursor.getTime() <= rangeEnd.getTime()) {
+        const key = formatDateKey(cursor);
         const dayData = loadDayData(key);
-        const items = dayData.items || [];
-        if (!items.length) continue;
-
-        const summary = buildDaySummary(items, { filterId: activeChannelFilter });
-        if (!summary.total) continue;
-        const humanDate = formatHumanDate(dateObj);
-        const haystack =
-          (humanDate +
-            " " +
-            summary.entries.map(([label]) => label).join(" ")).toLowerCase();
-        if (query && !haystack.includes(query)) continue;
-
-        any = true;
-
-        const row = document.createElement("div");
-        row.className = "schedule-item summary";
-        const highlightColor = highlightedDates.get(key);
-        if (highlightColor) {
-          row.classList.add("has-highlight");
-          const normalizedHighlight =
-            normalizeHexColor(highlightColor) || highlightColor;
-          const token = getColorTokenFromHex(normalizedHighlight);
-          const isPureWhite =
-            token === "white" || normalizedHighlight === "#ffffff";
-          const surfaceTint = isPureWhite
-            ? "#ffffff"
-            : hexToRgba(normalizedHighlight, 0.12);
-          const summaryShadow = isPureWhite
-            ? "rgba(15, 23, 42, 0.08)"
-            : hexToRgba(normalizedHighlight, 0.2);
-          row.style.setProperty("--summary-border", normalizedHighlight);
-          row.style.setProperty("--summary-surface", surfaceTint);
-          row.style.setProperty("--summary-shadow", summaryShadow);
-          if (token) {
-            row.dataset.color = token;
-            row.style.removeProperty("--summary-text");
-            row.style.removeProperty("--summary-chip-bg");
-            row.style.removeProperty("--summary-chip-color");
-            row.style.removeProperty("--summary-chip-border");
-          } else {
-            delete row.dataset.color;
-            const textColor = getContrastingTextColor(normalizedHighlight);
-            row.style.setProperty("--summary-text", textColor);
-            if (textColor === "#f9fafb") {
-              row.style.setProperty("--summary-chip-bg", "rgba(255, 255, 255, 0.28)");
-              row.style.setProperty("--summary-chip-color", "#ffffff");
-              row.style.setProperty("--summary-chip-border", "rgba(255, 255, 255, 0.45)");
-            } else {
-              row.style.setProperty("--summary-chip-bg", "rgba(15, 23, 42, 0.08)");
-              row.style.setProperty("--summary-chip-color", "#0f172a");
-              row.style.setProperty("--summary-chip-border", "rgba(15, 23, 42, 0.2)");
+        const items = (dayData.items || []).filter((item) =>
+          entryMatchesChannelFilter(item, activeChannelFilter)
+        );
+        if (items.length) {
+          const summary = buildDaySummary(items, { filterId: activeChannelFilter });
+          if (summary.total) {
+            const humanDate = formatHumanDate(cursor);
+            const haystack = (
+              humanDate +
+              " " +
+              summary.entries.map(([label]) => label).join(" ")
+            ).toLowerCase();
+            if (!query || haystack.includes(query)) {
+              any = true;
+              const snapshot = new Date(
+                cursor.getFullYear(),
+                cursor.getMonth(),
+                cursor.getDate()
+              );
+              scheduleList.appendChild(
+                createScheduleSummaryRow(snapshot, key, summary, humanDate)
+              );
             }
           }
-        } else {
-          row.classList.remove("has-highlight");
-          row.style.setProperty("--summary-border", "transparent");
-          delete row.dataset.color;
-          row.style.removeProperty("--summary-surface");
-          row.style.removeProperty("--summary-shadow");
+        }
+        cursor.setDate(cursor.getDate() + 1);
+        cursor.setHours(0, 0, 0, 0);
+      }
+
+      if (!any) {
+        renderEmptySchedule(emptyMessage);
+      }
+    }
+
+    function createScheduleSummaryRow(dateObj, key, summary, humanDate) {
+      const row = document.createElement("div");
+      row.className = "schedule-item summary";
+      const highlightColor = highlightedDates.get(key);
+      if (highlightColor) {
+        row.classList.add("has-highlight");
+        const normalizedHighlight =
+          normalizeHexColor(highlightColor) || highlightColor;
+        const token = getColorTokenFromHex(normalizedHighlight);
+        const isPureWhite =
+          token === "white" || normalizedHighlight === "#ffffff";
+        const surfaceTint = isPureWhite
+          ? "#ffffff"
+          : hexToRgba(normalizedHighlight, 0.12);
+        const summaryShadow = isPureWhite
+          ? "rgba(15, 23, 42, 0.08)"
+          : hexToRgba(normalizedHighlight, 0.2);
+        row.style.setProperty("--summary-border", normalizedHighlight);
+        row.style.setProperty("--summary-surface", surfaceTint);
+        row.style.setProperty("--summary-shadow", summaryShadow);
+        if (token) {
+          row.dataset.color = token;
           row.style.removeProperty("--summary-text");
           row.style.removeProperty("--summary-chip-bg");
           row.style.removeProperty("--summary-chip-color");
           row.style.removeProperty("--summary-chip-border");
+        } else {
+          delete row.dataset.color;
+          const textColor = getContrastingTextColor(normalizedHighlight);
+          row.style.setProperty("--summary-text", textColor);
+          if (textColor === "#f9fafb") {
+            row.style.setProperty("--summary-chip-bg", "rgba(255, 255, 255, 0.28)");
+            row.style.setProperty("--summary-chip-color", "#ffffff");
+            row.style.setProperty("--summary-chip-border", "rgba(255, 255, 255, 0.45)");
+          } else {
+            row.style.setProperty("--summary-chip-bg", "rgba(15, 23, 42, 0.08)");
+            row.style.setProperty("--summary-chip-color", "#0f172a");
+            row.style.setProperty("--summary-chip-border", "rgba(15, 23, 42, 0.2)");
+          }
         }
-
-        const header = document.createElement("div");
-        header.className = "schedule-summary-header";
-        const headerSuffix =
-          activeChannelFilter === "all"
-            ? `${summary.total} paylaşım`
-            : `${getChannelFilterLabel(activeChannelFilter)} ${summary.total} paylaşım`;
-        header.textContent = `${humanDate} · ${headerSuffix}`;
-        row.appendChild(header);
-
-        const chips = document.createElement("div");
-        chips.className = "schedule-summary-chips";
-        summary.entries.forEach(([label, count]) => {
-          const chip = document.createElement("span");
-          chip.className = "summary-chip";
-          chip.textContent = `${label} ${count}`;
-          chips.appendChild(chip);
-        });
-        row.appendChild(chips);
-
-        row.addEventListener("click", () => {
-          openModalForDate(dateObj, key);
-        });
-
-        scheduleList.appendChild(row);
+      } else {
+        row.classList.remove("has-highlight");
+        row.style.setProperty("--summary-border", "transparent");
+        delete row.dataset.color;
+        row.style.removeProperty("--summary-surface");
+        row.style.removeProperty("--summary-shadow");
+        row.style.removeProperty("--summary-text");
+        row.style.removeProperty("--summary-chip-bg");
+        row.style.removeProperty("--summary-chip-color");
+        row.style.removeProperty("--summary-chip-border");
       }
 
-      if (!any) {
-        const empty = document.createElement("p");
-        empty.className = "small";
-        const baseMessage =
-          activeChannelFilter === "all"
-            ? "Yaklaşan içerik bulunamadı."
-            : `${getChannelFilterLabel(activeChannelFilter)} için içerik bulunamadı.`;
-        empty.textContent = query
-          ? "Aramanızla eşleşen gün bulunamadı."
-          : baseMessage;
-        scheduleList.appendChild(empty);
+      const header = document.createElement("div");
+      header.className = "schedule-summary-header";
+      const headerSuffix =
+        activeChannelFilter === "all"
+          ? `${summary.total} paylaşım`
+          : `${getChannelFilterLabel(activeChannelFilter)} ${summary.total} paylaşım`;
+      header.textContent = `${humanDate} · ${headerSuffix}`;
+      row.appendChild(header);
+
+      const chips = document.createElement("div");
+      chips.className = "schedule-summary-chips";
+      summary.entries.forEach(([label, count]) => {
+        const chip = document.createElement("span");
+        chip.className = "summary-chip";
+        chip.textContent = `${label} ${count}`;
+        chips.appendChild(chip);
+      });
+      row.appendChild(chips);
+
+      row.addEventListener("click", () => {
+        const clone = new Date(dateObj.getTime());
+        openModalForDate(clone, key);
+      });
+
+      return row;
+    }
+
+    function renderEmptySchedule(message) {
+      const empty = document.createElement("p");
+      empty.className = "small";
+      empty.textContent = scheduleSearchQuery
+        ? "Aramanızla eşleşen gün bulunamadı."
+        : message;
+      scheduleList.appendChild(empty);
+    }
+
+    function renderWeeklySchedule() {
+      const start = getEffectiveRangeStartDate();
+      const monthEnd = getSelectedMonthEndDate();
+      if (start.getTime() > monthEnd.getTime()) {
+        renderEmptySchedule("Yaklaşan içerik bulunamadı.");
+        return;
       }
+      let end = addDays(start, 6);
+      if (end.getTime() > monthEnd.getTime()) {
+        end = monthEnd;
+      }
+      renderRangeSchedule(start, end, "Bu hafta için içerik bulunamadı.");
     }
 
     /* Takvim */
@@ -4547,6 +4699,12 @@ document.addEventListener("click", () => {
         wrap.setAttribute("role", "button");
         wrap.setAttribute("tabindex", "0");
         if (item.id === activeItemId) wrap.classList.add("active");
+        const cardColor = normalizeHexColor(item.color);
+        if (cardColor) {
+          wrap.style.setProperty("--summary-card-color", cardColor);
+        } else {
+          wrap.style.removeProperty("--summary-card-color");
+        }
         wrap.dataset.entryId = String(item.id);
         if (item.source === "excel") wrap.classList.add("excel");
         const statusKey =
@@ -4636,9 +4794,14 @@ document.addEventListener("click", () => {
       renderModalSummaryList();
       setModalViewForEntry(entry);
       setControlActionsEnabled(Boolean(authToken) && isViewingOwnData());
+      if (scheduleViewMode === "daily") {
+        scheduleDailyDateKey = selectedDateKey;
+        updateScheduleList();
+      }
     }
 
     function populateFormWithEntry(entry) {
+      hideSaveSuccessMessage();
       filesInput.value = entry.files || "";
       textInput.value = entry.text || "";
       timeInput.value = entry.time || "";
@@ -4828,12 +4991,12 @@ document.addEventListener("click", () => {
       });
     }
 
-    function clearFormOnly() {
+    function clearFormOnly(options = {}) {
       filesInput.value = "";
       textInput.value = "";
       timeInput.value = "";
-    platformInputs.forEach((cb) => (cb.checked = false));
-    if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
+  platformInputs.forEach((cb) => (cb.checked = false));
+  if (entryColorInput) entryColorInput.value = DEFAULT_ENTRY_COLOR;
     if (entryColorPicker && entryColorInput) {
       setColorPickerValue(
         entryColorPicker,
@@ -4852,6 +5015,9 @@ document.addEventListener("click", () => {
         }
       }
       setPlanReturnBannerVisible(false);
+      if (!options.preserveSuccessMessage) {
+        hideSaveSuccessMessage();
+      }
     }
 
     function updateHighlightStateUI() {
@@ -4953,6 +5119,7 @@ document.addEventListener("click", () => {
       activeItemId = null;
       toggleColorHelpPanel(false);
       closeCopyPopover();
+      hideSaveSuccessMessage();
     }
 
     function normalizeToMidnight(date) {
@@ -6135,9 +6302,10 @@ document.addEventListener("click", () => {
         if (viewReports.style.display !== "none") renderReports();
         activeItemId = null;
         modalForcePlanMode = false;
-        clearFormOnly();
+        clearFormOnly({ preserveSuccessMessage: true });
         setModalViewForEntry(null);
         renderModalSummaryList();
+        showSaveSuccessMessage();
         deleteBtn.disabled = true;
       } catch (err) {
         console.error(err);

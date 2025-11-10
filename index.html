@@ -143,11 +143,7 @@
       gap: 10px;
     }
     #viewCalendar {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      min-height: 0;
+      display: block;
     }
     #viewReports {
       display: block;
@@ -462,7 +458,7 @@
   display: grid;
   grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
   gap: 14px;
-  align-items: flex-start;
+  align-items: stretch;
   width: 100%;
 }
 .calendar {
@@ -664,18 +660,25 @@
     .day-summary.excel {
       color: #0369a1;
     }
-.day-summary-chip {
+    .day-summary-chip {
       display: flex;
       align-items: center;
       width: 100%;
-      padding: 2px 6px;
+      padding: 2px 8px;
       margin-top: 2px;
       border-radius: 999px;
-      background: var(--day-chip-bg);
-      border: 1px solid var(--day-chip-border);
-      font-size: 9px;
-      color: var(--day-chip-color);
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      font-size: 10px;
+      color: #0f172a;
       font-weight: 600;
+    }
+    .day-summary-more {
+      margin-top: 3px;
+      font-size: 10px;
+      color: #9ca3af;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
     .day[data-color] .day-summary {
       color: var(--day-text);
@@ -742,6 +745,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  height: 100%;
 }
 .form {
   border: 1px solid #dde2ff;
@@ -751,6 +755,23 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  height: 100%;
+}
+.summary-scroll-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.summary-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+.summary-scroll-area::-webkit-scrollbar-thumb {
+  background: #cbd5f5;
+  border-radius: 999px;
 }
 .excel-upload-container {
   margin-top: auto;
@@ -799,6 +820,10 @@
   margin-top: 6px;
   border-top: 1px solid #eef0ff;
   padding-top: 6px;
+}
+#scheduleList {
+  flex: 1;
+  min-height: 0;
 }
 .schedule-search {
   margin-top: 6px;
@@ -2393,20 +2418,22 @@
       <div class="side">
         <div class="form">
           <h2>Gün Detayı / Takvim Özeti</h2>
-          <div class="schedule-search">
-            <input
-              type="text"
-              id="scheduleSearchInput"
-              placeholder="Tarih veya platform ara"
-              aria-label="Takvim araması"
-            />
+          <div class="summary-scroll-area">
+            <div class="schedule-search">
+              <input
+                type="text"
+                id="scheduleSearchInput"
+                placeholder="Tarih veya platform ara"
+                aria-label="Takvim araması"
+              />
+            </div>
+            <div class="schedule-view-toggle" id="scheduleViewToggle">
+              <button type="button" class="schedule-view-btn active" data-view="daily">Günlük</button>
+              <button type="button" class="schedule-view-btn" data-view="weekly">Haftalık</button>
+              <button type="button" class="schedule-view-btn" data-view="monthly">Aylık</button>
+            </div>
+            <div id="scheduleList" class="schedule-list small"></div>
           </div>
-          <div class="schedule-view-toggle" id="scheduleViewToggle">
-            <button type="button" class="schedule-view-btn active" data-view="daily">Günlük</button>
-            <button type="button" class="schedule-view-btn" data-view="weekly">Haftalık</button>
-            <button type="button" class="schedule-view-btn" data-view="monthly">Aylık</button>
-          </div>
-          <div id="scheduleList" class="schedule-list small"></div>
           <div class="excel-upload-container">
             <p class="excel-note">
               Excel yüklediğinde önceki Excel kayıtları silinir, manuel eklediğin içeriklere dokunulmaz.
@@ -2600,7 +2627,7 @@
             <div class="platform-presets">
               <span>Hızlı seçim:</span>
               <button type="button" class="preset-btn secondary-btn" data-platforms="Instagram Post|Instagram Story|Instagram Reels">Instagram paketi</button>
-              <button type="button" class="preset-btn secondary-btn" data-platforms="Instagram Post|Instagram Story|Instagram Reels|Facebook|X|Telegram">Çoklu sosyal</button>
+              <button type="button" class="preset-btn secondary-btn" data-platforms="Instagram Post|Instagram Story|Instagram Reels|Facebook|X|Telegram|Website">Çoklu sosyal</button>
               <button type="button" class="preset-btn secondary-btn" data-platforms="">Temizle</button>
             </div>
             <div class="platforms">
@@ -2615,6 +2642,7 @@
               <label><input type="checkbox" value="LinkedIn" />LinkedIn</label>
               <label><input type="checkbox" value="TikTok" />TikTok</label>
               <label><input type="checkbox" value="Telegram" />Telegram</label>
+              <label><input type="checkbox" value="Website" />Website</label>
               <label><input type="checkbox" value="Medium" />Medium</label>
             </div>
           </div>
@@ -4502,6 +4530,11 @@ function summarizePlatformLabel(platform) {
     function updateScheduleList() {
       if (!scheduleList) return;
       scheduleList.innerHTML = "";
+      const normalizedQuery = getNormalizedSearchQuery();
+      if (normalizedQuery) {
+        renderSearchResults(normalizedQuery);
+        return;
+      }
       if (scheduleViewMode === "daily") {
         renderDailySchedule();
       } else if (scheduleViewMode === "monthly") {
@@ -4509,6 +4542,44 @@ function summarizePlatformLabel(platform) {
       } else {
         renderWeeklySchedule();
       }
+    }
+
+    function renderSearchResults(query) {
+      const matches = [];
+      entriesByDate.forEach((items, key) => {
+        const dayData = loadDayData(key);
+        const dayItems = dayData.items || [];
+        if (!dayItems.length) return;
+        const scopedItems = dayItems.filter((item) =>
+          entryMatchesChannelFilter(item, activeChannelFilter)
+        );
+        if (!scopedItems.length) return;
+        const hasMatch = scopedItems.some((item) =>
+          entryMatchesSearchQuery(item, query)
+        );
+        if (!hasMatch) return;
+        matches.push({ key, items: scopedItems });
+      });
+      if (!matches.length) {
+        renderEmptySchedule("Aramanızla eşleşen gün bulunamadı.");
+        return;
+      }
+      matches
+        .sort((a, b) => a.key.localeCompare(b.key))
+        .forEach(({ key, items }) => {
+          const dateObj = parseDateKeyString(key);
+          const summary = buildDaySummary(items, {
+            filterId: activeChannelFilter
+          });
+          scheduleList.appendChild(
+            createScheduleSummaryRow(
+              dateObj,
+              key,
+              summary,
+              formatHumanDate(dateObj)
+            )
+          );
+        });
     }
 
     function focusDayFromSchedule(dateKey, entryId = null) {
@@ -4534,23 +4605,33 @@ function summarizePlatformLabel(platform) {
       return isDateBeforeToday(dateObj);
     }
 
-    function entryMatchesSearchQuery(entry) {
-      if (!scheduleSearchQuery) return true;
-      const ownerLabel = entry.owner_id ? getOwnerLabel(entry.owner_id) : "";
-      const haystack = (
-        (entry.text || "") +
-        " " +
-        (entry.files || "") +
-        " " +
-        (entry.time || "") +
-        " " +
-        formatPlatformsLabel(entry.platforms || []) +
-        " " +
-        ownerLabel
-      )
-        .toLowerCase();
-      return haystack.includes(scheduleSearchQuery);
-    }
+function getNormalizedSearchQuery(override = null) {
+  if (typeof override === "string") {
+    return override.trim().toLowerCase();
+  }
+  return (scheduleSearchQuery || "").trim().toLowerCase();
+}
+
+function entryMatchesSearchQuery(entry, queryOverride = null) {
+  const query = getNormalizedSearchQuery(queryOverride);
+  if (!query) return true;
+  const ownerLabel = entry.owner_id ? getOwnerLabel(entry.owner_id) : "";
+  const haystack = (
+    (entry.text || "") +
+    " " +
+    (entry.files || "") +
+    " " +
+    (entry.note || "") +
+    " " +
+    (entry.time || "") +
+    " " +
+    formatPlatformsLabel(entry.platforms || []) +
+    " " +
+    ownerLabel
+  )
+    .toLowerCase();
+  return haystack.includes(query);
+}
 
     function getDailyFocusDateKey() {
       if (summaryDateKey) {
@@ -4962,22 +5043,10 @@ function summarizePlatformLabel(platform) {
           if (colorToken) {
             cell.dataset.color = colorToken;
             cell.style.removeProperty("--day-text");
-            cell.style.removeProperty("--day-chip-bg");
-            cell.style.removeProperty("--day-chip-color");
-            cell.style.removeProperty("--day-chip-border");
           } else {
             delete cell.dataset.color;
             const textColor = getContrastingTextColor(normalizedHighlight);
             cell.style.setProperty("--day-text", textColor);
-            if (textColor === "#f9fafb") {
-              cell.style.setProperty("--day-chip-bg", "rgba(255, 255, 255, 0.22)");
-              cell.style.setProperty("--day-chip-color", "#ffffff");
-              cell.style.setProperty("--day-chip-border", "rgba(255, 255, 255, 0.45)");
-            } else {
-              cell.style.setProperty("--day-chip-bg", "rgba(15, 23, 42, 0.08)");
-              cell.style.setProperty("--day-chip-color", "#0f172a");
-              cell.style.setProperty("--day-chip-border", "rgba(15, 23, 42, 0.18)");
-            }
           }
         } else {
           cell.classList.remove("day-highlighted");
@@ -4986,9 +5055,6 @@ function summarizePlatformLabel(platform) {
           cell.style.removeProperty("--day-border");
           cell.style.removeProperty("--day-highlight-shadow");
           cell.style.removeProperty("--day-text");
-          cell.style.removeProperty("--day-chip-bg");
-          cell.style.removeProperty("--day-chip-color");
-          cell.style.removeProperty("--day-chip-border");
         }
 
         const matchesFilter = dayMatchesChannelFilter(items, activeChannelFilter);
@@ -5015,12 +5081,22 @@ function summarizePlatformLabel(platform) {
               )} ${summary.total} içerik`;
             }
             body.appendChild(counter);
-            summary.entries.slice(0, 3).forEach(([label, count]) => {
+            let shownTotal = 0;
+            const entriesToShow = summary.entries.slice(0, 3);
+            entriesToShow.forEach(([label, count]) => {
               const chip = document.createElement("div");
               chip.className = "day-summary-chip";
               chip.textContent = `${count} ${label}`;
               body.appendChild(chip);
+              shownTotal += count;
             });
+            const remaining = summary.total - shownTotal;
+            if (remaining > 0) {
+              const more = document.createElement("div");
+              more.className = "day-summary-more";
+              more.textContent = `+${remaining} diğer içerik`;
+              body.appendChild(more);
+            }
           }
         }
 

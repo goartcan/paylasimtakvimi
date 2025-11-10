@@ -673,13 +673,6 @@
       color: #0f172a;
       font-weight: 600;
     }
-    .day-summary-more {
-      margin-top: 3px;
-      font-size: 10px;
-      color: #9ca3af;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
     .day[data-color] .day-summary {
       color: var(--day-text);
     }
@@ -5070,33 +5063,28 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           if (summary.total > 0) {
             const counter = document.createElement("div");
             counter.className = "day-counter";
+            const entriesToShow = summary.entries.slice(0, 3);
+            const visibleTotal = entriesToShow.reduce(
+              (sum, [, count]) => sum + count,
+              0
+            );
             if (activeChannelFilter === "all") {
               counter.textContent =
-                summary.total === 1
+                visibleTotal === 1
                   ? "1 içerik"
-                  : `${summary.total} içerik`;
+                  : `${visibleTotal} içerik`;
             } else {
               counter.textContent = `${getChannelFilterLabel(
                 activeChannelFilter
-              )} ${summary.total} içerik`;
+              )} ${visibleTotal} içerik`;
             }
             body.appendChild(counter);
-            let shownTotal = 0;
-            const entriesToShow = summary.entries.slice(0, 3);
             entriesToShow.forEach(([label, count]) => {
               const chip = document.createElement("div");
               chip.className = "day-summary-chip";
               chip.textContent = `${count} ${label}`;
               body.appendChild(chip);
-              shownTotal += count;
             });
-            const remaining = summary.total - shownTotal;
-            if (remaining > 0) {
-              const more = document.createElement("div");
-              more.className = "day-summary-more";
-              more.textContent = `+${remaining} diğer içerik`;
-              body.appendChild(more);
-            }
           }
         }
 

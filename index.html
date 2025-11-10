@@ -1679,22 +1679,28 @@
       overflow: hidden;
     }
     .summary-item-time-row {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 4px;
+      justify-content: space-between;
+      gap: 10px;
       font-size: 11.5px;
       color: #475569;
-      margin-bottom: 2px;
+      margin-bottom: 6px;
+    }
+    .summary-item-time-row .time-text {
+      display: inline-flex;
+      align-items: center;
+      font-weight: 600;
     }
     .summary-item-time-row .time-icon {
-      width: 12px;
-      height: 12px;
-      border-radius: 999px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
       border: 1px solid #c7d2fe;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 9px;
+      font-size: 10px;
       color: #1d4ed8;
       background: #eef2ff;
     }
@@ -1708,8 +1714,8 @@
       color: #1f2937;
       margin-top: 2px;
     }
-.summary-item-badge {
-  font-size: 10px;
+    .summary-item-badge {
+      font-size: 10px;
       color: #0f172a;
       background: #f8fafc;
       border: 1px solid rgba(15, 23, 42, 0.08);
@@ -1726,20 +1732,26 @@
       font-size: 9.5px;
       padding: 2px 7px;
     }
-    .summary-item-actions {
+    .summary-item-footer {
+      margin-top: 6px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
+      justify-content: flex-end;
     }
-    .summary-item-copy-btn {
-      font-size: 9.5px;
+    .summary-item-copy-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
       border: 1px dashed #c7d2fe;
       background: #eef2ff;
       color: #4338ca;
-      padding: 3px 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s ease;
     }
-    .summary-item-copy-btn:hover {
+    .summary-item-copy-icon:hover {
       background: #e0e7ff;
     }
     .summary-item-head {
@@ -5045,19 +5057,19 @@ function summarizePlatformLabel(platform) {
 
         const timeRow = document.createElement("div");
         timeRow.className = "summary-item-time-row";
+        const timeText = document.createElement("span");
+        timeText.className = "time-text";
+        timeText.textContent = time ? time : "Saat seçilmedi";
+        timeRow.appendChild(timeText);
         const timeIcon = document.createElement("span");
         timeIcon.className = "time-icon";
         timeIcon.textContent = "⏰";
         timeRow.appendChild(timeIcon);
-        const timeText = document.createElement("span");
-        timeText.textContent = time ? time : "Saat seçilmedi";
-        timeRow.appendChild(timeText);
         wrap.appendChild(timeRow);
 
         const platformsDiv = document.createElement("div");
         platformsDiv.className = "summary-item-platforms";
         platformsDiv.textContent = platforms;
-        
         wrap.appendChild(platformsDiv);
 
         const ownerLabel = getOwnerLabel(item.owner_id);
@@ -5068,18 +5080,19 @@ function summarizePlatformLabel(platform) {
           : "Sorumlu: Belirlenmedi";
         wrap.appendChild(ownerDiv);
 
-        const actionsRow = document.createElement("div");
-        actionsRow.className = "summary-item-actions";
+        const footer = document.createElement("div");
+        footer.className = "summary-item-footer";
         const copyBtn = document.createElement("button");
         copyBtn.type = "button";
-        copyBtn.className = "summary-item-copy-btn";
-        copyBtn.textContent = "Bu paylaşımı kopyala";
+        copyBtn.className = "summary-item-copy-icon";
+        copyBtn.setAttribute("aria-label", "Paylaşımı kopyala");
+        copyBtn.textContent = "⧉";
         copyBtn.addEventListener("click", (event) => {
           event.stopPropagation();
           openCopyPopover(item);
         });
-        actionsRow.appendChild(copyBtn);
-        wrap.appendChild(actionsRow);
+        footer.appendChild(copyBtn);
+        wrap.appendChild(footer);
 
         wrap.addEventListener("keydown", (event) => {
           if (event.key === "Enter" || event.key === " ") {

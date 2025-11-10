@@ -1584,63 +1584,99 @@
       gap: 6px;
     }
     .summary-item {
-      --summary-card-color: rgba(15, 23, 42, 0.2);
-      padding: 10px 12px;
-      border-radius: 14px;
+      --summary-card-color: rgba(15, 23, 42, 0.25);
+      position: relative;
+      padding: 8px 10px 9px;
+      border-radius: 12px;
       background: #ffffff;
-      border: 1px solid rgba(15, 23, 42, 0.08);
-      border-left: 4px solid var(--summary-card-color, rgba(15, 23, 42, 0.12));
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+      border: 1px solid #e5e7eb;
+      box-shadow: none;
       cursor: pointer;
       color: #0f172a;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease,
+        background 0.15s ease;
     }
     .summary-item:focus-visible {
       outline: 2px solid rgba(59, 91, 219, 0.4);
       outline-offset: 2px;
     }
     .summary-item + .summary-item {
-      margin-top: 4px;
+      margin-top: 3px;
     }
     .summary-item.excel {
       background: #ffffff;
     }
     .summary-item.active {
-      border-color: rgba(59, 91, 219, 0.25);
-      box-shadow: 0 16px 32px rgba(37, 99, 235, 0.12);
+      border: 2px solid #3b82f6;
+      background: #eef3ff;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.18);
+    }
+    .summary-item.active::before {
+      content: "";
+      position: absolute;
+      left: -1px;
+      top: 10px;
+      bottom: 10px;
+      width: 4px;
+      border-radius: 999px;
+      background: #3b82f6;
+    }
+    .summary-item:hover {
+      border-color: #cbd5f5;
+    }
+    .summary-color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--summary-card-color, #94a3b8);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      flex-shrink: 0;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
     }
     .summary-item-title {
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 600;
       color: #0f172a;
-      margin-bottom: 3px;
-      line-height: 1.4;
+      margin-bottom: 2px;
+      line-height: 1.35;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
     .summary-item-time {
-      font-size: 12px;
+      font-size: 11.5px;
       color: #475569;
       margin-bottom: 1px;
       line-height: 1.3;
     }
     .summary-item-platforms {
-      font-size: 12px;
+      font-size: 11.5px;
       color: #475569;
       line-height: 1.3;
     }
     .summary-item-owner {
-      font-size: 12px;
+      font-size: 11.5px;
       color: #1f2937;
       margin-top: 2px;
     }
 .summary-item-badge {
-  font-size: 11px;
+  font-size: 10px;
       color: #0f172a;
       background: #f8fafc;
       border: 1px solid rgba(15, 23, 42, 0.08);
       border-radius: 999px;
-      padding: 4px 10px;
+      padding: 2px 8px;
       display: inline-flex;
       align-items: center;
       gap: 4px;
+    }
+    .summary-item-badge.excel {
+      background: #e0e7ff;
+      color: #1d4ed8;
+      border-color: #c7d2fe;
+      font-size: 9.5px;
+      padding: 2px 7px;
     }
     .summary-item-actions {
       display: flex;
@@ -1649,11 +1685,11 @@
       margin-top: 8px;
     }
     .summary-item-copy-btn {
-      font-size: 11px;
+      font-size: 9.5px;
       border: 1px dashed #c7d2fe;
       background: #eef2ff;
       color: #4338ca;
-      padding: 4px 10px;
+      padding: 3px 8px;
     }
     .summary-item-copy-btn:hover {
       background: #e0e7ff;
@@ -1663,7 +1699,13 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 8px;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
+    }
+    .summary-item-status-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
     }
     .summary-item-status {
       font-size: 11px;
@@ -2706,7 +2748,7 @@ const checkedSummaryOwner = document.getElementById("checkedSummaryOwner");
 
     let currentYear;
     let currentMonth;
-    let selectedDateKey = null;
+    let selectedDateKey = todayDateKey;
 let currentDayItems = []; // {id, files, text, time, platforms}[]
 let activeItemId = null;
 let isRegisterMode = false;
@@ -2720,7 +2762,7 @@ let scheduleViewMode = "daily";
 let scheduleDailyDateKey = todayDateKey;
 let highlightedDates = new Map();
 let saveSuccessTimeout = null;
-let activeScheduleSummaryKey = null;
+let activeScheduleSummaryKey = todayDateKey;
 const DEFAULT_ENTRY_COLOR = "#2563eb";
 const DEFAULT_HIGHLIGHT_COLOR = "#fee2e2";
 const COLOR_PALETTE = [
@@ -4227,6 +4269,15 @@ if (modalFormSection) {
       const year = date.getFullYear();
       return day + " " + monthName + " " + year;
     }
+    function setSelectedDateState(dateKey, dateObj = null) {
+      if (!dateKey) return null;
+      const parsed = dateObj || parseDateKeyString(dateKey);
+      if (!parsed) return null;
+      selectedDateKey = dateKey;
+      scheduleDailyDateKey = dateKey;
+      activeScheduleSummaryKey = dateKey;
+      return parsed;
+    }
     function minutesFromTime(t) {
       if (!t) return 24 * 60 + 1; // saat yoksa en sona
       const parts = t.split(":");
@@ -4343,9 +4394,7 @@ function summarizePlatformLabel(platform) {
       if (!dateKey) return;
       const dateObj = parseDateKeyString(dateKey);
       if (!dateObj) return;
-      selectedDateKey = dateKey;
-      scheduleDailyDateKey = dateKey;
-      activeScheduleSummaryKey = dateKey;
+      setSelectedDateState(dateKey, dateObj);
       currentYear = dateObj.getFullYear();
       currentMonth = dateObj.getMonth();
       renderCalendar();
@@ -4912,15 +4961,34 @@ function summarizePlatformLabel(platform) {
         const header = document.createElement("div");
         header.className = "summary-item-head";
 
+        const headerLeft = document.createElement("div");
+        headerLeft.style.display = "flex";
+        headerLeft.style.alignItems = "center";
+        headerLeft.style.gap = "6px";
+
+        const colorDot = document.createElement("span");
+        colorDot.className = "summary-color-dot";
+        headerLeft.appendChild(colorDot);
+
         const title = document.createElement("div");
         title.className = "summary-item-title";
         title.textContent = snippet || `İçerik ${index + 1}`;
-        header.appendChild(title);
+        headerLeft.appendChild(title);
+        header.appendChild(headerLeft);
 
+        const statusWrap = document.createElement("div");
+        statusWrap.className = "summary-item-status-wrap";
         const statusBadge = document.createElement("span");
         statusBadge.className = `summary-item-status status-${statusKey}`;
         statusBadge.textContent = formatStatusLabel(item.status);
-        header.appendChild(statusBadge);
+        statusWrap.appendChild(statusBadge);
+        if (item.source === "excel") {
+          const excelBadge = document.createElement("span");
+          excelBadge.className = "summary-item-badge excel";
+          excelBadge.textContent = "Excel";
+          statusWrap.appendChild(excelBadge);
+        }
+        header.appendChild(statusWrap);
 
         wrap.appendChild(header);
 
@@ -4932,13 +5000,7 @@ function summarizePlatformLabel(platform) {
         const platformsDiv = document.createElement("div");
         platformsDiv.className = "summary-item-platforms";
         platformsDiv.textContent = platforms;
-        if (item.source === "excel") {
-          const badge = document.createElement("span");
-          badge.className = "summary-item-badge";
-          badge.textContent = "Excel";
-          platformsDiv.appendChild(document.createTextNode(" "));
-          platformsDiv.appendChild(badge);
-        }
+        
         wrap.appendChild(platformsDiv);
 
         const ownerLabel = getOwnerLabel(item.owner_id);
@@ -5262,9 +5324,7 @@ function summarizePlatformLabel(platform) {
 
     function openModalForDate(dateObj, key, initialItemId = null) {
       closeCopyPopover();
-      selectedDateKey = key;
-      scheduleDailyDateKey = key;
-      activeScheduleSummaryKey = key;
+      setSelectedDateState(key, dateObj);
       const dayData = loadDayData(key);
       currentDayItems = dayData.items || [];
       activeItemId = initialItemId;
@@ -6317,12 +6377,12 @@ function summarizePlatformLabel(platform) {
       adminViewInfo.style.display = "none";
       entriesById = new Map();
       entriesByDate = new Map();
-      selectedDateKey = null;
+      selectedDateKey = todayDateKey;
       currentDayItems = [];
       activeItemId = null;
       scheduleViewMode = "daily";
       scheduleDailyDateKey = todayDateKey;
-      activeScheduleSummaryKey = null;
+      activeScheduleSummaryKey = todayDateKey;
       if (scheduleViewButtons.length) {
         scheduleViewButtons.forEach((btn) => {
           const view = btn.dataset.view || "daily";

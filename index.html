@@ -6,7 +6,7 @@
   <style>
     * { box-sizing: border-box; }
     html, body {
-      min-height: 100%;
+      height: 100%;
       margin: 0;
     }
     body {
@@ -16,6 +16,7 @@
       background: #ffffff;
       color: #111827;
       font-size: 14px;
+      overflow: hidden;
     }
     h1, h2, h3, label { font-weight: 700; }
 
@@ -133,7 +134,7 @@
       background: #2c3a52;
     }
     #appRoot {
-      min-height: 100vh;
+      height: 100vh;
       width: 100%;
       max-width: 1320px;
       margin: 0 auto;
@@ -141,9 +142,14 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      overflow: hidden;
     }
     #viewCalendar {
-      display: block;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     #viewReports {
       display: block;
@@ -455,6 +461,8 @@
     }
 
 .container {
+  flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
   gap: 14px;
@@ -469,6 +477,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  height: 100%;
 }
 .channel-filter {
   display: flex;
@@ -585,11 +594,15 @@
       gap: 4px;
     }
     .days {
-      grid-auto-rows: 122px;
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      grid-template-rows: repeat(5, minmax(0, 1fr));
+      gap: 4px;
     }
     #daysContainer {
-      padding-bottom: 6px;
-      padding-right: 2px;
+      flex: 1;
+      min-height: 0;
     }
     .weekday {
       text-align: center;

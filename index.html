@@ -23,9 +23,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      min-height: 64px;
-      padding: 6px 0;
-      margin-bottom: 4px;
+      min-height: 56px;
+      padding: 4px 0;
+      margin-bottom: 2px;
     }
     .header-left {
       display: flex;
@@ -135,12 +135,12 @@
     #appRoot {
       min-height: 100vh;
       width: 100%;
-      max-width: 1360px;
+      max-width: 1320px;
       margin: 0 auto;
-      padding: 16px 20px 20px;
+      padding: 12px 16px 18px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
     #viewCalendar {
       flex: 1;
@@ -425,24 +425,20 @@
     }
 
 .container {
-  flex: 1;
   display: grid;
-  grid-template-columns: minmax(0, 2.35fr) minmax(0, 1fr);
-  gap: 16px;
-  align-items: stretch;
-  min-height: 0;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  gap: 14px;
+  align-items: flex-start;
   width: 100%;
 }
 .calendar {
   border: 1px solid #dde2ff;
   border-radius: 12px;
-  padding: 12px;
+  padding: 10px;
   background: #f9faff;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-height: 0;
-  height: 100%;
+  gap: 10px;
 }
 .channel-filter {
   display: flex;
@@ -469,14 +465,10 @@
 }
     .calendar-header {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      margin: -14px -14px 10px -14px;
-      padding: 8px 12px;
-      background: #eef2ff;
-      border-bottom: 1px solid #dde2ff;
-      border-radius: 10px 10px 0 0;
-      gap: 8px;
+      gap: 12px;
+      padding: 4px 0;
     }
     button {
       cursor: pointer;
@@ -509,16 +501,17 @@
       background: #1d4ed8;
     }
     .month-nav-btn {
-      min-width: 36px;
-      height: 36px;
+      min-width: 30px;
+      height: 30px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
-      border-radius: 10px;
+      font-size: 15px;
+      border-radius: 8px;
       background: #ffffff;
       border-color: #c4d0ff;
       color: #1a275a;
+      padding: 0;
     }
     .month-nav-btn:hover {
       background: #dde5ff;
@@ -552,21 +545,21 @@
     }
     .month-label {
       font-weight: 700;
-      font-size: 18px;
+      font-size: 17px;
       color: #152052;
     }
     .weekdays,
     .days {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
+      gap: 4px;
     }
     .days {
-      grid-auto-rows: 140px;
+      grid-auto-rows: 122px;
     }
     #daysContainer {
-      padding-bottom: 8px;
-      padding-right: 4px;
+      padding-bottom: 6px;
+      padding-right: 2px;
     }
     .weekday {
       text-align: center;
@@ -587,9 +580,9 @@
       --day-highlight-shadow: rgba(15, 23, 42, 0.08);
       border-radius: 8px;
       border: 1px solid var(--day-border);
-      padding: 7px;
+      padding: 6px;
       height: 100%;
-      font-size: 12px;
+      font-size: 11px;
       cursor: pointer;
       background: var(--day-surface);
       color: var(--day-text);
@@ -611,11 +604,11 @@
       margin-bottom: 3px;
       color: var(--day-text);
     }
-    .day-counter {
+.day-counter {
       font-size: 10px;
       font-weight: 600;
       color: #6b21a8;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
     .day.day-highlighted {
       background: var(--day-surface, #ffffff);
@@ -628,22 +621,16 @@
     }
     .day-body {
       flex: 1;
-      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
       padding-right: 2px;
-      scrollbar-width: none;
-    }
-    .day-body::-webkit-scrollbar {
-      width: 0;
-      height: 0;
     }
     .day-summary + .day-summary { margin-top: 2px; }
     .day-summary.excel {
       color: #0369a1;
     }
-    .day-summary-chip {
+.day-summary-chip {
       display: flex;
       align-items: center;
       width: 100%;
@@ -654,7 +641,7 @@
       border: 1px solid var(--day-chip-border);
       font-size: 9px;
       color: var(--day-chip-color);
-      font-weight: 500;
+      font-weight: 600;
     }
     .day[data-color] .day-summary {
       color: var(--day-text);
@@ -720,21 +707,16 @@
 .side {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-height: 0;
-  height: 100%;
+  gap: 10px;
 }
 .form {
   border: 1px solid #dde2ff;
   border-radius: 12px;
-  padding: 14px;
+  padding: 12px;
   background: #ffffff;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
+  gap: 8px;
 }
 .excel-upload-container {
   margin-top: auto;
@@ -780,12 +762,9 @@
       color: #4b5563;
     }
 .schedule-list {
-  margin-top: 10px;
+  margin-top: 6px;
   border-top: 1px solid #eef0ff;
-  padding-top: 10px;
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
+  padding-top: 6px;
 }
 .schedule-search {
   margin-top: 6px;
@@ -801,7 +780,7 @@
   outline: none;
 }
     .schedule-view-toggle {
-      margin: 8px 0 6px;
+      margin: 6px 0 4px;
       display: inline-flex;
       gap: 6px;
       background: #f1f5f9;
@@ -2742,7 +2721,6 @@ let scheduleDailyDateKey = todayDateKey;
 let highlightedDates = new Map();
 let saveSuccessTimeout = null;
 let activeScheduleSummaryKey = null;
-let panelHeightRaf = null;
 const DEFAULT_ENTRY_COLOR = "#2563eb";
 const DEFAULT_HIGHLIGHT_COLOR = "#fee2e2";
 const COLOR_PALETTE = [
@@ -4359,30 +4337,6 @@ function summarizePlatformLabel(platform) {
       } else {
         renderWeeklySchedule();
       }
-      schedulePanelHeightSync();
-    }
-
-    function syncSidePanelHeight() {
-      if (!viewCalendar || getComputedStyle(viewCalendar).display === "none") {
-        return;
-      }
-      const calendarEl = viewCalendar.querySelector(".calendar");
-      const sideForm = viewCalendar.querySelector(".side .form");
-      if (!calendarEl || !sideForm) return;
-      const calendarHeight = calendarEl.getBoundingClientRect().height;
-      if (!calendarHeight) return;
-      const heightValue = `${Math.round(calendarHeight)}px`;
-      sideForm.style.minHeight = heightValue;
-      sideForm.style.maxHeight = heightValue;
-      sideForm.style.height = heightValue;
-    }
-
-    function schedulePanelHeightSync() {
-      if (panelHeightRaf) cancelAnimationFrame(panelHeightRaf);
-      panelHeightRaf = requestAnimationFrame(() => {
-        panelHeightRaf = null;
-        syncSidePanelHeight();
-      });
     }
 
     function focusDayFromSchedule(dateKey, entryId = null) {
@@ -4757,7 +4711,7 @@ function summarizePlatformLabel(platform) {
       summary.entries.forEach(([label, count]) => {
         const chip = document.createElement("span");
         chip.className = "summary-chip";
-        chip.textContent = `${label} ${count}`;
+        chip.textContent = `${count} ${label}`;
         chips.appendChild(chip);
       });
       row.appendChild(chips);
@@ -4893,7 +4847,7 @@ function summarizePlatformLabel(platform) {
               counter.textContent =
                 summary.total === 1
                   ? "1 içerik"
-                  : `+${summary.total} içerik`;
+                  : `${summary.total} içerik`;
             } else {
               counter.textContent = `${getChannelFilterLabel(
                 activeChannelFilter
@@ -4903,7 +4857,7 @@ function summarizePlatformLabel(platform) {
             summary.entries.slice(0, 3).forEach(([label, count]) => {
               const chip = document.createElement("div");
               chip.className = "day-summary-chip";
-              chip.textContent = `${label} ${count}`;
+              chip.textContent = `${count} ${label}`;
               body.appendChild(chip);
             });
           }
@@ -5905,7 +5859,6 @@ function summarizePlatformLabel(platform) {
       tabReports.classList.remove("active");
       viewCalendar.style.display = "";
       viewReports.style.display = "none";
-      schedulePanelHeightSync();
     });
 
     tabReports.addEventListener("click", () => {
@@ -6119,7 +6072,6 @@ function summarizePlatformLabel(platform) {
         setActiveChannelFilter(channelId);
       });
     });
-    window.addEventListener("resize", schedulePanelHeightSync);
     if (scheduleViewButtons.length) {
       scheduleViewButtons.forEach((btn) => {
         const view = btn.dataset.view || "daily";

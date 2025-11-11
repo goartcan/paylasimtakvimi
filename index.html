@@ -26,8 +26,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      min-height: 56px;
-      padding: 4px 0;
+      min-height: 48px;
+      padding: 2px 0;
       margin-bottom: 2px;
     }
     .header-left {
@@ -137,12 +137,12 @@
     }
     #appRoot {
       width: 100%;
-      max-width: 1320px;
+      max-width: 1240px;
       margin: 0 auto;
-      padding: 12px 16px 18px;
+      padding: 10px 14px 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       min-height: 100vh;
     }
 #viewCalendar {
@@ -461,7 +461,7 @@
 .container {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
-  gap: 14px;
+  gap: 12px;
   align-items: stretch;
   width: 100%;
 }
@@ -607,8 +607,8 @@
   flex: 1;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-auto-rows: 122px;
-  gap: 4px;
+  grid-auto-rows: 104px;
+  gap: 3px;
   width: 100%;
 }
     .weekday {
@@ -628,9 +628,9 @@
       --day-chip-color: #0f172a;
       --day-chip-border: transparent;
       --day-highlight-shadow: rgba(15, 23, 42, 0.08);
-      border-radius: 8px;
+      border-radius: 7px;
       border: 1px solid var(--day-border);
-      padding: 4px;
+      padding: 3px;
       height: 100%;
       font-size: 11px;
       cursor: pointer;
@@ -651,15 +651,15 @@
     }
     .day-number {
       font-weight: 700;
-      font-size: 13px;
-      margin-bottom: 3px;
+      font-size: 12px;
+      margin-bottom: 2px;
       color: var(--day-text);
     }
 .day-counter {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 600;
       color: #6b21a8;
-      margin-bottom: 2px;
+      margin-bottom: 1px;
     }
     .day.day-highlighted {
       background: var(--day-surface, #ffffff);
@@ -674,7 +674,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
       padding-right: 2px;
       overflow: hidden;
     }
@@ -686,12 +686,12 @@
       display: flex;
       align-items: center;
       width: 100%;
-      padding: 2px 8px;
-      margin-top: 2px;
+      padding: 1px 7px;
+      margin-top: 1px;
       border-radius: 999px;
       background: #f3f4f6;
       border: 1px solid #e5e7eb;
-      font-size: 10px;
+      font-size: 9px;
       color: #0f172a;
       font-weight: 600;
     }
@@ -765,7 +765,7 @@
     .summary-shell {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       flex: 0 0 340px;
       max-width: 340px;
       align-self: stretch;
@@ -776,12 +776,12 @@
     }
 .form {
   border: 1px solid #dde2ff;
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 10px;
+  padding: 10px;
   background: #ffffff;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   height: 100%;
 }
 .summary-shell .form {
@@ -792,9 +792,9 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: 3px;
 }
 .summary-scroll-area::-webkit-scrollbar {
   width: 6px;
@@ -899,9 +899,9 @@
   --summary-chip-color: #0f172a;
   --summary-chip-border: rgba(15, 23, 42, 0.16);
   --summary-shadow: rgba(15, 23, 42, 0.08);
-  padding: 10px;
-  margin-bottom: 8px;
-  border-radius: 9px;
+  padding: 8px;
+  margin-bottom: 6px;
+  border-radius: 8px;
   border: 1px solid rgba(226, 232, 240, 0.8);
   border-left: 4px solid var(--summary-border, rgba(226, 232, 240, 0.9));
   background: var(--summary-surface);
@@ -930,15 +930,15 @@
       font-size: 12px;
       margin: 4px 0;
     }
-    .daily-entry-row {
-      --daily-card-color: rgba(15, 23, 42, 0.12);
-      border: 1px solid rgba(15, 23, 42, 0.08);
-      border-left: 4px solid rgba(226, 232, 240, 0.9);
-      border-radius: 12px;
-      padding: 10px 12px;
-      background: #ffffff;
-      display: flex;
-      gap: 10px;
+.daily-entry-row {
+  --daily-card-color: rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-left: 4px solid rgba(226, 232, 240, 0.9);
+  border-radius: 10px;
+  padding: 9px 10px;
+  background: #ffffff;
+  display: flex;
+  gap: 10px;
       align-items: flex-start;
       cursor: pointer;
       transition: box-shadow 0.12s ease, border-color 0.12s ease;

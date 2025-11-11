@@ -467,6 +467,10 @@
   align-items: stretch;
   width: 100%;
 }
+.calendar-layout {
+  height: var(--calendar-available-height, auto);
+  min-height: var(--calendar-available-height, auto);
+}
 .calendar-shell {
   flex: 1 1 auto;
   min-width: 0;
@@ -2408,7 +2412,7 @@
 
   <!-- TAKVİM GÖRÜNÜMÜ -->
   <div id="viewCalendar">
-    <div class="container">
+    <div class="container calendar-layout" id="calendarLayout">
       <div class="calendar-shell">
         <div class="calendar">
         <div class="channel-filter" id="channelFilter">
@@ -4456,6 +4460,18 @@ if (modalFormSection) {
       updateScheduleList();
       renderCalendar();
     }
+
+    function syncCalendarLayoutHeight() {
+      const layout = document.getElementById("calendarLayout");
+      if (!layout) return;
+      const offsetTop = layout.offsetTop;
+      const available = window.innerHeight - offsetTop - 12; // small padding
+      if (available > 400) {
+        layout.style.setProperty("--calendar-available-height", `${available}px`);
+      }
+    }
+    window.addEventListener("resize", syncCalendarLayoutHeight);
+    syncCalendarLayoutHeight();
     function minutesFromTime(t) {
       if (!t) return 24 * 60 + 1; // saat yoksa en sona
       const parts = t.split(":");

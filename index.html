@@ -6,7 +6,7 @@
   <style>
     * { box-sizing: border-box; }
     html, body {
-      height: 100%;
+      min-height: 100vh;
       margin: 0;
     }
     body {
@@ -16,15 +16,6 @@
       background: #ffffff;
       color: #111827;
       font-size: 14px;
-    }
-    body.mode-calendar {
-      height: 100vh;
-      overflow: hidden;
-    }
-    body.mode-reports {
-      min-height: 100vh;
-      height: auto;
-      overflow-y: auto;
     }
     h1, h2, h3, label { font-weight: 700; }
 
@@ -150,14 +141,6 @@
       flex-direction: column;
       gap: 10px;
       min-height: 100vh;
-    }
-    body.mode-calendar #appRoot {
-      height: 100vh;
-      overflow: hidden;
-    }
-    body.mode-reports #appRoot {
-      height: auto;
-      overflow: visible;
     }
     #viewCalendar {
       flex: 1;
@@ -479,18 +462,10 @@
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
-  gap: 14px;
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 16px;
+  align-items: start;
   width: 100%;
-}
-.app-shell {
-  flex: 1;
-  min-height: 0;
-}
-body.mode-reports .app-shell {
-  flex: none;
-  min-height: auto;
 }
 .calendar-shell {
   flex: 1 1 auto;
@@ -633,9 +608,9 @@ body.mode-reports .app-shell {
   flex: 1;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(6, minmax(0, 1fr));
-  gap: 4px;
-  height: 100%;
+  grid-auto-rows: 160px;
+  gap: 6px;
+  width: 100%;
 }
     .weekday {
       text-align: center;
@@ -789,13 +764,8 @@ body.mode-reports .app-shell {
   height: 100%;
 }
 .summary-shell {
-  flex: 0 0 360px;
-  max-width: 360px;
-}
-body.mode-reports .summary-shell {
-  flex: none;
-  width: auto;
-  max-width: none;
+  flex: 0 0 380px;
+  max-width: 380px;
 }
 .form {
   border: 1px solid #dde2ff;
@@ -2343,7 +2313,7 @@ body.mode-reports .summary-shell {
     }
   </style>
 </head>
-<body class="mode-calendar">
+<body>
   <div id="loginOverlay" class="login-overlay">
     <div class="login-card">
       <h2>Paylaşım Takvimi</h2>
@@ -2434,7 +2404,7 @@ body.mode-reports .summary-shell {
 
   <!-- TAKVİM GÖRÜNÜMÜ -->
   <div id="viewCalendar">
-    <div class="container app-shell">
+    <div class="container">
       <div class="calendar-shell">
         <div class="calendar">
         <div class="channel-filter" id="channelFilter">
@@ -4482,17 +4452,6 @@ if (modalFormSection) {
       updateScheduleList();
       renderCalendar();
     }
-
-    function updateBodyViewMode(mode) {
-      if (mode === "reports") {
-        document.body.classList.add("mode-reports");
-        document.body.classList.remove("mode-calendar");
-      } else {
-        document.body.classList.add("mode-calendar");
-        document.body.classList.remove("mode-reports");
-      }
-    }
-    updateBodyViewMode("calendar");
     function minutesFromTime(t) {
       if (!t) return 24 * 60 + 1; // saat yoksa en sona
       const parts = t.split(":");
@@ -6172,7 +6131,6 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       tabReports.classList.remove("active");
       viewCalendar.style.display = "";
       viewReports.style.display = "none";
-      updateBodyViewMode("calendar");
     });
 
     tabReports.addEventListener("click", () => {
@@ -6180,7 +6138,6 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       tabCalendar.classList.remove("active");
       viewCalendar.style.display = "none";
       viewReports.style.display = "";
-      updateBodyViewMode("reports");
       renderReports();
     });
 

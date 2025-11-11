@@ -5,6 +5,9 @@
   <title>Paylaşım Takvimi</title>
   <style>
     * { box-sizing: border-box; }
+    :root {
+      --calendar-height: auto;
+    }
     html, body {
       min-height: 100vh;
       margin: 0;
@@ -142,13 +145,10 @@
       gap: 10px;
       min-height: 100vh;
     }
-    #viewCalendar {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+#viewCalendar {
+  width: 100%;
+  display: block;
+}
     #viewReports {
       display: block;
     }
@@ -459,17 +459,11 @@
     }
 
 .container {
-  flex: 1;
-  min-height: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
   gap: 18px;
-  align-items: stretch;
+  align-items: start;
   width: 100%;
-}
-.calendar-layout {
-  height: var(--calendar-available-height, auto);
-  min-height: var(--calendar-available-height, auto);
 }
 .calendar-shell {
   flex: 1 1 auto;
@@ -771,9 +765,9 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  height: 100%;
   flex: 0 0 360px;
   max-width: 360px;
+  max-height: var(--calendar-height, none);
 }
 .form {
   border: 1px solid #dde2ff;
@@ -4461,17 +4455,26 @@ if (modalFormSection) {
       renderCalendar();
     }
 
-    function syncCalendarLayoutHeight() {
-      const layout = document.getElementById("calendarLayout");
-      if (!layout) return;
-      const offsetTop = layout.offsetTop;
-      const available = window.innerHeight - offsetTop - 12; // small padding
-      if (available > 400) {
-        layout.style.setProperty("--calendar-available-height", `${available}px`);
+    let summaryHeightRaf = null;
+    function syncSummaryPanelHeight() {
+      const calendarGrid = document.querySelector(".calendar-grid-wrapper");
+      if (!calendarGrid) return;
+      const height = calendarGrid.getBoundingClientRect().height;
+      if (height && height > 0) {
+        document.documentElement.style.setProperty(
+          "--calendar-height",
+          `${Math.round(height)}px`
+        );
       }
     }
-    window.addEventListener("resize", syncCalendarLayoutHeight);
-    syncCalendarLayoutHeight();
+    function requestSummaryHeightSync() {
+      if (summaryHeightRaf) cancelAnimationFrame(summaryHeightRaf);
+      summaryHeightRaf = requestAnimationFrame(() => {
+        summaryHeightRaf = null;
+        syncSummaryPanelHeight();
+      });
+    }
+    window.addEventListener("resize", requestSummaryHeightSync);
     function minutesFromTime(t) {
       if (!t) return 24 * 60 + 1; // saat yoksa en sona
       const parts = t.split(":");
@@ -5146,10 +5149,11 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           openModalForDate(dateObj, key);
         });
 
-        daysContainer.appendChild(cell);
+       daysContainer.appendChild(cell);
       }
 
       updateScheduleList();
+      requestSummaryHeightSync();
     }
 
     /* Modal içi liste */

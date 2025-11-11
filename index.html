@@ -462,7 +462,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
   gap: 18px;
-  align-items: start;
+  align-items: stretch;
   width: 100%;
 }
 .calendar-shell {
@@ -767,7 +767,9 @@
   gap: 10px;
   flex: 0 0 360px;
   max-width: 360px;
+  height: var(--calendar-height, auto);
   max-height: var(--calendar-height, none);
+  min-height: var(--calendar-height, auto);
 }
 .form {
   border: 1px solid #dde2ff;
@@ -4475,6 +4477,7 @@ if (modalFormSection) {
       });
     }
     window.addEventListener("resize", requestSummaryHeightSync);
+    requestSummaryHeightSync();
     function minutesFromTime(t) {
       if (!t) return 24 * 60 + 1; // saat yoksa en sona
       const parts = t.split(":");

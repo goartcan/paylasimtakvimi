@@ -6,7 +6,7 @@
   <style>
     * { box-sizing: border-box; }
     :root {
-      --calendar-height: auto;
+      --calendar-shell-height: auto;
     }
     html, body {
       min-height: 100vh;
@@ -767,9 +767,8 @@
   gap: 10px;
   flex: 0 0 360px;
   max-width: 360px;
-  height: var(--calendar-height, auto);
-  max-height: var(--calendar-height, none);
-  min-height: var(--calendar-height, auto);
+  height: var(--calendar-shell-height, auto);
+  max-height: var(--calendar-shell-height, none);
 }
 .form {
   border: 1px solid #dde2ff;
@@ -4459,12 +4458,12 @@ if (modalFormSection) {
 
     let summaryHeightRaf = null;
     function syncSummaryPanelHeight() {
-      const calendarGrid = document.querySelector(".calendar-grid-wrapper");
-      if (!calendarGrid) return;
-      const height = calendarGrid.getBoundingClientRect().height;
+      const calendarShellEl = document.querySelector(".calendar-shell");
+      if (!calendarShellEl) return;
+      const height = calendarShellEl.getBoundingClientRect().height;
       if (height && height > 0) {
         document.documentElement.style.setProperty(
-          "--calendar-height",
+          "--calendar-shell-height",
           `${Math.round(height)}px`
         );
       }

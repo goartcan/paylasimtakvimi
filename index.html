@@ -460,8 +460,8 @@
 
 .container {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 14px;
   align-items: stretch;
   width: 100%;
 }
@@ -470,15 +470,16 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  align-self: stretch;
 }
 .calendar {
   border: 1px solid #dde2ff;
   border-radius: 12px;
-  padding: 10px;
+  padding: 8px;
   background: #f9faff;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   flex: 1;
   min-height: 0;
 }
@@ -606,15 +607,15 @@
   flex: 1;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-auto-rows: 136px;
-  gap: 5px;
+  grid-auto-rows: 122px;
+  gap: 4px;
   width: 100%;
 }
     .weekday {
       text-align: center;
       font-weight: 700;
-      font-size: 11px;
-      padding: 3px 0;
+      font-size: 10px;
+      padding: 2px 0;
       background: #f0f3ff;
       border-radius: 6px;
       color: #1a275a;
@@ -629,7 +630,7 @@
       --day-highlight-shadow: rgba(15, 23, 42, 0.08);
       border-radius: 8px;
       border: 1px solid var(--day-border);
-      padding: 5px;
+      padding: 4px;
       height: 100%;
       font-size: 11px;
       cursor: pointer;
@@ -761,15 +762,18 @@
   gap: 10px;
   height: 100%;
 }
-.summary-shell {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  flex: 0 0 360px;
-  max-width: 360px;
-  height: var(--calendar-shell-height, auto);
-  max-height: var(--calendar-shell-height, none);
-}
+    .summary-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 0 0 340px;
+      max-width: 340px;
+      align-self: stretch;
+      min-height: var(--calendar-shell-height, auto);
+      height: var(--calendar-shell-height, auto);
+      max-height: var(--calendar-shell-height, none);
+      overflow: hidden;
+    }
 .form {
   border: 1px solid #dde2ff;
   border-radius: 12px;
@@ -788,7 +792,7 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   overflow-y: auto;
   padding-right: 4px;
 }
@@ -1684,7 +1688,7 @@
     .summary-item {
       --summary-card-color: rgba(15, 23, 42, 0.25);
       position: relative;
-      padding: 6px 9px 7px;
+      padding: 5px 8px 6px;
       border-radius: 10px;
       background: #ffffff;
       border: 1px solid #e5e7eb;
@@ -1699,7 +1703,7 @@
       outline-offset: 2px;
     }
     .summary-item + .summary-item {
-      margin-top: 2px;
+      margin-top: 1px;
     }
     .summary-item.excel {
       background: #ffffff;
@@ -1734,7 +1738,7 @@
     .summary-item-header-left {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       min-width: 0;
       flex: 1;
     }
@@ -1758,12 +1762,12 @@
       max-width: 240px;
     }
     .summary-item-time-chip {
-      font-size: 11px;
+      font-size: 10.5px;
       color: #475569;
       border: 1px solid #dbeafe;
       background: #eef2ff;
       border-radius: 999px;
-      padding: 2px 7px 2px 9px;
+      padding: 2px 6px 2px 8px;
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -1785,12 +1789,12 @@
       background: #eef2ff;
     }
     .summary-item-platforms {
-      font-size: 11px;
+      font-size: 10.8px;
       color: #475569;
       line-height: 1.3;
     }
     .summary-item-owner {
-      font-size: 11px;
+      font-size: 10.8px;
       color: #1f2937;
       margin-top: 2px;
     }
@@ -1813,13 +1817,13 @@
       padding: 2px 7px;
     }
     .summary-item-footer {
-      margin-top: 4px;
+      margin-top: 2px;
       display: flex;
       justify-content: flex-end;
     }
     .summary-item-copy-icon {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       border-radius: 8px;
       border: 1px dashed #c7d2fe;
       background: #eef2ff;
@@ -4457,16 +4461,22 @@ if (modalFormSection) {
     }
 
     let summaryHeightRaf = null;
+    let calendarHeightObserver = null;
+    function applyCalendarShellHeight(nextHeight) {
+      const numericHeight = Number(nextHeight);
+      if (!numericHeight || Number.isNaN(numericHeight) || numericHeight <= 0) {
+        return;
+      }
+      document.documentElement.style.setProperty(
+        "--calendar-shell-height",
+        `${Math.round(numericHeight)}px`
+      );
+    }
     function syncSummaryPanelHeight() {
       const calendarShellEl = document.querySelector(".calendar-shell");
       if (!calendarShellEl) return;
       const height = calendarShellEl.getBoundingClientRect().height;
-      if (height && height > 0) {
-        document.documentElement.style.setProperty(
-          "--calendar-shell-height",
-          `${Math.round(height)}px`
-        );
-      }
+      applyCalendarShellHeight(height);
     }
     function requestSummaryHeightSync() {
       if (summaryHeightRaf) cancelAnimationFrame(summaryHeightRaf);
@@ -4475,8 +4485,39 @@ if (modalFormSection) {
         syncSummaryPanelHeight();
       });
     }
+    function initCalendarHeightObserver() {
+      if (!("ResizeObserver" in window)) {
+        return;
+      }
+      const calendarShellEl = document.querySelector(".calendar-shell");
+      if (!calendarShellEl) return;
+      if (calendarHeightObserver) {
+        calendarHeightObserver.disconnect();
+      }
+      calendarHeightObserver = new ResizeObserver((entries) => {
+        entries.forEach((entry) => {
+          const borderSize =
+            entry.borderBoxSize && entry.borderBoxSize.length
+              ? entry.borderBoxSize[0].blockSize
+              : null;
+          const contentSize =
+            entry.contentBoxSize && entry.contentBoxSize.length
+              ? entry.contentBoxSize[0].blockSize
+              : null;
+          const fallbackSize =
+            entry.contentRect && entry.contentRect.height
+              ? entry.contentRect.height
+              : null;
+          const resolved =
+            borderSize || contentSize || fallbackSize || calendarShellEl.offsetHeight;
+          applyCalendarShellHeight(resolved);
+        });
+      });
+      calendarHeightObserver.observe(calendarShellEl);
+    }
     window.addEventListener("resize", requestSummaryHeightSync);
     requestSummaryHeightSync();
+    initCalendarHeightObserver();
     function minutesFromTime(t) {
       if (!t) return 24 * 60 + 1; // saat yoksa en sona
       const parts = t.split(":");

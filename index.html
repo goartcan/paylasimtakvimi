@@ -616,6 +616,40 @@
   font-size: 12px;
   color: #475569;
 }
+.assignee-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #475569;
+}
+.assignee-filter-label {
+  font-weight: 600;
+}
+.assignee-filter-toggle {
+  display: inline-flex;
+  gap: 4px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  padding: 3px;
+}
+.assignee-filter-btn {
+  border: none;
+  background: transparent;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.assignee-filter-btn.active {
+  background: #0f172a;
+  color: #ffffff;
+}
 .channel-filter-btn {
   font-size: 11px;
   padding: 3px 9px;
@@ -2664,6 +2698,13 @@
           <button type="button" class="channel-filter-btn" data-channel="website">Website</button>
           <button type="button" class="channel-filter-btn" data-channel="medium">Medium</button>
         </div>
+        <div class="assignee-filter" id="assigneeFilter">
+          <span class="assignee-filter-label">Görünüm:</span>
+          <div class="assignee-filter-toggle">
+            <button type="button" class="assignee-filter-btn" data-assignee="all">Tüm kartlar</button>
+            <button type="button" class="assignee-filter-btn" data-assignee="mine">Sadece benim kartlarım</button>
+          </div>
+        </div>
         <div class="calendar-header">
           <button id="prevMonthBtn" class="month-nav-btn" aria-label="Önceki ay">&larr;</button>
           <div class="month-label" id="monthLabel"></div>
@@ -3079,6 +3120,9 @@ const channelFilter = document.getElementById("channelFilter");
 const channelFilterButtons = channelFilter
   ? Array.from(channelFilter.querySelectorAll("button[data-channel]"))
   : [];
+const assigneeFilterButtons = Array.from(
+  document.querySelectorAll(".assignee-filter-btn")
+);
 const copyPopoverBackdrop = document.getElementById("copyPopoverBackdrop");
 const copyPopover = document.getElementById("copyPopover");
 const copyDateInput = document.getElementById("copyDateInput");
@@ -3198,6 +3242,8 @@ let highlightedDates = new Map();
 let saveSuccessTimeout = null;
 let activeScheduleSummaryKey = summaryDateKey;
 const NOTIFICATION_STORAGE_PREFIX = "goartNotifications_";
+const CALENDAR_STORAGE_KEY = "goart_calendar_v2";
+const ASSIGNEE_FILTER_STORAGE_KEY = "calendar_assignee_filter";
 let notifications = [];
 let notificationPanelOpen = false;
 const DEFAULT_ENTRY_COLOR = "blue";
@@ -3304,6 +3350,11 @@ let activeChannelFilter =
 if (!CHANNEL_FILTER_DEFINITIONS[activeChannelFilter]) {
   activeChannelFilter = "all";
 }
+let assigneeFilter =
+  localStorage.getItem(ASSIGNEE_FILTER_STORAGE_KEY) || "all";
+if (assigneeFilter !== "all" && assigneeFilter !== "mine") {
+  assigneeFilter = "all";
+}
 let responsibleUsers = [];
 const responsibleUserMap = new Map();
 
@@ -3379,6 +3430,57 @@ function getEntryDateTime(entry) {
   const timestamp = new Date(`${entry.date}T${timeValue}:00`);
   return Number.isNaN(timestamp.getTime()) ? null : timestamp;
 }
+
+function readSharedCalendarEntries() {
+  try {
+    const raw = localStorage.getItem(CALENDAR_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function mergeEntryArrays(existingEntries = [], newEntries = []) {
+  const map = new Map();
+  existingEntries.forEach((entry) => {
+    if (entry && typeof entry.id !== "undefined") {
+      map.set(entry.id, entry);
+    }
+  });
+  newEntries.forEach((entry) => {
+    if (entry && typeof entry.id !== "undefined") {
+      map.set(entry.id, entry);
+    }
+  });
+  return Array.from(map.values());
+}
+
+let isBootstrappingFromStorage = false;
+
+function writeSharedCalendarEntries(entries) {
+  try {
+    localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(entries));
+  } catch {}
+}
+
+function persistEntriesToSharedStorage() {
+  if (isBootstrappingFromStorage) return;
+  const payload = Array.from(entriesById.values());
+  writeSharedCalendarEntries(payload);
+}
+
+function bootstrapEntriesFromSharedStorage() {
+  const stored = readSharedCalendarEntries();
+  if (stored && stored.length) {
+    isBootstrappingFromStorage = true;
+    rebuildEntriesCache(stored);
+    isBootstrappingFromStorage = false;
+  }
+}
+
+bootstrapEntriesFromSharedStorage();
 
 function isEntryPast(entry) {
   const dt = getEntryDateTime(entry);
@@ -3848,6 +3950,29 @@ function filterEntriesByChannel(items, filterId = "all") {
   return items.filter((item) => entryMatchesChannelFilter(item, filterId));
 }
 
+function getEntryOwnerEmail(entry) {
+  if (!entry) return "";
+  return getOwnerLabel(entry.owner_id) || "";
+}
+
+function entryAssignedToCurrentUser(entry) {
+  const currentEmail = getCurrentUserEmail();
+  if (!currentEmail) return false;
+  const ownerEmail = getEntryOwnerEmail(entry);
+  if (!ownerEmail) return false;
+  return ownerEmail.toLowerCase() === currentEmail.toLowerCase();
+}
+
+function entryMatchesAssigneeFilter(entry) {
+  if (assigneeFilter !== "mine") return true;
+  return entryAssignedToCurrentUser(entry);
+}
+
+function filterEntriesByAssignee(items = []) {
+  if (assigneeFilter !== "mine") return items.slice();
+  return items.filter((item) => entryMatchesAssigneeFilter(item));
+}
+
 function getChannelFilterLabel(filterId) {
   return CHANNEL_FILTER_DEFINITIONS[filterId]
     ? CHANNEL_FILTER_DEFINITIONS[filterId].label
@@ -3870,6 +3995,28 @@ function setActiveChannelFilter(nextFilter) {
   updateScheduleList();
   if (viewReports.style.display !== "none") renderReports();
   updateReportFilterLabel();
+}
+
+function updateAssigneeFilterUI() {
+  if (!assigneeFilterButtons.length) return;
+  assigneeFilterButtons.forEach((btn) => {
+    const target = btn.dataset.assignee || "all";
+    btn.classList.toggle("active", target === assigneeFilter);
+  });
+}
+
+function setAssigneeFilter(nextFilter) {
+  const allowedViews = ["all", "mine"];
+  const normalized = allowedViews.includes(nextFilter) ? nextFilter : "all";
+  if (assigneeFilter === normalized) return;
+  assigneeFilter = normalized;
+  try {
+    localStorage.setItem(ASSIGNEE_FILTER_STORAGE_KEY, assigneeFilter);
+  } catch {}
+  updateAssigneeFilterUI();
+  renderCalendar();
+  updateScheduleList();
+  if (viewReports.style.display !== "none") renderReports();
 }
 
 function setScheduleViewMode(nextMode) {
@@ -4612,10 +4759,11 @@ if (modalFormSection) {
       if (idx === -1) {
         list.push(normalized);
       } else {
-        list[idx] = normalized;
-      }
-      sortAndStore(normalized.date, list);
+      list[idx] = normalized;
     }
+    sortAndStore(normalized.date, list);
+    persistEntriesToSharedStorage();
+  }
 
     function rebuildEntriesCache(rows) {
       entriesById = new Map();
@@ -4630,10 +4778,11 @@ if (modalFormSection) {
         list.push(normalized);
         entriesByDate.set(normalized.date, list);
       });
-      entriesByDate.forEach((items, key) => {
-        sortAndStore(key, items);
-      });
-    }
+    entriesByDate.forEach((items, key) => {
+      sortAndStore(key, items);
+    });
+    persistEntriesToSharedStorage();
+  }
 
     function removeEntryFromCache(entryId) {
       const existing = entriesById.get(entryId);
@@ -4646,6 +4795,7 @@ if (modalFormSection) {
       } else {
         entriesByDate.delete(existing.date);
       }
+      persistEntriesToSharedStorage();
     }
 
     function isViewingOwnData() {
@@ -4699,9 +4849,30 @@ if (modalFormSection) {
 
     async function loadEntriesFromServer(targetUserId = null, label = "") {
       const query = targetUserId ? `?userId=${targetUserId}` : "";
-      const response = await apiFetch(`/calendar${query}`);
-      const data = await response.json();
-      rebuildEntriesCache(data);
+      let data = [];
+      let usedStoredFallback = false;
+      try {
+        const response = await apiFetch(`/calendar${query}`);
+        data = await response.json();
+      } catch (err) {
+        console.warn("Takvim verileri alınamadı:", err.message);
+        if (!targetUserId) {
+          const stored = readSharedCalendarEntries();
+          if (stored.length) {
+            data = stored;
+            usedStoredFallback = true;
+          } else {
+            return;
+          }
+        } else {
+          return;
+        }
+      }
+      const existingShared = readSharedCalendarEntries();
+      const mergedEntries = usedStoredFallback
+        ? data
+        : mergeEntryArrays(existingShared, data);
+      rebuildEntriesCache(mergedEntries);
       await loadHighlightsFromServer(targetUserId);
       activeItemId = null;
       modalFormSection.style.display = "none";
@@ -5147,7 +5318,8 @@ function summarizePlatformLabel(platform) {
 
     function buildDaySummary(items, options = {}) {
       const filterId = options.filterId || "all";
-      const scopedItems = filterEntriesByChannel(items, filterId);
+      const channelScoped = filterEntriesByChannel(items, filterId);
+      const scopedItems = filterEntriesByAssignee(channelScoped);
       const counts = {};
       scopedItems.forEach((item) => {
         let list = filterPlatformsByChannel(item.platforms || [], filterId);
@@ -5194,8 +5366,10 @@ function summarizePlatformLabel(platform) {
         const dayData = loadDayData(key);
         const dayItems = dayData.items || [];
         if (!dayItems.length) return;
-        const scopedItems = dayItems.filter((item) =>
-          entryMatchesChannelFilter(item, activeChannelFilter)
+        const scopedItems = filterEntriesByAssignee(
+          dayItems.filter((item) =>
+            entryMatchesChannelFilter(item, activeChannelFilter)
+          )
         );
         if (!scopedItems.length) return;
         const hasMatch = scopedItems.some((item) =>
@@ -5317,8 +5491,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       scheduleDailyDateKey = focusKey;
       const dateObj = parseDateKeyString(focusKey);
       const dayData = loadDayData(focusKey);
-      const items = (dayData.items || []).filter((item) =>
-        entryMatchesChannelFilter(item, activeChannelFilter)
+      const items = filterEntriesByAssignee(
+        (dayData.items || []).filter((item) =>
+          entryMatchesChannelFilter(item, activeChannelFilter)
+        )
       );
       const filtered = sortItemsByTime(
         items.filter((item) => entryMatchesSearchQuery(item))
@@ -5488,8 +5664,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       while (cursor.getTime() <= rangeEnd.getTime()) {
         const key = formatDateKey(cursor);
         const dayData = loadDayData(key);
-        const items = (dayData.items || []).filter((item) =>
-          entryMatchesChannelFilter(item, activeChannelFilter)
+        const items = filterEntriesByAssignee(
+          (dayData.items || []).filter((item) =>
+            entryMatchesChannelFilter(item, activeChannelFilter)
+          )
         );
         if (items.length) {
           const summary = buildDaySummary(items, { filterId: activeChannelFilter });
@@ -5628,6 +5806,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       const key = formatDateKey(dateObj);
       const dayData = loadDayData(key);
       const items = dayData.items || [];
+      const channelScopedItems = filterEntriesByChannel(items, activeChannelFilter);
+      const visibleItems = filterEntriesByAssignee(channelScopedItems);
         const highlightColor = highlightedDates.get(key);
         if (highlightColor) {
           cell.classList.add("day-highlighted");
@@ -5637,16 +5817,20 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           delete cell.dataset.color;
         }
 
-        const matchesFilter = dayMatchesChannelFilter(items, activeChannelFilter);
-        if (!matchesFilter && activeChannelFilter !== "all") {
+        const matchesChannel = dayMatchesChannelFilter(items, activeChannelFilter);
+        const hasVisibleAssigneeItems = visibleItems.length > 0;
+        if (
+          (activeChannelFilter !== "all" && !matchesChannel) ||
+          (assigneeFilter === "mine" && !hasVisibleAssigneeItems)
+        ) {
           cell.classList.add("filtered-out");
         } else {
           cell.classList.remove("filtered-out");
         }
 
-        if (items.length) {
+        if (visibleItems.length) {
           cell.classList.add("has-data");
-          const summary = buildDaySummary(items, { filterId: activeChannelFilter });
+          const summary = buildDaySummary(visibleItems, { filterId: activeChannelFilter });
           if (summary.total > 0) {
             const counter = document.createElement("div");
             counter.className = "day-counter";
@@ -6259,6 +6443,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
             item.text || item.files || item.time || (item.platforms && item.platforms.length);
           if (!hasContent) return;
           if (!entryMatchesChannelFilter(item, filterId)) return;
+          if (!entryMatchesAssigneeFilter(item)) return;
 
           dayHasContent = true;
           total++;
@@ -6364,12 +6549,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       const cursor = new Date(startDate);
       while (cursor <= endDate) {
         const key = formatDateKey(cursor);
-        const items = loadDayData(key).items || [];
-        items.forEach((item) => {
-          if (entryMatchesChannelFilter(item, filterId)) {
-            results.push(item);
-          }
-        });
+        const items = filterEntriesByAssignee(
+          filterEntriesByChannel(loadDayData(key).items || [], filterId)
+        );
+        items.forEach((item) => results.push(item));
         cursor.setDate(cursor.getDate() + 1);
         cursor.setHours(0, 0, 0, 0);
       }
@@ -6898,6 +7081,15 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         setActiveChannelFilter(channelId);
       });
     });
+    if (assigneeFilterButtons.length) {
+      updateAssigneeFilterUI();
+      assigneeFilterButtons.forEach((btn) => {
+        const targetAssignee = btn.dataset.assignee || "all";
+        btn.addEventListener("click", () => {
+          setAssigneeFilter(targetAssignee);
+        });
+      });
+    }
     if (scheduleViewButtons.length) {
       scheduleViewButtons.forEach((btn) => {
         const view = btn.dataset.view || "daily";

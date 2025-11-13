@@ -816,67 +816,67 @@
       color: var(--day-text);
     }
     .day[data-color="blue"] {
-      --day-surface: #eef2ff;
-      --day-border: #c7d2fe;
+      --day-surface: #dbeafe;
+      --day-border: #93c5fd;
       --day-text: #1e3a8a;
-      --day-chip-bg: #dbeafe;
+      --day-chip-bg: #c7d2fe;
       --day-chip-color: #1e3a8a;
-      --day-chip-border: rgba(30, 64, 175, 0.35);
-      --day-highlight-shadow: rgba(37, 99, 235, 0.25);
+      --day-chip-border: rgba(30, 64, 175, 0.45);
+      --day-highlight-shadow: rgba(37, 99, 235, 0.35);
     }
     .day[data-color="red"] {
-      --day-surface: #fef2f2;
-      --day-border: #fecaca;
+      --day-surface: #fee2e2;
+      --day-border: #fca5a5;
       --day-text: #7f1d1d;
-      --day-chip-bg: #fee2e2;
+      --day-chip-bg: #fecaca;
       --day-chip-color: #7f1d1d;
-      --day-chip-border: rgba(127, 29, 29, 0.3);
-      --day-highlight-shadow: rgba(239, 68, 68, 0.25);
+      --day-chip-border: rgba(127, 29, 29, 0.4);
+      --day-highlight-shadow: rgba(239, 68, 68, 0.32);
     }
     .day[data-color="green"] {
-      --day-surface: #ecfdf5;
-      --day-border: #a7f3d0;
+      --day-surface: #d1fae5;
+      --day-border: #6ee7b7;
       --day-text: #065f46;
-      --day-chip-bg: #d1fae5;
+      --day-chip-bg: #a7f3d0;
       --day-chip-color: #065f46;
-      --day-chip-border: rgba(6, 95, 70, 0.25);
-      --day-highlight-shadow: rgba(34, 197, 94, 0.22);
+      --day-chip-border: rgba(6, 95, 70, 0.35);
+      --day-highlight-shadow: rgba(34, 197, 94, 0.3);
     }
     .day[data-color="yellow"] {
-      --day-surface: #fffbeb;
+      --day-surface: #fef9c3;
       --day-border: #fde68a;
       --day-text: #92400e;
-      --day-chip-bg: #fef3c7;
+      --day-chip-bg: #fde68a;
       --day-chip-color: #92400e;
-      --day-chip-border: rgba(146, 64, 14, 0.25);
-      --day-highlight-shadow: rgba(250, 204, 21, 0.25);
+      --day-chip-border: rgba(146, 64, 14, 0.35);
+      --day-highlight-shadow: rgba(250, 204, 21, 0.32);
     }
     .day[data-color="purple"] {
-      --day-surface: #f5f3ff;
-      --day-border: #ddd6fe;
+      --day-surface: #ede9fe;
+      --day-border: #c4b5fd;
       --day-text: #4c1d95;
-      --day-chip-bg: #ede9fe;
+      --day-chip-bg: #ddd6fe;
       --day-chip-color: #4c1d95;
-      --day-chip-border: rgba(76, 29, 149, 0.25);
-      --day-highlight-shadow: rgba(124, 58, 237, 0.25);
+      --day-chip-border: rgba(76, 29, 149, 0.35);
+      --day-highlight-shadow: rgba(124, 58, 237, 0.32);
     }
     .day[data-color="orange"] {
-      --day-surface: #fff7ed;
-      --day-border: #fed7aa;
+      --day-surface: #ffedd5;
+      --day-border: #fdba74;
       --day-text: #9a3412;
-      --day-chip-bg: #ffedd5;
+      --day-chip-bg: #fed7aa;
       --day-chip-color: #9a3412;
-      --day-chip-border: rgba(154, 52, 18, 0.25);
-      --day-highlight-shadow: rgba(249, 115, 22, 0.25);
+      --day-chip-border: rgba(154, 52, 18, 0.35);
+      --day-highlight-shadow: rgba(249, 115, 22, 0.32);
     }
     .day[data-color="white"] {
-      --day-surface: #ffffff;
+      --day-surface: #f8fafc;
       --day-border: #e5e7eb;
       --day-text: #1f2937;
-      --day-chip-bg: #f3f4f6;
+      --day-chip-bg: #e2e8f0;
       --day-chip-color: #1f2937;
-      --day-chip-border: rgba(107, 114, 128, 0.3);
-      --day-highlight-shadow: rgba(15, 23, 42, 0.08);
+      --day-chip-border: rgba(107, 114, 128, 0.35);
+      --day-highlight-shadow: rgba(15, 23, 42, 0.15);
     }
 .schedule-item.summary[data-color] .schedule-summary-header {
   color: var(--summary-text);
@@ -3197,7 +3197,7 @@ let scheduleDailyDateKey = summaryDateKey;
 let highlightedDates = new Map();
 let saveSuccessTimeout = null;
 let activeScheduleSummaryKey = summaryDateKey;
-const NOTIFICATION_STORAGE_KEY = "calendarNotifications";
+const NOTIFICATION_STORAGE_PREFIX = "goartNotifications_";
 let notifications = [];
 let notificationPanelOpen = false;
 const DEFAULT_ENTRY_COLOR = "blue";
@@ -3472,9 +3472,16 @@ function getCurrentUserDisplayName() {
   );
 }
 
-function readAllNotificationsFromStorage() {
+function getNotificationStorageKey(email) {
+  if (!email) return null;
+  return `${NOTIFICATION_STORAGE_PREFIX}${email.toLowerCase()}`;
+}
+
+function readNotificationsForEmail(email) {
+  const key = getNotificationStorageKey(email);
+  if (!key) return [];
   try {
-    const raw = localStorage.getItem(NOTIFICATION_STORAGE_KEY);
+    const raw = localStorage.getItem(key);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
@@ -3483,10 +3490,39 @@ function readAllNotificationsFromStorage() {
   }
 }
 
-function writeAllNotificationsToStorage(list) {
+function writeNotificationsForEmail(email, list) {
+  const key = getNotificationStorageKey(email);
+  if (!key) return;
   try {
-    localStorage.setItem(NOTIFICATION_STORAGE_KEY, JSON.stringify(list));
+    localStorage.setItem(key, JSON.stringify(list));
   } catch {}
+}
+
+function normalizeNotificationRecord(item) {
+  if (!item || typeof item !== "object") return null;
+  const createdAt =
+    typeof item.createdAt === "number"
+      ? item.createdAt
+      : Date.parse(item.createdAt || "") || Date.now();
+  return {
+    id: item.id || `ntf_${createdAt}_${Math.random().toString(36).slice(2, 8)}`,
+    createdAt,
+    shareId: item.shareId || item.cardId || null,
+    dayKey: item.dayKey || item.dateKey || null,
+    title: item.title || "Yeni içerik",
+    from: item.from || item.userEmail || "Takvim",
+    to: item.to || item.userEmail || "",
+    message:
+      item.message ||
+      `${item.from || "Takvim"} seni "${item.title || "bu kart"}" için sorumlu yaptı.`,
+    isRead: Boolean(item.isRead)
+  };
+}
+
+function sortNotificationsDesc(list) {
+  return list
+    .slice()
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 }
 
 function loadNotificationsForCurrentUser() {
@@ -3497,14 +3533,11 @@ function loadNotificationsForCurrentUser() {
     renderNotificationList();
     return;
   }
-  const all = readAllNotificationsFromStorage();
-  notifications = all
-    .filter((item) => item && item.userEmail === email)
-    .sort(
-      (a, b) =>
-        new Date(b.createdAt || 0).getTime() -
-        new Date(a.createdAt || 0).getTime()
-    );
+  const stored = readNotificationsForEmail(email)
+    .map((item) => normalizeNotificationRecord(item))
+    .filter(Boolean);
+  notifications = sortNotificationsDesc(stored);
+  writeNotificationsForEmail(email, notifications);
   updateNotificationBadge();
   renderNotificationList();
 }
@@ -3555,7 +3588,9 @@ function renderNotificationList() {
     bodyRow.className = "notification-item-body";
     const messageSpan = document.createElement("span");
     messageSpan.textContent =
-      notification.message || "Sana bir kart atandı.";
+      notification.message ||
+      `${notification.from || "Takvim"} seni "${notification.title ||
+        "kart"}" için sorumlu yaptı.`;
     bodyRow.appendChild(messageSpan);
     const timeSpan = document.createElement("span");
     timeSpan.textContent = formatNotificationTimestamp(notification.createdAt);
@@ -3572,7 +3607,8 @@ function renderNotificationList() {
 
 function formatNotificationTimestamp(value) {
   if (!value) return "";
-  const date = new Date(value);
+  const date =
+    typeof value === "number" ? new Date(value) : new Date(value || 0);
   if (Number.isNaN(date.getTime())) return "";
   const today = new Date();
   const sameDay = date.toDateString() === today.toDateString();
@@ -3615,13 +3651,14 @@ function handleNotificationItemClick(notificationId) {
 
 function focusNotificationTarget(notification) {
   if (!notification) return;
+  const targetId = notification.shareId || notification.cardId || null;
   const entry =
-    notification.cardId && entriesById.get(notification.cardId)
-      ? entriesById.get(notification.cardId)
+    targetId && entriesById.get(targetId)
+      ? entriesById.get(targetId)
       : null;
-  const dateKey = entry ? entry.date : notification.dateKey || null;
+  const dateKey = entry ? entry.date : notification.dayKey || notification.dateKey || null;
   if (dateKey) {
-    focusDayFromSchedule(dateKey, notification.cardId || null);
+    focusDayFromSchedule(dateKey, targetId);
   }
 }
 
@@ -3636,10 +3673,13 @@ function markNotificationAsRead(notificationId) {
     return item;
   });
   if (changed) {
-    const all = readAllNotificationsFromStorage().map((item) =>
-      item.id === notificationId ? { ...item, isRead: true } : item
-    );
-    writeAllNotificationsToStorage(all);
+    const email = getCurrentUserEmail();
+    if (email) {
+      const stored = readNotificationsForEmail(email).map((item) =>
+        item.id === notificationId ? { ...item, isRead: true } : item
+      );
+      writeNotificationsForEmail(email, stored);
+    }
     updateNotificationBadge();
     renderNotificationList();
   }
@@ -3647,27 +3687,36 @@ function markNotificationAsRead(notificationId) {
 
 function addNotificationForAssignee({
   userEmail,
+  shareId,
   cardId,
   title,
   message,
+  dayKey,
   dateKey
 }) {
-  if (!userEmail || !cardId) return;
+  const targetId = shareId || cardId;
+  if (!userEmail || !targetId) return;
   const notification = {
-    id: `ntf_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-    userEmail,
-    cardId,
+    id: `ntf_${targetId}_${Date.now()}_${Math.random()
+      .toString(36)
+      .slice(2, 8)}`,
+    createdAt: Date.now(),
+    shareId: targetId,
+    dayKey: dayKey || dateKey || null,
     title: title || "Yeni içerik",
-    message: message || "Sana bir kart atandı.",
-    createdAt: new Date().toISOString(),
-    isRead: false,
-    dateKey: dateKey || null
+    from: getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim",
+    to: userEmail,
+    message:
+      message ||
+      `${getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim"} seni şu karta sorumlu yaptı: ${title ||
+        "Bu kart"}`,
+    isRead: false
   };
-  const all = readAllNotificationsFromStorage();
-  all.push(notification);
-  writeAllNotificationsToStorage(all);
+  const stored = readNotificationsForEmail(userEmail);
+  stored.push(notification);
+  writeNotificationsForEmail(userEmail, stored);
   if (userEmail === getCurrentUserEmail()) {
-    notifications = [notification, ...notifications];
+    notifications = sortNotificationsDesc(stored);
     updateNotificationBadge();
     renderNotificationList();
   }
@@ -3851,32 +3900,49 @@ async function ensureColorDescriptionsLoaded(force = false) {
   await loadColorDescriptions();
 }
 
-async function loadColorDescriptions() {
+const COLOR_SETTINGS_STORAGE_KEY = "goartCalendarColorSettings";
+
+function readColorSettingsFromStorage() {
   try {
-    const response = await apiFetch("/calendar/color-descriptions");
-    const data = await response.json();
-    const merged = cloneColorDescriptionDefaults();
-    if (data && typeof data === "object") {
-      Object.entries(data).forEach(([key, value]) => {
-        if (!merged[key]) return;
-        merged[key] = {
-          label:
-            value && typeof value.label === "string" && value.label.trim()
-              ? value.label.trim()
-              : merged[key].label,
-          description:
-            value && typeof value.description === "string"
-              ? value.description
-              : merged[key].description
-        };
-      });
-    }
-    colorDescriptions = merged;
-    colorDescriptionsLoaded = true;
-  } catch (err) {
-    console.warn("Renk açıklamaları yüklenemedi:", err.message);
-    colorDescriptions = cloneColorDescriptionDefaults();
+    const raw = localStorage.getItem(COLOR_SETTINGS_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
   }
+}
+
+function writeColorSettingsToStorage(settings) {
+  try {
+    localStorage.setItem(
+      COLOR_SETTINGS_STORAGE_KEY,
+      JSON.stringify(settings)
+    );
+  } catch {}
+}
+
+async function loadColorDescriptions(force = false) {
+  if (colorDescriptionsLoaded && !force) return;
+  const merged = cloneColorDescriptionDefaults();
+  const stored = readColorSettingsFromStorage();
+  if (stored && typeof stored === "object") {
+    Object.entries(stored).forEach(([key, value]) => {
+      if (!merged[key]) return;
+      merged[key] = {
+        label:
+          value && typeof value.label === "string" && value.label.trim()
+            ? value.label.trim()
+            : merged[key].label,
+        description:
+          value && typeof value.description === "string"
+            ? value.description
+            : merged[key].description
+      };
+    });
+  }
+  colorDescriptions = merged;
+  colorDescriptionsLoaded = true;
   renderColorHelpList();
   refreshColorDescriptionSection();
 }
@@ -3926,8 +3992,6 @@ function populateOwnerSelectOptions() {
   });
   if (previousValue && responsibleUserMap.has(Number(previousValue))) {
     ownerSelect.value = previousValue;
-  } else if (currentUser && responsibleUserMap.has(currentUser.id)) {
-    ownerSelect.value = String(currentUser.id);
   } else {
     ownerSelect.value = "";
   }
@@ -4074,16 +4138,29 @@ async function saveColorDescriptions() {
   colorDescriptionSaveBtn.disabled = true;
   if (colorDescriptionSaveStatus) colorDescriptionSaveStatus.textContent = "Kaydediliyor...";
   try {
-    await apiFetch("/calendar/color-descriptions", {
-      method: "PUT",
-      body: JSON.stringify({ descriptions: descriptionsPayload })
+    const merged = { ...colorDescriptions };
+    Object.entries(descriptionsPayload).forEach(([key, value]) => {
+      if (!merged[key]) return;
+      merged[key] = {
+        label:
+          value && typeof value.label === "string" && value.label.trim()
+            ? value.label.trim()
+            : merged[key].label,
+        description:
+          value && typeof value.description === "string"
+            ? value.description
+            : merged[key].description
+      };
     });
-    await loadColorDescriptions(true);
+    colorDescriptions = merged;
+    writeColorSettingsToStorage(colorDescriptions);
+    renderColorHelpList();
+    refreshColorDescriptionSection();
     if (colorDescriptionSaveStatus) {
       colorDescriptionSaveStatus.textContent = "Kaydedildi.";
       setTimeout(() => {
         if (colorDescriptionSaveStatus) colorDescriptionSaveStatus.textContent = "";
-      }, 3000);
+      }, 2500);
     }
   } catch (err) {
     if (colorDescriptionSaveStatus) {
@@ -7261,25 +7338,32 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         Boolean(ownerEmailForNotification) &&
         ownerIdValue !== null &&
         ownerIdValue !== previousOwnerId;
+      const assignerEmailForNotification =
+        getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim";
+      const notificationTitle = textVal || filesVal || "Yeni içerik";
       const notificationDraft = shouldNotifyAssignee
         ? {
             userEmail: ownerEmailForNotification,
-            title: textVal || filesVal || "Yeni içerik",
-            message: `${getCurrentUserDisplayName()} sana bir kart atadı.`
+            title: notificationTitle,
+            message: `${assignerEmailForNotification} seni şu karta sorumlu yaptı: ${notificationTitle}`
           }
         : null;
 
+      let resolvedEntryId = null;
       saveBtn.disabled = true;
       try {
         if (activeItemId && entriesById.has(activeItemId)) {
           await updateEntry(activeItemId, payload);
+          resolvedEntryId = activeItemId;
         } else {
           const created = await createEntry(payload);
           activeItemId = created.id;
+          resolvedEntryId = created.id;
         }
         currentDayItems = loadDayData(selectedDateKey).items;
         renderCalendar();
         if (viewReports.style.display !== "none") renderReports();
+        const targetEntryId = resolvedEntryId;
         activeItemId = null;
         modalForcePlanMode = false;
         clearFormOnly({ preserveSuccessMessage: true });
@@ -7287,13 +7371,13 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         renderModalSummaryList();
         showSaveSuccessMessage();
         deleteBtn.disabled = true;
-        if (notificationDraft && activeItemId) {
+        if (notificationDraft && targetEntryId) {
           addNotificationForAssignee({
             userEmail: notificationDraft.userEmail,
-            cardId: activeItemId,
+            shareId: targetEntryId,
             title: notificationDraft.title,
             message: notificationDraft.message,
-            dateKey: selectedDateKey
+            dayKey: selectedDateKey
           });
         }
       } catch (err) {

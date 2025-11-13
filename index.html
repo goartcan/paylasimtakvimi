@@ -589,7 +589,7 @@
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1.1fr);
   gap: 24px;
-  align-items: flex-start;
+  align-items: stretch;
   width: 100%;
 }
 .calendar-shell {
@@ -1028,6 +1028,7 @@
       gap: 6px;
       max-width: 360px;
       width: 100%;
+      height: 100%;
       align-self: stretch;
       justify-self: stretch;
     }
@@ -1052,6 +1053,7 @@
   padding-right: 0;
 }
 .day-summary-scroll {
+  flex: 1 1 auto;
   overflow-y: auto;
 }
 .summary-scroll-area::-webkit-scrollbar {
@@ -5190,6 +5192,7 @@ if (modalFormSection) {
       renderCalendar();
     }
 
+    // Takvim ile sağ panel listesinin yüksekliğini senkronize et
     function syncDaySummaryHeight() {
       const calendarShell = document.querySelector(".calendar-shell");
       const daySummaryScroll = document.querySelector(".day-summary-scroll");
@@ -5199,8 +5202,8 @@ if (modalFormSection) {
       const bottomPadding = 24;
       const targetHeight = calRect.bottom - scrollRect.top - bottomPadding;
       if (targetHeight > 0) {
-        daySummaryScroll.style.height = `${targetHeight}px`;
-        daySummaryScroll.style.maxHeight = `${targetHeight}px`;
+        daySummaryScroll.style.height = targetHeight + "px";
+        daySummaryScroll.style.maxHeight = targetHeight + "px";
       }
     }
     window.addEventListener("load", syncDaySummaryHeight);

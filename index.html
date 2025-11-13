@@ -1051,11 +1051,8 @@
   overflow: visible;
   padding-right: 0;
 }
-/* Sağ panel listesi viewport içinde kayar */
-#viewCalendar .summary-scroll-area {
-  max-height: calc(100vh - 220px);
+.day-summary-scroll {
   overflow-y: auto;
-  padding-right: 4px;
 }
 .summary-scroll-area::-webkit-scrollbar {
   width: 6px;
@@ -2737,7 +2734,7 @@
       <div class="side summary-shell">
         <div class="form">
           <h2>Gün Detayı / Takvim Özeti</h2>
-          <div class="summary-scroll-area">
+          <div class="summary-scroll-area day-summary-scroll">
             <div class="schedule-search">
               <input
                 type="text"
@@ -5193,64 +5190,21 @@ if (modalFormSection) {
       renderCalendar();
     }
 
-    let summaryHeightRaf = null;
-    let calendarHeightObserver = null;
-    function applyCalendarShellHeight(nextHeight) {
-      const numericHeight = Number(nextHeight);
-      if (!numericHeight || Number.isNaN(numericHeight) || numericHeight <= 0) {
-        return;
+    function syncDaySummaryHeight() {
+      const calendarShell = document.querySelector(".calendar-shell");
+      const daySummaryScroll = document.querySelector(".day-summary-scroll");
+      if (!calendarShell || !daySummaryScroll) return;
+      const calRect = calendarShell.getBoundingClientRect();
+      const scrollRect = daySummaryScroll.getBoundingClientRect();
+      const bottomPadding = 24;
+      const targetHeight = calRect.bottom - scrollRect.top - bottomPadding;
+      if (targetHeight > 0) {
+        daySummaryScroll.style.height = `${targetHeight}px`;
+        daySummaryScroll.style.maxHeight = `${targetHeight}px`;
       }
-      document.documentElement.style.setProperty(
-        "--calendar-shell-height",
-        `${Math.round(numericHeight)}px`
-      );
     }
-    function syncSummaryPanelHeight() {
-      const calendarShellEl = document.querySelector(".calendar-shell");
-      if (!calendarShellEl) return;
-      const height = calendarShellEl.getBoundingClientRect().height;
-      applyCalendarShellHeight(height);
-    }
-    function requestSummaryHeightSync() {
-      if (summaryHeightRaf) cancelAnimationFrame(summaryHeightRaf);
-      summaryHeightRaf = requestAnimationFrame(() => {
-        summaryHeightRaf = null;
-        syncSummaryPanelHeight();
-      });
-    }
-    function initCalendarHeightObserver() {
-      if (!("ResizeObserver" in window)) {
-        return;
-      }
-      const calendarShellEl = document.querySelector(".calendar-shell");
-      if (!calendarShellEl) return;
-      if (calendarHeightObserver) {
-        calendarHeightObserver.disconnect();
-      }
-      calendarHeightObserver = new ResizeObserver((entries) => {
-        entries.forEach((entry) => {
-          const borderSize =
-            entry.borderBoxSize && entry.borderBoxSize.length
-              ? entry.borderBoxSize[0].blockSize
-              : null;
-          const contentSize =
-            entry.contentBoxSize && entry.contentBoxSize.length
-              ? entry.contentBoxSize[0].blockSize
-              : null;
-          const fallbackSize =
-            entry.contentRect && entry.contentRect.height
-              ? entry.contentRect.height
-              : null;
-          const resolved =
-            borderSize || contentSize || fallbackSize || calendarShellEl.offsetHeight;
-          applyCalendarShellHeight(resolved);
-        });
-      });
-      calendarHeightObserver.observe(calendarShellEl);
-    }
-    window.addEventListener("resize", requestSummaryHeightSync);
-    requestSummaryHeightSync();
-    initCalendarHeightObserver();
+    window.addEventListener("load", syncDaySummaryHeight);
+    window.addEventListener("resize", syncDaySummaryHeight);
     function minutesFromTime(t) {
       if (!t) return 24 * 60 + 1; // saat yoksa en sona
       const parts = t.split(":");
@@ -5358,6 +5312,7 @@ function summarizePlatformLabel(platform) {
       const normalizedQuery = getNormalizedSearchQuery();
       if (normalizedQuery) {
         renderSearchResults(normalizedQuery);
+        syncDaySummaryHeight();
         return;
       }
       if (scheduleViewMode === "daily") {
@@ -5367,6 +5322,7 @@ function summarizePlatformLabel(platform) {
       } else {
         renderWeeklySchedule();
       }
+      syncDaySummaryHeight();
     }
 
     function renderSearchResults(query) {
@@ -5876,7 +5832,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       }
 
       updateScheduleList();
-      requestSummaryHeightSync();
+      syncDaySummaryHeight();
     }
 
     /* Modal içi liste */

@@ -582,14 +582,6 @@
   align-items: stretch;
   width: 100%;
 }
-.container.calendar-layout {
-  display: flex;
-  gap: 12px;
-  align-items: stretch;
-  width: 100%;
-  min-height: 0;
-  height: var(--calendar-shell-height, auto);
-}
 .calendar-shell {
   flex: 1 1 auto;
   min-width: 0;
@@ -3134,7 +3126,6 @@ const channelFilterButtons = channelFilter
 const assigneeFilterButtons = Array.from(
   document.querySelectorAll(".assignee-filter-btn")
 );
-const calendarLayoutEl = document.getElementById("calendarLayout");
 const copyPopoverBackdrop = document.getElementById("copyPopoverBackdrop");
 const copyPopover = document.getElementById("copyPopover");
 const copyDateInput = document.getElementById("copyDateInput");
@@ -5208,19 +5199,7 @@ if (modalFormSection) {
         `${Math.round(numericHeight)}px`
       );
     }
-    function calculateCalendarLayoutHeight() {
-      if (!calendarLayoutEl) return null;
-      const rect = calendarLayoutEl.getBoundingClientRect();
-      const bottomPadding = 16;
-      const available = window.innerHeight - rect.top - bottomPadding;
-      return available > 0 ? available : null;
-    }
     function syncSummaryPanelHeight() {
-      const available = calculateCalendarLayoutHeight();
-      if (available) {
-        applyCalendarShellHeight(available);
-        return;
-      }
       const calendarShellEl = document.querySelector(".calendar-shell");
       if (!calendarShellEl) return;
       const height = calendarShellEl.getBoundingClientRect().height;

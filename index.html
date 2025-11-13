@@ -582,12 +582,23 @@
   align-items: stretch;
   width: 100%;
 }
+.container.calendar-layout {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  width: 100%;
+  min-height: 0;
+  height: var(--calendar-shell-height, auto);
+}
 .calendar-shell {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
   align-self: stretch;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 .calendar {
   border: 1px solid #dde2ff;
@@ -1014,14 +1025,14 @@
   gap: 10px;
   height: 100%;
 }
-    .summary-shell {
+.summary-shell {
       display: flex;
       flex-direction: column;
       gap: 6px;
       flex: 0 0 340px;
       max-width: 340px;
       align-self: stretch;
-      min-height: var(--calendar-shell-height, auto);
+      min-height: 0;
       height: var(--calendar-shell-height, auto);
       max-height: var(--calendar-shell-height, none);
       overflow: hidden;
@@ -1034,13 +1045,13 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  height: 100%;
+  flex: 0 0 auto;
 }
 .summary-shell .form {
-  flex: 1;
+  flex: 0 0 auto;
 }
 .summary-scroll-area {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -3123,6 +3134,7 @@ const channelFilterButtons = channelFilter
 const assigneeFilterButtons = Array.from(
   document.querySelectorAll(".assignee-filter-btn")
 );
+const calendarLayoutEl = document.getElementById("calendarLayout");
 const copyPopoverBackdrop = document.getElementById("copyPopoverBackdrop");
 const copyPopover = document.getElementById("copyPopover");
 const copyDateInput = document.getElementById("copyDateInput");
@@ -5196,7 +5208,19 @@ if (modalFormSection) {
         `${Math.round(numericHeight)}px`
       );
     }
+    function calculateCalendarLayoutHeight() {
+      if (!calendarLayoutEl) return null;
+      const rect = calendarLayoutEl.getBoundingClientRect();
+      const bottomPadding = 16;
+      const available = window.innerHeight - rect.top - bottomPadding;
+      return available > 0 ? available : null;
+    }
     function syncSummaryPanelHeight() {
+      const available = calculateCalendarLayoutHeight();
+      if (available) {
+        applyCalendarShellHeight(available);
+        return;
+      }
       const calendarShellEl = document.querySelector(".calendar-shell");
       if (!calendarShellEl) return;
       const height = calendarShellEl.getBoundingClientRect().height;

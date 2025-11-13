@@ -22,28 +22,28 @@
     }
     h1, h2, h3, label { font-weight: 700; }
 
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 48px;
-      padding: 2px 0;
-      margin-bottom: 2px;
-    }
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: 2px 0;
+  margin-bottom: 2px;
+}
     .header-left {
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .header-right button {
-      padding: 5px 10px;
-      font-size: 12px;
-    }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header-right button {
+  padding: 5px 10px;
+  font-size: 12px;
+}
     .logo { height: 32px; }
     .login-overlay {
       position: fixed;
@@ -285,9 +285,126 @@
       color: #9a3412;
       margin-left: 4px;
     }
-    .pending-count-badge.has-pending {
-      color: #b91c1c;
-    }
+.pending-count-badge.has-pending {
+  color: #b91c1c;
+}
+.notification-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.notification-bell {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  min-width: 42px;
+}
+.notification-bell .notification-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -2px;
+  display: none;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+.notification-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  max-height: 380px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+  padding: 12px;
+  display: none;
+  flex-direction: column;
+  z-index: 60;
+}
+.notification-panel.open {
+  display: flex;
+}
+.notification-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 14px;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.notification-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+.notification-item.unread {
+  background: #eef3ff;
+  border-color: rgba(37, 99, 235, 0.25);
+}
+.notification-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.notification-item-body {
+  font-size: 12px;
+  color: #475569;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.notification-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2563eb;
+  flex-shrink: 0;
+}
+.notification-empty {
+  text-align: center;
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 10px 0 0;
+}
     .color-description-dot {
       width: 18px;
       height: 18px;
@@ -698,62 +815,163 @@
     .day[data-color] .day-summary {
       color: var(--day-text);
     }
-    .day[data-color="yellow"],
-    .day[data-color="white"],
-    .day[data-color="amber"],
-    .day[data-color="orange"],
-    .day[data-color="green"],
-    .day[data-color="emerald"],
-    .day[data-color="cyan"],
-    .day[data-color="sky"],
-    .day[data-color="default"] {
-      --day-text: #1f2937;
-      --day-chip-bg: rgba(255, 255, 255, 0.78);
-      --day-chip-color: #1f2937;
-      --day-chip-border: rgba(31, 41, 55, 0.18);
+    .day[data-color="blue"] {
+      --day-surface: #eef2ff;
+      --day-border: #c7d2fe;
+      --day-text: #1e3a8a;
+      --day-chip-bg: #dbeafe;
+      --day-chip-color: #1e3a8a;
+      --day-chip-border: rgba(30, 64, 175, 0.35);
+      --day-highlight-shadow: rgba(37, 99, 235, 0.25);
     }
-    .day[data-color="blue"],
-    .day[data-color="purple"],
-    .day[data-color="violet"],
-    .day[data-color="pink"],
-    .day[data-color="red"],
-    .day[data-color="rose"],
-    .day[data-color="gray"],
-    .day[data-color="black"] {
-      --day-text: #ffffff;
-      --day-chip-bg: rgba(255, 255, 255, 0.22);
-      --day-chip-color: #ffffff;
-      --day-chip-border: rgba(255, 255, 255, 0.45);
+    .day[data-color="red"] {
+      --day-surface: #fef2f2;
+      --day-border: #fecaca;
+      --day-text: #7f1d1d;
+      --day-chip-bg: #fee2e2;
+      --day-chip-color: #7f1d1d;
+      --day-chip-border: rgba(127, 29, 29, 0.3);
+      --day-highlight-shadow: rgba(239, 68, 68, 0.25);
+    }
+    .day[data-color="green"] {
+      --day-surface: #ecfdf5;
+      --day-border: #a7f3d0;
+      --day-text: #065f46;
+      --day-chip-bg: #d1fae5;
+      --day-chip-color: #065f46;
+      --day-chip-border: rgba(6, 95, 70, 0.25);
+      --day-highlight-shadow: rgba(34, 197, 94, 0.22);
+    }
+    .day[data-color="yellow"] {
+      --day-surface: #fffbeb;
+      --day-border: #fde68a;
+      --day-text: #92400e;
+      --day-chip-bg: #fef3c7;
+      --day-chip-color: #92400e;
+      --day-chip-border: rgba(146, 64, 14, 0.25);
+      --day-highlight-shadow: rgba(250, 204, 21, 0.25);
+    }
+    .day[data-color="purple"] {
+      --day-surface: #f5f3ff;
+      --day-border: #ddd6fe;
+      --day-text: #4c1d95;
+      --day-chip-bg: #ede9fe;
+      --day-chip-color: #4c1d95;
+      --day-chip-border: rgba(76, 29, 149, 0.25);
+      --day-highlight-shadow: rgba(124, 58, 237, 0.25);
+    }
+    .day[data-color="orange"] {
+      --day-surface: #fff7ed;
+      --day-border: #fed7aa;
+      --day-text: #9a3412;
+      --day-chip-bg: #ffedd5;
+      --day-chip-color: #9a3412;
+      --day-chip-border: rgba(154, 52, 18, 0.25);
+      --day-highlight-shadow: rgba(249, 115, 22, 0.25);
+    }
+    .day[data-color="white"] {
+      --day-surface: #ffffff;
+      --day-border: #e5e7eb;
+      --day-text: #1f2937;
+      --day-chip-bg: #f3f4f6;
+      --day-chip-color: #1f2937;
+      --day-chip-border: rgba(107, 114, 128, 0.3);
+      --day-highlight-shadow: rgba(15, 23, 42, 0.08);
     }
 .schedule-item.summary[data-color] .schedule-summary-header {
   color: var(--summary-text);
 }
-    .schedule-item.summary[data-color="yellow"],
-    .schedule-item.summary[data-color="white"],
-    .schedule-item.summary[data-color="amber"],
-    .schedule-item.summary[data-color="orange"],
-    .schedule-item.summary[data-color="green"],
-    .schedule-item.summary[data-color="emerald"],
-    .schedule-item.summary[data-color="cyan"],
-    .schedule-item.summary[data-color="sky"],
-    .schedule-item.summary[data-color="default"] {
-      --summary-text: #1f2937;
-      --summary-chip-bg: rgba(255, 255, 255, 0.78);
-      --summary-chip-color: #1f2937;
-      --summary-chip-border: rgba(31, 41, 55, 0.18);
+    .schedule-item.summary[data-color="blue"] {
+      --summary-border: #2563eb;
+      --summary-surface: #eef2ff;
+      --summary-text: #1d4ed8;
+      --summary-chip-bg: #dbeafe;
+      --summary-chip-color: #1d4ed8;
+      --summary-chip-border: #bfdbfe;
+      --summary-shadow: rgba(37, 99, 235, 0.2);
     }
-    .schedule-item.summary[data-color="blue"],
-    .schedule-item.summary[data-color="purple"],
-    .schedule-item.summary[data-color="violet"],
-    .schedule-item.summary[data-color="pink"],
-    .schedule-item.summary[data-color="red"],
-    .schedule-item.summary[data-color="rose"],
-    .schedule-item.summary[data-color="gray"],
-    .schedule-item.summary[data-color="black"] {
-      --summary-text: #ffffff;
-      --summary-chip-bg: rgba(255, 255, 255, 0.22);
-      --summary-chip-color: #ffffff;
-      --summary-chip-border: rgba(255, 255, 255, 0.45);
+    .schedule-item.summary[data-color="red"] {
+      --summary-border: #ef4444;
+      --summary-surface: #fef2f2;
+      --summary-text: #b91c1c;
+      --summary-chip-bg: #fee2e2;
+      --summary-chip-color: #b91c1c;
+      --summary-chip-border: #fecaca;
+      --summary-shadow: rgba(239, 68, 68, 0.2);
+    }
+    .schedule-item.summary[data-color="green"] {
+      --summary-border: #22c55e;
+      --summary-surface: #ecfdf5;
+      --summary-text: #047857;
+      --summary-chip-bg: #d1fae5;
+      --summary-chip-color: #047857;
+      --summary-chip-border: #a7f3d0;
+      --summary-shadow: rgba(34, 197, 94, 0.2);
+    }
+    .schedule-item.summary[data-color="yellow"] {
+      --summary-border: #facc15;
+      --summary-surface: #fffbeb;
+      --summary-text: #92400e;
+      --summary-chip-bg: #fef3c7;
+      --summary-chip-color: #92400e;
+      --summary-chip-border: #fde68a;
+      --summary-shadow: rgba(250, 204, 21, 0.2);
+    }
+    .schedule-item.summary[data-color="purple"] {
+      --summary-border: #7c3aed;
+      --summary-surface: #f5f3ff;
+      --summary-text: #5b21b6;
+      --summary-chip-bg: #ede9fe;
+      --summary-chip-color: #5b21b6;
+      --summary-chip-border: #ddd6fe;
+      --summary-shadow: rgba(124, 58, 237, 0.2);
+    }
+    .schedule-item.summary[data-color="orange"] {
+      --summary-border: #f97316;
+      --summary-surface: #fff7ed;
+      --summary-text: #9a3412;
+      --summary-chip-bg: #ffedd5;
+      --summary-chip-color: #9a3412;
+      --summary-chip-border: #fed7aa;
+      --summary-shadow: rgba(249, 115, 22, 0.2);
+    }
+    .schedule-item.summary[data-color="white"] {
+      --summary-border: #e5e7eb;
+      --summary-surface: #ffffff;
+      --summary-text: #1f2937;
+      --summary-chip-bg: #f3f4f6;
+      --summary-chip-color: #1f2937;
+      --summary-chip-border: #e5e7eb;
+      --summary-shadow: rgba(15, 23, 42, 0.08);
+    }
+
+    .color-blue {
+      --summary-card-color: #2563eb;
+      --daily-card-color: #2563eb;
+    }
+    .color-red {
+      --summary-card-color: #ef4444;
+      --daily-card-color: #ef4444;
+    }
+    .color-green {
+      --summary-card-color: #22c55e;
+      --daily-card-color: #22c55e;
+    }
+    .color-yellow {
+      --summary-card-color: #facc15;
+      --daily-card-color: #facc15;
+    }
+    .color-purple {
+      --summary-card-color: #7c3aed;
+      --daily-card-color: #7c3aed;
+    }
+    .color-orange {
+      --summary-card-color: #f97316;
+      --daily-card-color: #f97316;
+    }
+    .color-white {
+      --summary-card-color: #94a3b8;
+      --daily-card-color: #94a3b8;
     }
 
 .side {
@@ -2397,6 +2615,23 @@
       <h1>Paylaşım Takvimi</h1>
     </div>
     <div class="header-right">
+      <div class="notification-wrapper" id="notificationWrapper" style="display:none;">
+        <button
+          type="button"
+          class="notification-bell"
+          id="notificationToggleBtn"
+          aria-label="Bildirimleri göster"
+          aria-expanded="false"
+        >
+          <span class="notification-icon" aria-hidden="true">🔔</span>
+          <span class="notification-badge" id="notificationBadge"></span>
+        </button>
+        <div class="notification-panel" id="notificationPanel" role="region" aria-label="Bildirimler">
+          <div class="notification-panel-header">Bildirimler</div>
+          <div class="notification-list" id="notificationList"></div>
+          <p class="notification-empty" id="notificationEmptyState">Bildirim yok</p>
+        </div>
+      </div>
       <button id="adminPanelBtn" style="display:none;">Admin paneli</button>
       <button id="logoutBtn" style="display:none;">Çıkış yap</button>
       <button id="themeToggleBtn">Koyu mod</button>
@@ -2600,7 +2835,7 @@
           </button>
           <button type="button" class="highlight-help-btn" id="colorHelpBtn" aria-label="Gün rengi açıklamalarını göster">?</button>
           <div class="color-picker" id="highlightColorPicker"></div>
-          <input type="hidden" id="highlightColorInput" value="#fee2e2" />
+          <input type="hidden" id="highlightColorInput" value="white" />
           <div class="color-help-panel" id="colorHelpPanel">
             <div class="color-help-header">
               <span class="color-help-title">Gün rengi açıklamaları</span>
@@ -2689,7 +2924,7 @@
                 <span>Seç</span>
               </button>
               <div class="color-picker" id="entryColorPicker"></div>
-              <input type="hidden" id="entryColorInput" value="#2563eb" />
+              <input type="hidden" id="entryColorInput" value="blue" />
             </div>
             <div class="form-button-actions">
               <button id="deleteBtn">Sil</button>
@@ -2856,6 +3091,12 @@ const colorHelpList = document.getElementById("colorHelpList");
 const colorHelpCloseBtn = document.getElementById("colorHelpCloseBtn");
 const reportFilterLabel = document.getElementById("reportFilterLabel");
 const toastContainer = document.getElementById("toastContainer");
+const notificationWrapper = document.getElementById("notificationWrapper");
+const notificationToggleBtn = document.getElementById("notificationToggleBtn");
+const notificationBadge = document.getElementById("notificationBadge");
+const notificationPanel = document.getElementById("notificationPanel");
+const notificationListEl = document.getElementById("notificationList");
+const notificationEmptyState = document.getElementById("notificationEmptyState");
 function showToast(message, variant = "success") {
   if (!toastContainer) return;
   const toast = document.createElement("div");
@@ -2956,87 +3197,44 @@ let scheduleDailyDateKey = summaryDateKey;
 let highlightedDates = new Map();
 let saveSuccessTimeout = null;
 let activeScheduleSummaryKey = summaryDateKey;
-const DEFAULT_ENTRY_COLOR = "#2563eb";
-const DEFAULT_HIGHLIGHT_COLOR = "#fee2e2";
-const COLOR_PALETTE = [
-  DEFAULT_HIGHLIGHT_COLOR,
-  "#ffffff",
-  "#000000",
-  "#dc2626",
-  "#f97316",
-  "#facc15",
-  "#22c55e",
-  "#0ea5e9",
-  "#2563eb",
-  "#7c3aed",
-  "#ec4899",
-  "#6b7280",
-  "#fbbf24",
-  "#34d399",
-  "#38bdf8",
-  "#a855f7",
-  "#ef4444"
-];
-const COLOR_TOKEN_MAP = {
-  "#fee2e2": "default",
-  "#ffffff": "white",
-  "#000000": "black",
-  "#dc2626": "red",
-  "#f97316": "orange",
-  "#facc15": "yellow",
-  "#22c55e": "green",
-  "#0ea5e9": "sky",
-  "#2563eb": "blue",
-  "#7c3aed": "purple",
-  "#ec4899": "pink",
-  "#6b7280": "gray",
-  "#fbbf24": "amber",
-  "#34d399": "emerald",
-  "#38bdf8": "cyan",
-  "#a855f7": "violet",
-  "#ef4444": "rose"
-};
+const NOTIFICATION_STORAGE_KEY = "calendarNotifications";
+let notifications = [];
+let notificationPanelOpen = false;
+const DEFAULT_ENTRY_COLOR = "blue";
+const DEFAULT_HIGHLIGHT_COLOR = "white";
 const COLOR_TOKENS_IN_ORDER = [
-  "default",
-  "white",
-  "black",
-  "red",
-  "orange",
-  "yellow",
-  "amber",
-  "green",
-  "emerald",
-  "cyan",
-  "sky",
   "blue",
+  "red",
+  "green",
+  "yellow",
   "purple",
-  "violet",
-  "pink",
-  "rose",
-  "gray"
+  "orange",
+  "white"
 ];
-const COLOR_DESCRIPTION_DEFAULTS = {
-  default: { label: "Açık pembe", description: "Varsayılan gün rengi" },
-  white: { label: "Beyaz", description: "Genel içerikler" },
-  black: { label: "Siyah", description: "Sistem duyuruları" },
-  red: { label: "Kırmızı", description: "Airdrop günleri" },
-  orange: { label: "Turuncu", description: "Video içerikleri" },
-  yellow: { label: "Sarı", description: "Hediye saatleri" },
-  amber: { label: "Kehribar", description: "Yayın hatırlatmaları" },
-  green: { label: "Yeşil", description: "Önemli duyurular" },
-  emerald: { label: "Zümrüt", description: "B2B etkinlikleri" },
-  cyan: { label: "Turkuaz", description: "Eğitim içerikleri" },
-  sky: { label: "Açık mavi", description: "USDT etkinlikleri" },
-  blue: { label: "Mavi", description: "Topluluk canlı yayınları" },
-  purple: { label: "Mor", description: "Influencer iş birlikleri" },
-  violet: { label: "Menekşe", description: "Özel seri" },
-  pink: { label: "Pembe", description: "Kadın topluluğu içerikleri" },
-  rose: { label: "Pudra", description: "PR paylaşımları" },
-  gray: { label: "Gri", description: "Hazırlık aşamasında" }
+const COLOR_HEX_BY_TOKEN = {
+  blue: "#2563eb",
+  red: "#ef4444",
+  green: "#22c55e",
+  yellow: "#facc15",
+  purple: "#7c3aed",
+  orange: "#f97316",
+  white: "#ffffff"
 };
-const COLOR_HEX_BY_TOKEN = Object.fromEntries(
-  Object.entries(COLOR_TOKEN_MAP).map(([hex, token]) => [token, hex])
+const COLOR_TOKEN_BY_HEX = Object.fromEntries(
+  Object.entries(COLOR_HEX_BY_TOKEN).map(([token, hex]) => [
+    hex.toLowerCase(),
+    token
+  ])
 );
+const COLOR_DESCRIPTION_DEFAULTS = {
+  blue: { label: "Mavi", description: "Topluluk canlı yayınları" },
+  red: { label: "Kırmızı", description: "Acil kampanyalar / duyurular" },
+  green: { label: "Yeşil", description: "Topluluk başarıları / bülten" },
+  yellow: { label: "Sarı", description: "Etkinlik ve hatırlatmalar" },
+  purple: { label: "Mor", description: "İş birlikleri / özel projeler" },
+  orange: { label: "Turuncu", description: "Ürün güncellemeleri / videolar" },
+  white: { label: "Beyaz", description: "Varsayılan gün" }
+};
 function cloneColorDescriptionDefaults() {
   return JSON.parse(JSON.stringify(COLOR_DESCRIPTION_DEFAULTS));
 }
@@ -3157,7 +3355,21 @@ function normalizeHexColor(value) {
 function getColorTokenFromHex(value) {
   const normalized = normalizeHexColor(value);
   if (!normalized) return null;
-  return COLOR_TOKEN_MAP[normalized] || null;
+  return COLOR_TOKEN_BY_HEX[normalized] || null;
+}
+
+function normalizeColorToken(value, fallback = null) {
+  if (!value) return fallback;
+  const raw = value.toString().trim().toLowerCase();
+  if (COLOR_HEX_BY_TOKEN[raw]) return raw;
+  const fromHex = getColorTokenFromHex(value);
+  if (fromHex) return fromHex;
+  return fallback;
+}
+
+function getHexFromColorToken(value, fallbackToken = DEFAULT_ENTRY_COLOR) {
+  const token = normalizeColorToken(value, fallbackToken) || fallbackToken;
+  return COLOR_HEX_BY_TOKEN[token] || COLOR_HEX_BY_TOKEN[DEFAULT_ENTRY_COLOR];
 }
 
 function getEntryDateTime(entry) {
@@ -3241,6 +3453,237 @@ function renderColorHelpList() {
 
 renderColorHelpList();
 
+function getResponsibleEmailById(ownerId) {
+  if (ownerId === null || typeof ownerId === "undefined") return "";
+  return responsibleUserMap.get(Number(ownerId)) || "";
+}
+
+function getCurrentUserEmail() {
+  return currentUser && currentUser.email ? currentUser.email : "";
+}
+
+function getCurrentUserDisplayName() {
+  if (!currentUser) return "Takvim";
+  return (
+    currentUser.fullName ||
+    currentUser.name ||
+    currentUser.email ||
+    "Takvim"
+  );
+}
+
+function readAllNotificationsFromStorage() {
+  try {
+    const raw = localStorage.getItem(NOTIFICATION_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeAllNotificationsToStorage(list) {
+  try {
+    localStorage.setItem(NOTIFICATION_STORAGE_KEY, JSON.stringify(list));
+  } catch {}
+}
+
+function loadNotificationsForCurrentUser() {
+  const email = getCurrentUserEmail();
+  if (!email) {
+    notifications = [];
+    updateNotificationBadge();
+    renderNotificationList();
+    return;
+  }
+  const all = readAllNotificationsFromStorage();
+  notifications = all
+    .filter((item) => item && item.userEmail === email)
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt || 0).getTime() -
+        new Date(a.createdAt || 0).getTime()
+    );
+  updateNotificationBadge();
+  renderNotificationList();
+}
+
+function updateNotificationBadge() {
+  if (!notificationBadge) return;
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  if (unreadCount > 0) {
+    notificationBadge.textContent =
+      unreadCount > 99 ? "99+" : String(unreadCount);
+    notificationBadge.style.display = "inline-flex";
+  } else {
+    notificationBadge.textContent = "";
+    notificationBadge.style.display = "none";
+  }
+}
+
+function renderNotificationList() {
+  if (!notificationListEl || !notificationEmptyState) return;
+  notificationListEl.innerHTML = "";
+  if (!notifications.length) {
+    notificationEmptyState.style.display = "block";
+    return;
+  }
+  notificationEmptyState.style.display = "none";
+  notifications.forEach((notification) => {
+    const item = document.createElement("button");
+    item.type = "button";
+    item.className = "notification-item";
+    if (!notification.isRead) {
+      item.classList.add("unread");
+    }
+    item.dataset.notificationId = notification.id;
+    const titleRow = document.createElement("div");
+    titleRow.className = "notification-item-title";
+    if (!notification.isRead) {
+      const dot = document.createElement("span");
+      dot.className = "notification-dot";
+      dot.setAttribute("aria-hidden", "true");
+      titleRow.appendChild(dot);
+    }
+    const titleText = document.createElement("span");
+    titleText.textContent = notification.title || "Yeni içerik";
+    titleRow.appendChild(titleText);
+    item.appendChild(titleRow);
+
+    const bodyRow = document.createElement("div");
+    bodyRow.className = "notification-item-body";
+    const messageSpan = document.createElement("span");
+    messageSpan.textContent =
+      notification.message || "Sana bir kart atandı.";
+    bodyRow.appendChild(messageSpan);
+    const timeSpan = document.createElement("span");
+    timeSpan.textContent = formatNotificationTimestamp(notification.createdAt);
+    bodyRow.appendChild(timeSpan);
+    item.appendChild(bodyRow);
+
+    item.addEventListener("click", (event) => {
+      event.stopPropagation();
+      handleNotificationItemClick(notification.id);
+    });
+    notificationListEl.appendChild(item);
+  });
+}
+
+function formatNotificationTimestamp(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const today = new Date();
+  const sameDay = date.toDateString() === today.toDateString();
+  if (sameDay) {
+    return date.toLocaleTimeString("tr-TR", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+  return formatHumanDate(date);
+}
+
+function toggleNotificationPanel(forceOpen = null) {
+  if (!notificationPanel || !notificationToggleBtn) return;
+  const shouldOpen =
+    forceOpen === null ? !notificationPanelOpen : Boolean(forceOpen);
+  if (shouldOpen) {
+    notificationPanel.classList.add("open");
+    notificationPanelOpen = true;
+    notificationToggleBtn.setAttribute("aria-expanded", "true");
+  } else {
+    closeNotificationPanel();
+  }
+}
+
+function closeNotificationPanel() {
+  if (!notificationPanel || !notificationToggleBtn) return;
+  notificationPanel.classList.remove("open");
+  notificationPanelOpen = false;
+  notificationToggleBtn.setAttribute("aria-expanded", "false");
+}
+
+function handleNotificationItemClick(notificationId) {
+  const target = notifications.find((n) => n.id === notificationId);
+  if (!target) return;
+  markNotificationAsRead(notificationId);
+  closeNotificationPanel();
+  focusNotificationTarget(target);
+}
+
+function focusNotificationTarget(notification) {
+  if (!notification) return;
+  const entry =
+    notification.cardId && entriesById.get(notification.cardId)
+      ? entriesById.get(notification.cardId)
+      : null;
+  const dateKey = entry ? entry.date : notification.dateKey || null;
+  if (dateKey) {
+    focusDayFromSchedule(dateKey, notification.cardId || null);
+  }
+}
+
+function markNotificationAsRead(notificationId) {
+  if (!notificationId) return;
+  let changed = false;
+  notifications = notifications.map((item) => {
+    if (item.id === notificationId && !item.isRead) {
+      changed = true;
+      return { ...item, isRead: true };
+    }
+    return item;
+  });
+  if (changed) {
+    const all = readAllNotificationsFromStorage().map((item) =>
+      item.id === notificationId ? { ...item, isRead: true } : item
+    );
+    writeAllNotificationsToStorage(all);
+    updateNotificationBadge();
+    renderNotificationList();
+  }
+}
+
+function addNotificationForAssignee({
+  userEmail,
+  cardId,
+  title,
+  message,
+  dateKey
+}) {
+  if (!userEmail || !cardId) return;
+  const notification = {
+    id: `ntf_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    userEmail,
+    cardId,
+    title: title || "Yeni içerik",
+    message: message || "Sana bir kart atandı.",
+    createdAt: new Date().toISOString(),
+    isRead: false,
+    dateKey: dateKey || null
+  };
+  const all = readAllNotificationsFromStorage();
+  all.push(notification);
+  writeAllNotificationsToStorage(all);
+  if (userEmail === getCurrentUserEmail()) {
+    notifications = [notification, ...notifications];
+    updateNotificationBadge();
+    renderNotificationList();
+  }
+}
+
+function updateNotificationVisibility(isLoggedIn) {
+  if (!notificationWrapper) return;
+  notificationWrapper.style.display = isLoggedIn ? "inline-flex" : "none";
+  if (!isLoggedIn) {
+    closeNotificationPanel();
+    notifications = [];
+    updateNotificationBadge();
+    renderNotificationList();
+  }
+}
+
 function applyPlatformPreset(values = []) {
   platformInputs.forEach((cb) => {
     cb.checked = false;
@@ -3300,7 +3743,7 @@ async function handleCopyConfirm() {
       source.communication_type || source.communicationType || "",
     status: "planned",
     platforms: Array.isArray(source.platforms) ? [...source.platforms] : [],
-    color: source.color || DEFAULT_ENTRY_COLOR,
+    color: normalizeColorToken(source.color, DEFAULT_ENTRY_COLOR),
     note: source.note || "",
     checkedAt: null,
     ownerId: source.owner_id || null
@@ -3429,7 +3872,6 @@ async function loadColorDescriptions() {
       });
     }
     colorDescriptions = merged;
-    colorDescriptionsDraft = cloneColorDescriptionDefaults();
     colorDescriptionsLoaded = true;
   } catch (err) {
     console.warn("Renk açıklamaları yüklenemedi:", err.message);
@@ -3497,7 +3939,7 @@ function getOwnerLabel(ownerId) {
 }
 
 function setHighlightInputValue(value) {
-  const finalValue = value || DEFAULT_HIGHLIGHT_COLOR;
+  const finalValue = normalizeColorToken(value, DEFAULT_HIGHLIGHT_COLOR);
   if (highlightColorInput) {
     highlightColorInput.value = finalValue;
   }
@@ -3510,7 +3952,7 @@ function setHighlightInputValue(value) {
 function updateDayHighlightLocally(dateKey, colorValue) {
   if (!dateKey) return;
   if (colorValue) {
-    const normalized = normalizeHexColor(colorValue);
+    const normalized = normalizeColorToken(colorValue, null);
     if (normalized) {
       highlightedDates.set(dateKey, normalized);
     } else {
@@ -3662,28 +4104,33 @@ function formatDateTimeHuman(value) {
   });
 }
 
-function renderColorPicker(container, input, palette, onChange) {
-  if (!container || !input || !Array.isArray(palette)) return;
+function renderColorPicker(container, input, paletteTokens, onChange) {
+  if (!container || !input || !Array.isArray(paletteTokens)) return;
   container.innerHTML = "";
-  palette.forEach((color) => {
+  const currentToken = normalizeColorToken(input.value, DEFAULT_ENTRY_COLOR);
+  paletteTokens.forEach((token) => {
+    if (!COLOR_HEX_BY_TOKEN[token]) return;
+    const hex = COLOR_HEX_BY_TOKEN[token];
+    const swatchLabel = getColorDescriptionForKey(token).label || token;
     const button = document.createElement("button");
     button.type = "button";
     button.className = "color-swatch";
-    button.setAttribute("aria-label", color);
+    button.setAttribute("aria-label", swatchLabel);
+    button.title = swatchLabel;
     const span = document.createElement("span");
-    span.style.backgroundColor = color;
+    span.style.backgroundColor = hex;
     button.appendChild(span);
-    button.dataset.color = color.toLowerCase();
-    if (input.value && input.value.toLowerCase() === button.dataset.color) {
+    button.dataset.token = token;
+    if (currentToken === token) {
       button.classList.add("active");
     }
     button.addEventListener("click", () => {
-      input.value = color;
+      input.value = token;
       container
         .querySelectorAll(".color-swatch.active")
         .forEach((el) => el.classList.remove("active"));
       button.classList.add("active");
-      if (onChange) onChange(color);
+      if (onChange) onChange(token);
       closeColorPicker(container);
     });
     container.appendChild(button);
@@ -3693,15 +4140,17 @@ function renderColorPicker(container, input, palette, onChange) {
 
 function setColorPickerValue(container, input, value) {
   if (!container || !input) return;
-  const normalizedValue = (value || "").toLowerCase();
-  input.value = value;
+  const normalizedToken = normalizeColorToken(value, DEFAULT_ENTRY_COLOR);
+  input.value = normalizedToken || "";
   container
     .querySelectorAll(".color-swatch")
     .forEach((btn) => {
-      btn.classList.remove("active");
-      const swatchColor = btn.dataset.color;
-      if (swatchColor && swatchColor === normalizedValue) {
+      const token = btn.dataset.token;
+      if (!token) return;
+      if (token === normalizedToken) {
         btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
       }
     });
 }
@@ -3710,7 +4159,7 @@ function updateColorToggle(toggle, color) {
   if (!toggle) return;
   const swatch = toggle.querySelector(".toggle-swatch");
   if (swatch) {
-    swatch.style.backgroundColor = color;
+    swatch.style.backgroundColor = getHexFromColorToken(color);
   }
 }
 
@@ -3731,15 +4180,13 @@ function setColorPickerEnabled(wrapper, toggle, enabled) {
   }
 }
 
-function handleHighlightSelection(color) {
+function handleHighlightSelection(colorToken) {
   if (!selectedDateKey || !isViewingOwnData()) return;
-  const normalizedColor = normalizeHexColor(color);
-  if (!normalizedColor) return;
+  const normalizedToken = normalizeColorToken(colorToken, null);
+  if (!normalizedToken) return;
   const current = highlightedDates.get(selectedDateKey);
-  const normalizedCurrent = current ? normalizeHexColor(current) : null;
-  const willRemove =
-    normalizedCurrent && normalizedColor === normalizedCurrent;
-  const nextColor = willRemove ? null : normalizedColor;
+  const willRemove = current && current === normalizedToken;
+  const nextColor = willRemove ? null : normalizedToken;
   const previousColor = current || null;
 
   updateDayHighlightLocally(selectedDateKey, nextColor);
@@ -3861,7 +4308,7 @@ if (entryColorPicker && entryColorInput) {
     entryColorPicker,
     entryColorInput,
     entryColorToggle,
-    COLOR_PALETTE
+    COLOR_TOKENS_IN_ORDER
   );
 }
 
@@ -3870,8 +4317,8 @@ if (highlightColorPicker && highlightColorInput) {
     highlightColorPicker,
     highlightColorInput,
     highlightColorToggle,
-    COLOR_PALETTE,
-    (color) => handleHighlightSelection(color)
+    COLOR_TOKENS_IN_ORDER,
+    (token) => handleHighlightSelection(token)
   );
   setColorPickerEnabled(
     highlightColorWrapper,
@@ -3880,8 +4327,19 @@ if (highlightColorPicker && highlightColorInput) {
   );
 }
 
+if (notificationToggleBtn) {
+  notificationToggleBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    toggleNotificationPanel();
+  });
+}
+if (notificationPanel) {
+  notificationPanel.addEventListener("click", (event) => event.stopPropagation());
+}
+
 document.addEventListener("click", () => {
   closeAllColorPickers();
+  closeNotificationPanel();
 });
 
 if (scheduleSearchInput) {
@@ -3920,11 +4378,13 @@ if (modalFormSection) {
         responsibleUserMap.clear();
         populateOwnerSelectOptions();
       }
+      loadNotificationsForCurrentUser();
     }
 
     function updateAuthUI() {
       const isLoggedIn = Boolean(authToken && currentUser);
       logoutBtn.style.display = isLoggedIn ? "inline-flex" : "none";
+      updateNotificationVisibility(isLoggedIn);
       if (currentUser && currentUser.role === "admin") {
         adminPanelBtn.style.display = "inline-flex";
       } else {
@@ -4055,7 +4515,7 @@ if (modalFormSection) {
         owner_id: entry.owner_id || entry.ownerId || null,
         platforms: platformsRaw,
         source: normalizedSource,
-        color: entry.color || ""
+        color: normalizeColorToken(entry.color, DEFAULT_ENTRY_COLOR)
       };
     }
 
@@ -4148,9 +4608,9 @@ if (modalFormSection) {
       highlightedDates = new Map(
         data
           .map((item) => {
-            const normalized = normalizeHexColor(item.color);
-            if (!normalized) return null;
-            return [item.date, normalized];
+            const token = normalizeColorToken(item.color, null);
+            if (!token) return null;
+            return [item.date, token];
           })
           .filter(Boolean)
       );
@@ -4567,7 +5027,7 @@ function loadDayData(dateKey) {
       checkedAt: item.checkedAt || item.checked_at || null,
       owner_id: item.owner_id || item.ownerId || null,
       source: item.source || "manual",
-      color: item.color || ""
+      color: normalizeColorToken(item.color, DEFAULT_ENTRY_COLOR)
     }));
       return { items: sortItemsByTime(clones) };
     }
@@ -4613,7 +5073,6 @@ function summarizePlatformLabel(platform) {
       const scopedItems = filterEntriesByChannel(items, filterId);
       const counts = {};
       scopedItems.forEach((item) => {
-        const entryColor = item.color || DEFAULT_ENTRY_COLOR;
         let list = filterPlatformsByChannel(item.platforms || [], filterId);
         if (!list.length) {
           list =
@@ -4624,14 +5083,13 @@ function summarizePlatformLabel(platform) {
         list.forEach((platform) => {
           const label = summarizePlatformLabel(platform);
           if (!counts[label]) {
-            counts[label] = { count: 0, color: entryColor };
+            counts[label] = { count: 0 };
           }
           counts[label].count += 1;
-          counts[label].color = entryColor;
         });
       });
       const entries = Object.entries(counts)
-        .map(([label, info]) => [label, info.count, info.color])
+        .map(([label, info]) => [label, info.count])
         .sort((a, b) => b[1] - a[1]);
       return { total: scopedItems.length, entries };
     }
@@ -4813,12 +5271,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         row.className = "daily-entry-row";
         row.tabIndex = 0;
         row.dataset.entryId = String(entry.id);
-        const cardColor = normalizeHexColor(entry.color);
-        if (cardColor) {
-          row.style.setProperty("--daily-card-color", cardColor);
-        } else {
-          row.style.removeProperty("--daily-card-color");
-        }
+        const colorToken = normalizeColorToken(entry.color, DEFAULT_ENTRY_COLOR);
+        row.classList.add(`color-${colorToken}`);
         if (entry.id === activeItemId) {
           row.classList.add("active");
         }
@@ -4999,50 +5453,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       const highlightColor = highlightedDates.get(key);
       if (highlightColor) {
         row.classList.add("has-highlight");
-        const normalizedHighlight =
-          normalizeHexColor(highlightColor) || highlightColor;
-        const token = getColorTokenFromHex(normalizedHighlight);
-        const isPureWhite =
-          token === "white" || normalizedHighlight === "#ffffff";
-        const surfaceTint = isPureWhite
-          ? "#ffffff"
-          : hexToRgba(normalizedHighlight, 0.12);
-        const summaryShadow = isPureWhite
-          ? "rgba(15, 23, 42, 0.08)"
-          : hexToRgba(normalizedHighlight, 0.2);
-        row.style.setProperty("--summary-border", normalizedHighlight);
-        row.style.setProperty("--summary-surface", surfaceTint);
-        row.style.setProperty("--summary-shadow", summaryShadow);
-        if (token) {
-          row.dataset.color = token;
-          row.style.removeProperty("--summary-text");
-          row.style.removeProperty("--summary-chip-bg");
-          row.style.removeProperty("--summary-chip-color");
-          row.style.removeProperty("--summary-chip-border");
-        } else {
-          delete row.dataset.color;
-          const textColor = getContrastingTextColor(normalizedHighlight);
-          row.style.setProperty("--summary-text", textColor);
-          if (textColor === "#f9fafb") {
-            row.style.setProperty("--summary-chip-bg", "rgba(255, 255, 255, 0.28)");
-            row.style.setProperty("--summary-chip-color", "#ffffff");
-            row.style.setProperty("--summary-chip-border", "rgba(255, 255, 255, 0.45)");
-          } else {
-            row.style.setProperty("--summary-chip-bg", "rgba(15, 23, 42, 0.08)");
-            row.style.setProperty("--summary-chip-color", "#0f172a");
-            row.style.setProperty("--summary-chip-border", "rgba(15, 23, 42, 0.2)");
-          }
-        }
+        row.dataset.color = highlightColor;
       } else {
         row.classList.remove("has-highlight");
-        row.style.setProperty("--summary-border", "transparent");
         delete row.dataset.color;
-        row.style.removeProperty("--summary-surface");
-        row.style.removeProperty("--summary-shadow");
-        row.style.removeProperty("--summary-text");
-        row.style.removeProperty("--summary-chip-bg");
-        row.style.removeProperty("--summary-chip-color");
-        row.style.removeProperty("--summary-chip-border");
       }
       if (activeScheduleSummaryKey === key) {
         row.classList.add("active");
@@ -5139,31 +5553,11 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       const items = dayData.items || [];
         const highlightColor = highlightedDates.get(key);
         if (highlightColor) {
-          const normalizedHighlight =
-            normalizeHexColor(highlightColor) || highlightColor;
           cell.classList.add("day-highlighted");
-          cell.style.setProperty("--day-surface", normalizedHighlight);
-          cell.style.setProperty("--day-border", normalizedHighlight);
-          cell.style.setProperty(
-            "--day-highlight-shadow",
-            hexToRgba(normalizedHighlight, 0.28)
-          );
-          const colorToken = getColorTokenFromHex(normalizedHighlight);
-          if (colorToken) {
-            cell.dataset.color = colorToken;
-            cell.style.removeProperty("--day-text");
-          } else {
-            delete cell.dataset.color;
-            const textColor = getContrastingTextColor(normalizedHighlight);
-            cell.style.setProperty("--day-text", textColor);
-          }
+          cell.dataset.color = highlightColor;
         } else {
           cell.classList.remove("day-highlighted");
           delete cell.dataset.color;
-          cell.style.removeProperty("--day-surface");
-          cell.style.removeProperty("--day-border");
-          cell.style.removeProperty("--day-highlight-shadow");
-          cell.style.removeProperty("--day-text");
         }
 
         const matchesFilter = dayMatchesChannelFilter(items, activeChannelFilter);
@@ -5237,12 +5631,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         wrap.setAttribute("role", "button");
         wrap.setAttribute("tabindex", "0");
         if (item.id === activeItemId) wrap.classList.add("active");
-        const cardColor = normalizeHexColor(item.color);
-        if (cardColor) {
-          wrap.style.setProperty("--summary-card-color", cardColor);
-        } else {
-          wrap.style.removeProperty("--summary-card-color");
-        }
+        const cardColor = normalizeColorToken(item.color, DEFAULT_ENTRY_COLOR);
+        wrap.classList.add(`color-${cardColor}`);
         wrap.dataset.entryId = String(item.id);
         if (item.source === "excel") wrap.classList.add("excel");
         const statusKey =
@@ -5362,7 +5752,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           : false;
       });
   if (entryColorInput) {
-    const entryColor = entry.color || DEFAULT_ENTRY_COLOR;
+    const entryColor = normalizeColorToken(entry.color, DEFAULT_ENTRY_COLOR);
     entryColorInput.value = entryColor;
     updateColorToggle(entryColorToggle, entryColor);
     if (entryColorPicker) {
@@ -5597,15 +5987,19 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     }
 
     async function setDateHighlight(dateKey, colorValue = DEFAULT_HIGHLIGHT_COLOR) {
-      const payload = { date: dateKey, color: colorValue };
+      const colorToken = normalizeColorToken(colorValue, DEFAULT_HIGHLIGHT_COLOR);
+      const payload = { date: dateKey, color: colorToken };
       const response = await apiFetch("/calendar/highlights", {
         method: "POST",
         body: JSON.stringify(payload)
       });
       const data = await response.json();
-      const normalized = normalizeHexColor(data.color || colorValue);
+      const normalized = normalizeColorToken(
+        data.color || colorToken,
+        DEFAULT_HIGHLIGHT_COLOR
+      );
       if (normalized) {
-        highlightedDates.set(data.date, normalized);
+        highlightedDates.set(data.date || dateKey, normalized);
       }
     }
 
@@ -6825,11 +7219,19 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       }
 
       const existing = activeItemId ? entriesById.get(activeItemId) : null;
-      const ownerIdValue =
+      const normalizeOwnerId = (value) =>
+        value === null || typeof value === "undefined" || value === ""
+          ? null
+          : Number(value);
+      const selectedOwnerId =
         ownerSelect && ownerSelect.value
           ? Number(ownerSelect.value)
+          : null;
+      const ownerIdValue =
+        selectedOwnerId !== null
+          ? selectedOwnerId
           : existing
-          ? existing.owner_id || null
+          ? normalizeOwnerId(existing.owner_id)
           : null;
       const payload = {
         date: selectedDateKey,
@@ -6837,7 +7239,9 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         text: textVal,
         files: filesVal,
         platforms: selectedPlatforms,
-        color: entryColorInput ? entryColorInput.value || DEFAULT_ENTRY_COLOR : DEFAULT_ENTRY_COLOR,
+        color: entryColorInput
+          ? normalizeColorToken(entryColorInput.value, DEFAULT_ENTRY_COLOR)
+          : DEFAULT_ENTRY_COLOR,
         communication: existing ? existing.communication || "" : "",
         communicationType: existing
           ? existing.communication_type || existing.communicationType || ""
@@ -6847,6 +7251,23 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         checkedAt: existing ? existing.checkedAt || null : null,
         ownerId: ownerIdValue
       };
+
+      const previousOwnerId = existing
+        ? normalizeOwnerId(existing.owner_id)
+        : null;
+      const ownerEmailForNotification =
+        ownerIdValue !== null ? getResponsibleEmailById(ownerIdValue) : "";
+      const shouldNotifyAssignee =
+        Boolean(ownerEmailForNotification) &&
+        ownerIdValue !== null &&
+        ownerIdValue !== previousOwnerId;
+      const notificationDraft = shouldNotifyAssignee
+        ? {
+            userEmail: ownerEmailForNotification,
+            title: textVal || filesVal || "Yeni içerik",
+            message: `${getCurrentUserDisplayName()} sana bir kart atadı.`
+          }
+        : null;
 
       saveBtn.disabled = true;
       try {
@@ -6866,6 +7287,15 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         renderModalSummaryList();
         showSaveSuccessMessage();
         deleteBtn.disabled = true;
+        if (notificationDraft && activeItemId) {
+          addNotificationForAssignee({
+            userEmail: notificationDraft.userEmail,
+            cardId: activeItemId,
+            title: notificationDraft.title,
+            message: notificationDraft.message,
+            dateKey: selectedDateKey
+          });
+        }
       } catch (err) {
         console.error(err);
         alert(err.message || "Kaydedilirken bir hata oluştu.");
@@ -6906,7 +7336,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           entry.communication_type || entry.communicationType || "",
         status: nextStatus,
         platforms: Array.isArray(entry.platforms) ? entry.platforms : [],
-        color: entry.color || DEFAULT_ENTRY_COLOR,
+        color: normalizeColorToken(entry.color, DEFAULT_ENTRY_COLOR),
         note: noteValue,
         checkedAt: new Date().toISOString(),
         ownerId: entry.owner_id || null

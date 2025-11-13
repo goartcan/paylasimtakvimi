@@ -7,6 +7,7 @@
     * { box-sizing: border-box; }
     :root {
       --calendar-shell-height: auto;
+      --calendar-header-offset: 240px;
     }
     html, body {
       min-height: 100vh;
@@ -582,12 +583,23 @@
   align-items: stretch;
   width: 100%;
 }
+.container.calendar-layout {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+  min-height: 0;
+  height: calc(100vh - var(--calendar-header-offset, 240px));
+}
 .calendar-shell {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
   align-self: stretch;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 .calendar {
   border: 1px solid #dde2ff;
@@ -1014,17 +1026,17 @@
   gap: 10px;
   height: 100%;
 }
-    .summary-shell {
+.summary-shell {
       display: flex;
       flex-direction: column;
       gap: 6px;
       flex: 0 0 340px;
       max-width: 340px;
       align-self: stretch;
-      min-height: var(--calendar-shell-height, auto);
-      height: var(--calendar-shell-height, auto);
-      max-height: var(--calendar-shell-height, none);
-      overflow: hidden;
+      height: 100%;
+      min-height: 0;
+      overflow-y: auto;
+      border-radius: inherit;
     }
 .form {
   border: 1px solid #dde2ff;
@@ -1034,19 +1046,19 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  height: 100%;
+  flex: 0 0 auto;
 }
 .summary-shell .form {
-  flex: 1;
+  flex: 0 0 auto;
 }
 .summary-scroll-area {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  overflow-y: auto;
-  padding-right: 3px;
+  overflow: visible;
+  padding-right: 0;
 }
 .summary-scroll-area::-webkit-scrollbar {
   width: 6px;

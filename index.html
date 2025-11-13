@@ -584,38 +584,46 @@
   align-items: stretch;
   width: 100%;
 }
+/* Takvim + sağ panel hizası */
 .container.calendar-layout {
-  /* Takvim + sağ panel hizası */
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1.1fr);
   gap: 24px;
   align-items: stretch;
   width: 100%;
+  min-height: 0;
 }
 .calendar-shell {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-self: stretch;
-}
-.calendar {
-  border: 1px solid #dde2ff;
-  border-radius: 12px;
-  padding: 8px;
-  background: #f9faff;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  flex: 1;
+  padding: 8px;
+  border-radius: 12px;
+  background: #f9faff;
+  border: 1px solid #dde2ff;
+  height: 100%;
+  min-height: 0;
+}
+.calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
   min-height: 0;
 }
 .calendar-grid-wrapper {
-  width: 100%;
-  height: auto;
+  flex: 1;
   min-height: 0;
-  display: block;
-  overflow: visible;
+  display: flex;
+  overflow: hidden;
+}
+.calendar-grid-wrapper .days {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: 104px;
+  gap: 3px;
+  width: 100%;
 }
 .channel-filter {
   display: flex;
@@ -1023,42 +1031,36 @@
   gap: 10px;
 }
 .summary-shell {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-width: 360px;
-      width: 100%;
-      height: 100%;
-      align-self: stretch;
-      justify-self: stretch;
-    }
-.form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 360px;
+  width: 100%;
+  height: 100%;
+}
+.summary-shell .form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-height: 0;
   border: 1px solid #dde2ff;
   border-radius: 10px;
   padding: 10px;
   background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  flex: 0 0 auto;
-}
-.summary-shell .form {
-  flex: 1 1 auto;
-  min-height: 0;
 }
 .summary-scroll-area {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  flex: 1 1 auto;
+  flex: 1;
   min-height: 0;
-  overflow: visible;
-  padding-right: 0;
 }
 .day-summary-scroll {
-  flex: 1 1 auto;
+  flex: 1;
   min-height: 0;
   overflow-y: auto;
+  padding-right: 4px;
 }
 .summary-scroll-area::-webkit-scrollbar {
   width: 6px;

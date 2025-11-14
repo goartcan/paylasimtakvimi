@@ -1072,16 +1072,29 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  position: relative;
 }
     .excel-upload-actions {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .excel-upload-actions button {
+      flex: 1 1 0;
     }
     .reset-options {
       display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 58px;
       flex-direction: column;
       gap: 8px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+      z-index: 20;
     }
     .reset-options .danger-btn {
       justify-content: center;

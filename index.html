@@ -1032,7 +1032,6 @@
   gap: 6px;
   max-width: 360px;
   width: 100%;
-  height: 100%;
 }
 .summary-shell .form {
   display: flex;
@@ -5195,15 +5194,27 @@ if (modalFormSection) {
     // Takvim ile sağ panel listesinin yüksekliğini senkronize et
     function syncDaySummaryHeight() {
       const calendarShell = document.querySelector(".calendar-shell");
+      const summaryShell = document.querySelector(".summary-shell");
       const daySummaryScroll = document.querySelector(".day-summary-scroll");
-      if (!calendarShell || !daySummaryScroll) return;
-      const calRect = calendarShell.getBoundingClientRect();
-      const scrollRect = daySummaryScroll.getBoundingClientRect();
-      const bottomPadding = 16;
-      const targetHeight = calRect.bottom - scrollRect.top - bottomPadding;
-      if (targetHeight > 0) {
-        daySummaryScroll.style.height = targetHeight + "px";
-        daySummaryScroll.style.maxHeight = targetHeight + "px";
+      if (!calendarShell || !summaryShell || !daySummaryScroll) return;
+
+      // Ölçümleri temiz bir şekilde alabilmek için önce yükseklikleri sıfırla
+      summaryShell.style.height = "";
+      daySummaryScroll.style.height = "";
+      daySummaryScroll.style.maxHeight = "";
+
+      const calendarHeight = calendarShell.getBoundingClientRect().height;
+      const totalShellHeight = summaryShell.scrollHeight;
+      const currentScrollHeight = daySummaryScroll.offsetHeight;
+      const otherContentHeight = totalShellHeight - currentScrollHeight;
+      const targetScrollHeight = calendarHeight - otherContentHeight - 8; // küçük tampon
+
+      if (targetScrollHeight > 0) {
+        summaryShell.style.height = `${calendarHeight}px`;
+        daySummaryScroll.style.height = `${targetScrollHeight}px`;
+        daySummaryScroll.style.maxHeight = `${targetScrollHeight}px`;
+      } else {
+        summaryShell.style.height = `${calendarHeight}px`;
       }
     }
     window.addEventListener("load", syncDaySummaryHeight);

@@ -589,7 +589,7 @@
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1.1fr);
   gap: 24px;
-  align-items: stretch;
+  align-items: flex-start;
   width: 100%;
   min-height: 0;
 }
@@ -603,13 +603,11 @@
   border-radius: 12px;
   background: #f9faff;
   border: 1px solid #dde2ff;
-  height: auto;
 }
 .calendar {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  height: auto;
 }
 .calendar-grid-wrapper {
   flex: 0 0 auto;
@@ -5188,7 +5186,7 @@ if (modalFormSection) {
       if (!calendarShell || !daySummaryScroll) return;
       const calRect = calendarShell.getBoundingClientRect();
       const scrollRect = daySummaryScroll.getBoundingClientRect();
-      const bottomPadding = 24;
+      const bottomPadding = 16;
       const targetHeight = calRect.bottom - scrollRect.top - bottomPadding;
       if (targetHeight > 0) {
         daySummaryScroll.style.height = targetHeight + "px";

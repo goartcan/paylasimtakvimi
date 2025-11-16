@@ -1235,6 +1235,25 @@
       border-left-color: var(--daily-card-color, rgba(59, 91, 219, 0.3));
       box-shadow: 0 12px 28px rgba(37, 99, 235, 0.15);
     }
+    
+    /* Daily entry row renk border'ları */
+    .daily-entry-row.color-blue { border-left-color: #3b82f6; --daily-card-color: #3b82f6; }
+    .daily-entry-row.color-red { border-left-color: #ef4444; --daily-card-color: #ef4444; }
+    .daily-entry-row.color-green { border-left-color: #22c55e; --daily-card-color: #22c55e; }
+    .daily-entry-row.color-yellow { border-left-color: #facc15; --daily-card-color: #facc15; }
+    .daily-entry-row.color-purple { border-left-color: #a855f7; --daily-card-color: #a855f7; }
+    .daily-entry-row.color-orange { border-left-color: #f97316; --daily-card-color: #f97316; }
+    .daily-entry-row.color-pink { border-left-color: #ec4899; --daily-card-color: #ec4899; }
+    .daily-entry-row.color-cyan { border-left-color: #06b6d4; --daily-card-color: #06b6d4; }
+    .daily-entry-row.color-emerald { border-left-color: #10b981; --daily-card-color: #10b981; }
+    .daily-entry-row.color-amber { border-left-color: #f59e0b; --daily-card-color: #f59e0b; }
+    .daily-entry-row.color-sky { border-left-color: #0ea5e9; --daily-card-color: #0ea5e9; }
+    .daily-entry-row.color-violet { border-left-color: #8b5cf6; --daily-card-color: #8b5cf6; }
+    .daily-entry-row.color-rose { border-left-color: #f43f5e; --daily-card-color: #f43f5e; }
+    .daily-entry-row.color-gray { border-left-color: #6b7280; --daily-card-color: #6b7280; }
+    .daily-entry-row.color-white { border-left-color: #d1d5db; --daily-card-color: #9ca3af; }
+    .daily-entry-row.color-black { border-left-color: #374151; --daily-card-color: #374151; }
+    
     .daily-entry-row:focus-visible {
       outline: 2px solid #3b82f6;
       outline-offset: 2px;
@@ -2008,6 +2027,30 @@
     .summary-item:hover {
       border-color: #cbd5f5;
     }
+    
+    /* Kart renk border'ları - base state */
+    .summary-item.color-blue { border-color: #3b82f6; --summary-card-color: #3b82f6; }
+    .summary-item.color-red { border-color: #ef4444; --summary-card-color: #ef4444; }
+    .summary-item.color-green { border-color: #22c55e; --summary-card-color: #22c55e; }
+    .summary-item.color-yellow { border-color: #facc15; --summary-card-color: #facc15; }
+    .summary-item.color-purple { border-color: #a855f7; --summary-card-color: #a855f7; }
+    .summary-item.color-orange { border-color: #f97316; --summary-card-color: #f97316; }
+    .summary-item.color-pink { border-color: #ec4899; --summary-card-color: #ec4899; }
+    .summary-item.color-cyan { border-color: #06b6d4; --summary-card-color: #06b6d4; }
+    .summary-item.color-emerald { border-color: #10b981; --summary-card-color: #10b981; }
+    .summary-item.color-amber { border-color: #f59e0b; --summary-card-color: #f59e0b; }
+    .summary-item.color-sky { border-color: #0ea5e9; --summary-card-color: #0ea5e9; }
+    .summary-item.color-violet { border-color: #8b5cf6; --summary-card-color: #8b5cf6; }
+    .summary-item.color-rose { border-color: #f43f5e; --summary-card-color: #f43f5e; }
+    .summary-item.color-gray { border-color: #6b7280; --summary-card-color: #6b7280; }
+    .summary-item.color-white { border-color: #d1d5db; --summary-card-color: #9ca3af; }
+    .summary-item.color-black { border-color: #374151; --summary-card-color: #374151; }
+    
+    /* Active state'in border'ı hep mavi kalır */
+    .summary-item.active {
+      border-color: #3b82f6 !important;
+    }
+    
     .summary-color-dot {
       width: 10px;
       height: 10px;

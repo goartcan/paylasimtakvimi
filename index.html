@@ -1087,6 +1087,7 @@
   gap: 6px;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
   border: 1px solid #dde2ff;
   border-radius: 10px;
   padding: 10px;
@@ -1652,11 +1653,16 @@
       padding: 0;
       max-width: 960px;
       width: min(96vw, 960px);
+      height: 92vh;
       max-height: 92vh;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       box-shadow: 0 18px 45px rgba(15, 23, 42, 0.25);
+    }
+    /* Modal açıkken body scroll'u engelle */
+    body.modal-open {
+      overflow: hidden;
     }
     .modal-header-block {
       position: sticky;
@@ -1686,11 +1692,12 @@
     }
     .modal-body {
       flex: 1;
-      overflow-y: auto;
+      overflow: hidden;
       padding: 16px 24px 24px;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      min-height: 0;
     }
     .modal-toolbar {
       display: flex;
@@ -1903,17 +1910,20 @@
       display: grid;
       grid-template-columns: minmax(230px, 320px) minmax(420px, 1fr);
       gap: 18px;
-      align-items: flex-start;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
     }
     .modal-summary {
       border: 1px solid #e5e7eb;
       border-radius: 12px;
       padding: 12px;
       background: #f9fafb;
-      min-height: 220px;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      overflow-y: auto;
+      max-height: 100%;
     }
     .modal-form-section {
       border: 1px solid #e5e7eb;
@@ -6536,11 +6546,13 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       }
       renderModalSummaryList();
       dayModal.style.display = "flex";
+      document.body.classList.add('modal-open');
       updateScheduleList();
     }
 
     function closeModal() {
       dayModal.style.display = "none";
+      document.body.classList.remove('modal-open');
       modalForcePlanMode = false;
       setPlanReturnBannerVisible(false);
       if (modalControlSection) modalControlSection.style.display = "none";

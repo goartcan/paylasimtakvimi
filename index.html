@@ -1122,6 +1122,7 @@
   flex-direction: column;
   gap: 10px;
   position: relative;
+  flex-shrink: 0;
 }
     .excel-upload-actions {
       display: flex;
@@ -3129,12 +3130,6 @@
             <div class="modal-summary-scroll">
               <div id="modalSummary" class="small"></div>
             </div>
-            <div class="modal-summary-footer">
-              <div class="excel-upload-actions" style="display: flex; gap: 10px;">
-                <button id="modalExcelUploadBtn" class="secondary-btn" style="display:none; flex: 1;">Excel yükle</button>
-                <button id="modalResetEntriesBtn" class="danger-btn" style="display:none; flex: 1;">Sıfırla</button>
-              </div>
-            </div>
           </div>
 
           <div id="modalFormSection" class="modal-form-section" style="display: none;">
@@ -3305,8 +3300,6 @@
     const excelUploadContainer = document.querySelector(".excel-upload-container");
     const excelUploadBtn = document.getElementById("excelUploadBtn");
     const resetEntriesBtn = document.getElementById("resetEntriesBtn");
-    const modalExcelUploadBtn = document.getElementById("modalExcelUploadBtn");
-    const modalResetEntriesBtn = document.getElementById("modalResetEntriesBtn");
     const resetOptions = document.getElementById("resetOptions");
     const resetOptionButtons = resetOptions
       ? Array.from(resetOptions.querySelectorAll("button[data-scope]"))
@@ -4919,18 +4912,10 @@ if (modalFormSection) {
           Boolean(isLoggedIn && currentUser && currentUser.role === "admin" && isViewingOwnData());
         excelUploadBtn.style.display = canUpload ? "inline-flex" : "none";
         excelUploadBtn.disabled = !canUpload;
-        if (modalExcelUploadBtn) {
-          modalExcelUploadBtn.style.display = canUpload ? "inline-flex" : "none";
-          modalExcelUploadBtn.disabled = !canUpload;
-        }
         if (resetEntriesBtn) {
           resetEntriesBtn.style.display = canUpload ? "inline-flex" : "none";
           resetEntriesBtn.disabled = !canUpload;
           resetEntriesBtn.textContent = "Sıfırla";
-          if (modalResetEntriesBtn) {
-            modalResetEntriesBtn.style.display = canUpload ? "inline-flex" : "none";
-            modalResetEntriesBtn.disabled = !canUpload;
-          }
         }
         if (excelUploadContainer) {
           excelUploadContainer.style.display = canUpload ? "flex" : "none";
@@ -4962,6 +4947,7 @@ if (modalFormSection) {
 
     function showLoginOverlay(registerMode = false) {
       loginOverlay.classList.add("active");
+      document.body.classList.add('modal-open');
       loginError.textContent = "";
       loginError.classList.remove("success");
       loginPasswordInput.value = "";
@@ -4972,6 +4958,7 @@ if (modalFormSection) {
 
     function hideLoginOverlay() {
       loginOverlay.classList.remove("active");
+      document.body.classList.remove('modal-open');
       loginError.textContent = "";
       loginError.classList.remove("success");
       loginPasswordInput.value = "";
@@ -5386,6 +5373,7 @@ if (modalFormSection) {
     function openAdminOverlay() {
       if (!currentUser || currentUser.role !== "admin") return;
       adminOverlay.classList.add("active");
+      document.body.classList.add('modal-open');
       loadAdminUsers();
       ensureColorDescriptionsLoaded().then(() => {
         renderColorDescriptionsForm();
@@ -5394,6 +5382,7 @@ if (modalFormSection) {
 
     function closeAdminOverlay() {
       adminOverlay.classList.remove("active");
+      document.body.classList.remove('modal-open');
       if (colorDescriptionSaveStatus) colorDescriptionSaveStatus.textContent = "";
     }
 
@@ -7465,9 +7454,6 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         excelFileInput.click();
       };
       excelUploadBtn.addEventListener("click", handleExcelUpload);
-      if (modalExcelUploadBtn) {
-        modalExcelUploadBtn.addEventListener("click", handleExcelUpload);
-      }
 
       excelFileInput.addEventListener("change", async (event) => {
         const file = event.target.files && event.target.files[0];
@@ -7622,9 +7608,6 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         }
       };
       resetEntriesBtn.addEventListener("click", handleResetClick);
-      if (modalResetEntriesBtn) {
-        modalResetEntriesBtn.addEventListener("click", handleResetClick);
-      }
     }
 
     resetOptionButtons.forEach((btn) => {

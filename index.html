@@ -7003,6 +7003,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         setAuthToken(data.token);
         setCurrentUser(data.user);
         adminSelectedUserId = null;
+        setAssigneeFilter("all"); // Tüm kartları göster
         await loadEntriesFromServer();
         hideLoginOverlay();
       } catch (err) {
@@ -7373,6 +7374,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           const meData = await meResponse.json();
           setCurrentUser(meData);
           adminSelectedUserId = null;
+          setAssigneeFilter("all"); // Tüm kartları göster
           await loadEntriesFromServer();
           await loadResponsibleUsers();
           await ensureColorDescriptionsLoaded();

@@ -1374,8 +1374,9 @@
       line-height: 1;
     }
     .daily-entry-badges {
-      margin-top: 2px;
+      margin-top: auto;
       display: flex;
+      justify-content: flex-end;
       gap: 4px;
       flex-wrap: wrap;
     }
@@ -3506,7 +3507,7 @@ const CALENDAR_STORAGE_KEY = "goart_calendar_v2";
 const ASSIGNEE_FILTER_STORAGE_KEY = "calendar_assignee_filter";
 let notifications = [];
 let notificationPanelOpen = false;
-const DEFAULT_ENTRY_COLOR = "blue";
+const DEFAULT_ENTRY_COLOR = "white";
 const DEFAULT_HIGHLIGHT_COLOR = "white";
 const COLOR_TOKENS_IN_ORDER = [
   "blue",
@@ -5761,7 +5762,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       }
       const pastEntry = isEntryPast(entry);
       if (entry.status === "missed" || (pastEntry && entry.status !== "done")) {
-        return { key: "missed", symbol: "!" };
+        return { key: "missed", symbol: "❌" };
       }
       if (entry.time) {
         return { key: "scheduled", symbol: "⏰" };

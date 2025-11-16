@@ -1663,12 +1663,9 @@
     /* Modal açıkken body scroll'u engelle */
     body.modal-open {
       overflow: hidden !important;
-      height: 100vh;
     }
     .modal-header-block {
-      position: sticky;
-      top: 0;
-      z-index: 2;
+      flex-shrink: 0;
       background: #f9fbff;
       padding: 20px 24px 12px;
       border-bottom: 1px solid #e5e7eb;
@@ -1930,6 +1927,16 @@
       overflow-y: auto;
       padding: 12px;
       min-height: 0;
+    }
+    .modal-summary-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .modal-summary-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+    .modal-summary-scroll::-webkit-scrollbar-track {
+      background: transparent;
     }
     .modal-summary-footer {
       border-top: 1px dashed #e5e7eb;
@@ -2758,6 +2765,9 @@
     body.dark .modal-summary-footer {
       background: #111827;
       border-top-color: #374151;
+    }
+    body.dark .modal-summary-scroll::-webkit-scrollbar-thumb {
+      background: #475569;
     }
     body.dark .modal-form-section {
       background: #0b1120;
@@ -7642,6 +7652,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
 
     /* Olaylar ve init */
     async function init() {
+      // Sayfa yüklendiğinde modal-open class'ını temizle
+      document.body.classList.remove('modal-open');
       const today = new Date();
       currentYear = today.getFullYear();
       currentMonth = today.getMonth();
@@ -7968,6 +7980,13 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     modalCloseBtn.addEventListener("click", closeModal);
     dayModal.addEventListener("click", (e) => {
       if (e.target === dayModal) closeModal();
+    });
+    
+    // Escape tuşu ile modal'ı kapat
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && dayModal && dayModal.style.display === "flex") {
+        closeModal();
+      }
     });
 
     initTheme();

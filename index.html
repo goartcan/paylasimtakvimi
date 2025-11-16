@@ -1953,6 +1953,18 @@
       flex-direction: column;
       gap: 12px;
       background: #ffffff;
+      overflow-y: auto;
+      max-height: 100%;
+    }
+    .modal-form-section::-webkit-scrollbar {
+      width: 6px;
+    }
+    .modal-form-section::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+    .modal-form-section::-webkit-scrollbar-track {
+      background: transparent;
     }
     .form-row {
       margin-bottom: 8px;
@@ -2772,6 +2784,9 @@
     body.dark .modal-form-section {
       background: #0b1120;
       border-color: #1f2937;
+    }
+    body.dark .modal-form-section::-webkit-scrollbar-thumb {
+      background: #475569;
     }
 
     @media (max-width: 900px) {

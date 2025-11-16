@@ -810,10 +810,10 @@
       box-shadow: 0 0 0 1px rgba(59, 91, 219, 0.12);
       background: #f4f6ff;
     }
-    .day.today .day-number {
+    .day.today .day-number-inner {
       background: #ef4444;
-      color: #ffffff !important;
-      border-radius: 4px;
+      color: #ffffff;
+      border-radius: 9999px;
       padding: 2px 6px;
       display: inline-block;
       box-sizing: border-box;
@@ -2332,8 +2332,9 @@
     body.dark .day.day-highlighted {
       box-shadow: 0 14px 30px var(--day-highlight-shadow, rgba(15, 23, 42, 0.45));
     }
-    body.dark .day.today .day-number {
-      color: #ffffff !important;
+    body.dark .day.today .day-number-inner {
+      background: #ef4444;
+      color: #ffffff;
     }
     body.dark .day-number { color: var(--day-text); }
     body.dark .day-summary { color: #cbd5f5; }
@@ -5796,7 +5797,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
 
         const numSpan = document.createElement("div");
         numSpan.className = "day-number";
-        numSpan.textContent = day;
+        const numInner = document.createElement("span");
+        numInner.className = "day-number-inner";
+        numInner.textContent = day;
+        numSpan.appendChild(numInner);
         cell.appendChild(numSpan);
 
       const body = document.createElement("div");

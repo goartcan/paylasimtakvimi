@@ -2053,9 +2053,15 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: var(--summary-card-color, #94a3b8);
-      border: 1px solid rgba(255, 255, 255, 0.9);
+      background: transparent;
+      border: 1.5px solid #cbd5e1;
       flex-shrink: 0;
+      box-shadow: none;
+    }
+    /* Seçili kartlarda dot dolsun */
+    .summary-item.active .summary-color-dot {
+      background: var(--summary-card-color, #94a3b8);
+      border-color: rgba(255, 255, 255, 0.9);
       box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
     }
     .summary-item-header-left {
@@ -2429,6 +2435,15 @@
     body.dark .summary-item.active {
       border-color: rgba(59, 130, 246, 0.5);
       box-shadow: 0 20px 45px rgba(59, 130, 246, 0.25);
+    }
+    /* Dark mode - dot seçili olmayan kartlarda boş */
+    body.dark .summary-color-dot {
+      background: transparent;
+      border-color: #475569;
+    }
+    body.dark .summary-item.active .summary-color-dot {
+      background: var(--summary-card-color, #94a3b8);
+      border-color: rgba(255, 255, 255, 0.9);
     }
     body.dark .summary-empty {
       background: #020617;

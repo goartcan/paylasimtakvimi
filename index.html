@@ -1312,32 +1312,34 @@
       outline-offset: 2px;
     }
     .daily-entry-status {
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       flex-shrink: 0;
       margin-top: 2px;
-      font-size: 10px;
+      font-size: 11px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-weight: 700;
+      font-weight: 600;
+      background: #ffffff;
+      border: 2px solid transparent;
     }
     .daily-entry-status.status-done {
-      background: #16a34a;
-      color: #ffffff;
+      border-color: #16a34a;
+      color: #16a34a;
     }
     .daily-entry-status.status-missed {
-      background: #dc2626;
-      color: #ffffff;
+      border-color: #dc2626;
+      color: #dc2626;
     }
     .daily-entry-status.status-scheduled {
-      background: #2563eb;
-      color: #ffffff;
+      border-color: #2563eb;
+      color: #2563eb;
     }
     .daily-entry-status.status-pending {
-      background: #e2e8f0;
-      color: #1e293b;
+      border-color: #cbd5e1;
+      color: #64748b;
     }
     .daily-entry-body {
       flex: 1;
@@ -2720,13 +2722,24 @@
     body.dark .daily-entry-meta {
       color: #cbd5f5;
     }
-    body.dark .daily-entry-status.status-pending {
-      background: #334155;
-      color: #f1f5f9;
+    body.dark .daily-entry-status {
+      background: #1e293b;
+    }
+    body.dark .daily-entry-status.status-done {
+      border-color: #22c55e;
+      color: #22c55e;
+    }
+    body.dark .daily-entry-status.status-missed {
+      border-color: #ef4444;
+      color: #ef4444;
     }
     body.dark .daily-entry-status.status-scheduled {
-      background: #38bdf8;
-      color: #0f172a;
+      border-color: #60a5fa;
+      color: #60a5fa;
+    }
+    body.dark .daily-entry-status.status-pending {
+      border-color: #475569;
+      color: #94a3b8;
     }
     body.dark .daily-entry-time-icon {
       color: #facc15;
@@ -2990,7 +3003,7 @@
               <input
                 type="text"
                 id="scheduleSearchInput"
-                placeholder="Tarih veya platform ara"
+                placeholder="İçerik ara"
                 aria-label="Takvim araması"
               />
             </div>
@@ -5818,9 +5831,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         } else {
           row.classList.add("color-default");
         }
-        if (entry.id === activeItemId) {
-          row.classList.add("active");
-        }
+        // Gün Detayı panelinde active class ekleme - mavi şerit istemiyoruz
+        // if (entry.id === activeItemId) {
+        //   row.classList.add("active");
+        // }
 
         const statusIcon = document.createElement("span");
         statusIcon.className = `daily-entry-status status-${statusState.key}`;
@@ -6005,9 +6019,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         row.classList.remove("has-highlight");
         delete row.dataset.color;
       }
-      if (activeScheduleSummaryKey === key) {
-        row.classList.add("active");
-      }
+      // Gün Detayı panelinde active class ekleme - mavi şerit istemiyoruz
+      // if (activeScheduleSummaryKey === key) {
+      //   row.classList.add("active");
+      // }
 
       const header = document.createElement("div");
       header.className = "schedule-summary-header";

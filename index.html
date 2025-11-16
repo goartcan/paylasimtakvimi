@@ -3954,7 +3954,7 @@ async function handleCopyConfirm() {
       source.communication_type || source.communicationType || "",
     status: "planned",
     platforms: Array.isArray(source.platforms) ? [...source.platforms] : [],
-    color: normalizeColorToken(source.color, DEFAULT_ENTRY_COLOR),
+    color: normalizeColorToken(source.color, null) || "",
     note: source.note || "",
     checkedAt: null,
     ownerId: source.owner_id || null
@@ -4799,7 +4799,7 @@ if (modalFormSection) {
         owner_id: entry.owner_id || entry.ownerId || null,
         platforms: platformsRaw,
         source: normalizedSource,
-        color: normalizeColorToken(entry.color, DEFAULT_ENTRY_COLOR)
+        color: normalizeColorToken(entry.color, null) || ""
       };
     }
 
@@ -5306,7 +5306,7 @@ function loadDayData(dateKey) {
       checkedAt: item.checkedAt || item.checked_at || null,
       owner_id: item.owner_id || item.ownerId || null,
       source: item.source || "manual",
-      color: normalizeColorToken(item.color, DEFAULT_ENTRY_COLOR)
+      color: normalizeColorToken(item.color, null) || ""
     }));
       return { items: sortItemsByTime(clones) };
     }
@@ -6070,9 +6070,9 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           : false;
       });
   if (entryColorInput) {
-    const entryColor = normalizeColorToken(entry.color, DEFAULT_ENTRY_COLOR);
-    entryColorInput.value = entryColor;
-    updateColorToggle(entryColorToggle, entryColor);
+    const entryColor = normalizeColorToken(entry.color, null) || "";
+    entryColorInput.value = entryColor || DEFAULT_ENTRY_COLOR;
+    updateColorToggle(entryColorToggle, entryColor || DEFAULT_ENTRY_COLOR);
     if (entryColorPicker) {
       setColorPickerValue(entryColorPicker, entryColorInput, entryColor);
     }
@@ -7568,8 +7568,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         files: filesVal,
         platforms: selectedPlatforms,
         color: entryColorInput
-          ? normalizeColorToken(entryColorInput.value, DEFAULT_ENTRY_COLOR)
-          : DEFAULT_ENTRY_COLOR,
+          ? normalizeColorToken(entryColorInput.value, null) || ""
+          : "",
         communication: existing ? existing.communication || "" : "",
         communicationType: existing
           ? existing.communication_type || existing.communicationType || ""
@@ -7671,7 +7671,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           entry.communication_type || entry.communicationType || "",
         status: nextStatus,
         platforms: Array.isArray(entry.platforms) ? entry.platforms : [],
-        color: normalizeColorToken(entry.color, DEFAULT_ENTRY_COLOR),
+        color: normalizeColorToken(entry.color, null) || "",
         note: noteValue,
         checkedAt: new Date().toISOString(),
         ownerId: entry.owner_id || null

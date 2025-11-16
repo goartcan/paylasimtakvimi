@@ -810,6 +810,21 @@
       box-shadow: 0 0 0 1px rgba(59, 91, 219, 0.12);
       background: #f4f6ff;
     }
+    .day.today {
+      position: relative;
+    }
+    .day.today::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 2px;
+      border: 2px solid #ef4444;
+      border-radius: 6px;
+      pointer-events: none;
+      z-index: 1;
+    }
     .day.filtered-out {
       opacity: 0.35;
     }
@@ -2323,6 +2338,9 @@
     }
     body.dark .day.day-highlighted {
       box-shadow: 0 14px 30px var(--day-highlight-shadow, rgba(15, 23, 42, 0.45));
+    }
+    body.dark .day.today::before {
+      border-color: #ef4444;
     }
     body.dark .day-number { color: var(--day-text); }
     body.dark .day-summary { color: #cbd5f5; }
@@ -5769,9 +5787,19 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         daysContainer.appendChild(empty);
       }
 
+      const today = new Date();
+      const todayYear = today.getFullYear();
+      const todayMonth = today.getMonth();
+      const todayDay = today.getDate();
+
       for (let day = 1; day <= daysInMonth; day++) {
         const cell = document.createElement("div");
         cell.className = "day";
+
+        // Bugünkü tarihi işaretle
+        if (day === todayDay && currentMonth === todayMonth && currentYear === todayYear) {
+          cell.classList.add("today");
+        }
 
         const numSpan = document.createElement("div");
         numSpan.className = "day-number";

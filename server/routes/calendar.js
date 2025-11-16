@@ -27,26 +27,10 @@ const COLOR_DESCRIPTION_DEFAULTS = {
 const COLOR_DESCRIPTION_KEYS = Object.keys(COLOR_DESCRIPTION_DEFAULTS);
 
 router.get("/", requireAuth, (req, res) => {
-  let targetUserId = req.userId;
-  if (req.user.role === "admin" && req.query.userId) {
-    const requested = Number(req.query.userId);
-    if (!Number.isInteger(requested)) {
-      return res.status(400).json({ error: "Geçersiz kullanıcı kimliği." });
-    }
-    const targetUser = db
-      .prepare("SELECT id FROM users WHERE id = ?")
-      .get(requested);
-    if (!targetUser) {
-      return res.status(404).json({ error: "Kullanıcı bulunamadı." });
-    }
-    targetUserId = requested;
-  } else if (req.query.userId && req.user.role !== "admin") {
-    return res.status(403).json({ error: "Sadece adminler diğer kullanıcıları görüntüleyebilir." });
-  }
-
+  // Tüm kullanıcıların kartlarını döndür - kullanıcı filtresi yok
   const rows = db
-    .prepare("SELECT * FROM entries WHERE user_id = ?")
-    .all(targetUserId);
+    .prepare("SELECT * FROM entries")
+    .all();
   res.json(rows);
 });
 

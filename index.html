@@ -812,8 +812,12 @@
     }
     .day.today .day-number {
       position: relative;
-      color: #ffffff;
-      z-index: 2;
+      color: #ffffff !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 26px;
+      min-height: 26px;
     }
     .day.today .day-number::before {
       content: '';
@@ -825,7 +829,6 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: -1;
     }
     .day.filtered-out {
       opacity: 0.35;
@@ -2342,10 +2345,7 @@
       box-shadow: 0 14px 30px var(--day-highlight-shadow, rgba(15, 23, 42, 0.45));
     }
     body.dark .day.today .day-number {
-      color: #ffffff;
-    }
-    body.dark .day.today .day-number::before {
-      background: #ef4444;
+      color: #ffffff !important;
     }
     body.dark .day-number { color: var(--day-text); }
     body.dark .day-summary { color: #cbd5f5; }

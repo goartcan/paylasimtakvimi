@@ -5974,10 +5974,13 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
 
         const statusWrap = document.createElement("div");
         statusWrap.className = "summary-item-header-right";
-        const statusBadge = document.createElement("span");
-        statusBadge.className = `summary-item-status status-${statusKey}`;
-        statusBadge.textContent = formatStatusLabel(item.status);
-        statusWrap.appendChild(statusBadge);
+        // "Planlandı" durumunda etiket gösterme, sadece "done" ve "missed"
+        if (statusKey === "done" || statusKey === "missed") {
+          const statusBadge = document.createElement("span");
+          statusBadge.className = `summary-item-status status-${statusKey}`;
+          statusBadge.textContent = formatStatusLabel(item.status);
+          statusWrap.appendChild(statusBadge);
+        }
         if (item.source === "excel") {
           const excelBadge = document.createElement("span");
           excelBadge.className = "summary-item-badge excel";

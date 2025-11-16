@@ -35,28 +35,10 @@ router.get("/", requireAuth, (req, res) => {
 });
 
 router.get("/highlights", requireAuth, (req, res) => {
-  let targetUserId = req.userId;
-  if (req.user.role === "admin" && req.query.userId) {
-    const requested = Number(req.query.userId);
-    if (!Number.isInteger(requested)) {
-      return res.status(400).json({ error: "Geçersiz kullanıcı kimliği." });
-    }
-    const targetUser = db
-      .prepare("SELECT id FROM users WHERE id = ?")
-      .get(requested);
-    if (!targetUser) {
-      return res.status(404).json({ error: "Kullanıcı bulunamadı." });
-    }
-    targetUserId = requested;
-  } else if (req.query.userId && req.user.role !== "admin") {
-    return res
-      .status(403)
-      .json({ error: "Sadece adminler diğer kullanıcıları görüntüleyebilir." });
-  }
-
+  // Tüm kullanıcıların gün renklerini döndür - kullanıcı filtresi yok
   const rows = db
-    .prepare("SELECT date, color FROM day_flags WHERE user_id = ?")
-    .all(targetUserId);
+    .prepare("SELECT date, color FROM day_flags")
+    .all();
   res.json(rows);
 });
 

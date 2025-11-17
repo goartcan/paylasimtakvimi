@@ -2271,11 +2271,18 @@
       gap: 2px;
     }
     .summary-item-badge.excel {
-      background: #e0e7ff;
-      color: #1d4ed8;
-      border-color: #c7d2fe;
-      font-size: 8px;
-      padding: 1px 5px;
+      background: #dcfce7;
+      color: #16a34a;
+      border-color: #86efac;
+      font-size: 11px;
+      padding: 3px 5px;
+      line-height: 1;
+      font-weight: 600;
+      width: 18px;
+      height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
     .summary-item-footer {
       margin-top: 0px;
@@ -2655,6 +2662,11 @@
       background: #1d4ed8;
       border-color: transparent;
       color: #f8fafc;
+    }
+    body.dark .summary-item-badge.excel {
+      background: #14532d;
+      border-color: #16a34a;
+      color: #86efac;
     }
     body.dark .summary-item-copy-icon {
       border-color: #4c1d95;
@@ -5993,8 +6005,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         // Excel badge'i sadece Excel kartlarında görünsün
         if (entry.source && entry.source.toLowerCase() === "excel") {
           const badge = document.createElement("span");
-          badge.className = "summary-item-badge";
-          badge.textContent = "Excel";
+          badge.className = "summary-item-badge excel";
+          badge.textContent = "X";
+          badge.setAttribute("title", "Excel'den içe aktarıldı");
+          badge.setAttribute("aria-label", "Excel");
           footer.appendChild(badge);
         }
         
@@ -6365,7 +6379,9 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         if (item.source === "excel") {
           const excelBadge = document.createElement("span");
           excelBadge.className = "summary-item-badge excel";
-          excelBadge.textContent = "Excel";
+          excelBadge.textContent = "X";
+          excelBadge.setAttribute("title", "Excel'den içe aktarıldı");
+          excelBadge.setAttribute("aria-label", "Excel");
           statusWrap.appendChild(excelBadge);
         }
         const timeChip = document.createElement("span");

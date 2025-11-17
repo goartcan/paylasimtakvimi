@@ -1280,7 +1280,7 @@
     .daily-entry-row:hover {
       box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
       border-color: #dbe3ff;
-      border-left-color: #2563eb;
+      /* Mavi şerit kaldırıldı - kartın kendi rengi hover'da da korunuyor */
     }
     .daily-entry-row.active {
       border-color: rgba(59, 91, 219, 0.3);
@@ -1316,14 +1316,14 @@
       height: 20px;
       border-radius: 50%;
       flex-shrink: 0;
-      margin-top: 2px;
-      font-size: 11px;
+      font-size: 12px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       font-weight: 600;
       background: #ffffff;
       border: 2px solid transparent;
+      line-height: 0;
     }
     .daily-entry-status.status-done {
       border-color: #16a34a;
@@ -2712,8 +2712,9 @@
       border-left-color: rgba(30, 41, 59, 0.9);
     }
     body.dark .daily-entry-row:hover {
-      border-color: #3b82f6;
+      border-color: rgba(59, 130, 246, 0.3);
       box-shadow: 0 12px 28px rgba(15, 23, 42, 0.6);
+      /* Mavi şerit kaldırıldı - kartın kendi rengi hover'da da korunuyor */
     }
     body.dark .daily-entry-row.active {
       border-color: rgba(59, 130, 246, 0.5);

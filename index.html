@@ -1271,8 +1271,7 @@
   cursor: pointer;
   transition: box-shadow 0.12s ease, border-color 0.12s ease;
   margin-bottom: 5px;
-  min-height: 68px;
-  max-height: 72px;
+  min-height: 75px;
 }
 .daily-entry-row:last-child {
   margin-bottom: 0;
@@ -1374,6 +1373,14 @@
       font-size: 12px;
       color: #2563eb;
       line-height: 1;
+    }
+    .daily-entry-footer {
+      margin-top: 4px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      min-height: 18px;
+      gap: 4px;
     }
     .daily-entry-badges {
       margin-top: auto;
@@ -5947,16 +5954,20 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         ].filter(Boolean);
         metaLine.textContent = parts.join(" · ");
         body.appendChild(metaLine);
+        
+        // Footer'ı HER ZAMAN oluştur (Excel olsun olmasın)
+        const footer = document.createElement("div");
+        footer.className = "daily-entry-footer";
+        
+        // Excel badge'i sadece Excel kartlarında görünsün
         if (entry.source && entry.source.toLowerCase() === "excel") {
-          const badgeWrap = document.createElement("div");
-          badgeWrap.className = "daily-entry-badges";
           const badge = document.createElement("span");
           badge.className = "summary-item-badge";
           badge.textContent = "Excel";
-          badgeWrap.appendChild(badge);
-          body.appendChild(badgeWrap);
+          footer.appendChild(badge);
         }
-
+        
+        body.appendChild(footer);
         row.appendChild(body);
         const openEntry = () => {
           if (entry.date) {

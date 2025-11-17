@@ -5036,7 +5036,6 @@ if (modalFormSection) {
       if (!currentUser) {
         responsibleUsers = [];
         responsibleUserMap.clear();
-        populateOwnerSelectOptions();
       }
       loadNotificationsForCurrentUser();
     }
@@ -5078,7 +5077,6 @@ if (modalFormSection) {
       }
       updateEditingPermissions();
       refreshColorDescriptionSection();
-      populateOwnerSelectOptions();
     }
 
     function setAuthMode(registerMode) {
@@ -7458,6 +7456,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         adminSelectedUserId = null;
         setAssigneeFilter("all"); // Tüm kartları göster
         await loadEntriesFromServer();
+        await loadResponsibleUsers();
+        await ensureColorDescriptionsLoaded();
         hideLoginOverlay();
       } catch (err) {
         loginError.classList.remove("success");

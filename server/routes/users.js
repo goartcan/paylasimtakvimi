@@ -15,7 +15,6 @@ router.get("/approved", requireAuth, (req, res) => {
     `
     )
     .all();
-  console.log(`[/users/approved] Kullanıcı ${req.user.email} için ${rows.length} onaylı kullanıcı döndürülüyor`);
   res.json(rows);
 });
 

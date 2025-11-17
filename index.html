@@ -1364,9 +1364,10 @@
       gap: 4px;
     }
     .daily-entry-time-icon {
-      font-size: 12px;
+      font-size: 9px;
       color: #2563eb;
       line-height: 1;
+      margin-right: 3px;
     }
     .daily-entry-footer {
       margin-top: auto;
@@ -5837,8 +5838,9 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
 
     function getDailyRowStatus(entry) {
       if (!entry) {
-        return { key: "pending", symbol: "•" };
+        return null;
       }
+      // Sadece paylaşıldı/paylaşılmadı durumları için ikon
       if (entry.status === "done") {
         return { key: "done", symbol: "✓" };
       }
@@ -5846,10 +5848,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       if (entry.status === "missed" || (pastEntry && entry.status !== "done")) {
         return { key: "missed", symbol: "❌" };
       }
-      if (entry.time) {
-        return { key: "scheduled", symbol: "⏰" };
-      }
-      return { key: "pending", symbol: "•" };
+      // Sadece saat atanmış veya pending durumları için ikon yok
+      return null;
     }
 
     function renderDailySchedule() {
@@ -5912,11 +5912,14 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         const header = document.createElement("div");
         header.className = "daily-entry-header";
         
-        const statusIcon = document.createElement("span");
-        statusIcon.className = `daily-entry-status status-${statusState.key}`;
-        statusIcon.textContent = statusState.symbol;
-        statusIcon.title = formatStatusLabel(entry.status);
-        header.appendChild(statusIcon);
+        // Status ikonu sadece paylaşıldı/paylaşılmadı durumları için
+        if (statusState) {
+          const statusIcon = document.createElement("span");
+          statusIcon.className = `daily-entry-status status-${statusState.key}`;
+          statusIcon.textContent = statusState.symbol;
+          statusIcon.title = formatStatusLabel(entry.status);
+          header.appendChild(statusIcon);
+        }
 
         const title = document.createElement("span");
         title.className = "daily-entry-title";

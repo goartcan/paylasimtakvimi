@@ -1668,6 +1668,8 @@
       justify-content: center;
       z-index: 1000;
       overscroll-behavior: contain;
+      overflow-y: auto;
+      touch-action: pan-y;
     }
     .modal-content {
       background: #ffffff;
@@ -3695,6 +3697,23 @@ function normalizeColorToken(value, fallback = null) {
 function getHexFromColorToken(value, fallbackToken = DEFAULT_ENTRY_COLOR) {
   const token = normalizeColorToken(value, fallbackToken) || fallbackToken;
   return COLOR_HEX_BY_TOKEN[token] || COLOR_HEX_BY_TOKEN[DEFAULT_ENTRY_COLOR];
+}
+
+// Ortak modal helper fonksiyonları
+function openModalHelper(modalElement) {
+  if (!modalElement) return;
+  modalElement.style.display = "flex";
+  document.body.classList.add('modal-open');
+}
+
+function closeModalHelper(modalElement) {
+  if (!modalElement) return;
+  modalElement.style.display = "none";
+  // Başka açık modal var mı kontrol et
+  const anyModalOpen = document.querySelector('.modal[style*="display: flex"], .login-overlay.active, .admin-overlay.active');
+  if (!anyModalOpen) {
+    document.body.classList.remove('modal-open');
+  }
 }
 
 function getEntryDateTime(entry) {
@@ -6635,14 +6654,12 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         setModalViewForEntry(selectedEntry);
       }
       renderModalSummaryList();
-      dayModal.style.display = "flex";
-      document.body.classList.add('modal-open');
+      openModalHelper(dayModal);
       updateScheduleList();
     }
 
     function closeModal() {
-      dayModal.style.display = "none";
-      document.body.classList.remove('modal-open');
+      closeModalHelper(dayModal);
       modalForcePlanMode = false;
       setPlanReturnBannerVisible(false);
       if (modalControlSection) modalControlSection.style.display = "none";

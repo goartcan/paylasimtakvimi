@@ -1273,7 +1273,7 @@
   cursor: pointer;
   transition: box-shadow 0.12s ease, border-color 0.12s ease;
   margin-bottom: 4px;
-  min-height: 68px;
+  min-height: 76px;
 }
 .daily-entry-row:last-child {
   margin-bottom: 0;
@@ -5969,17 +5969,22 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         
         body.appendChild(header);
 
-        const metaLine = document.createElement("p");
-        metaLine.className = "daily-entry-meta";
+        // Platform satırı
+        const platformLine = document.createElement("div");
+        platformLine.className = "daily-entry-meta";
+        platformLine.textContent = formatPlatformsLabel(entry.platforms || [], {
+          filterId: activeChannelFilter
+        });
+        body.appendChild(platformLine);
+        
+        // Sorumlu satırı
         const ownerLabel = getOwnerLabel(entry.owner_id);
-        const parts = [
-          formatPlatformsLabel(entry.platforms || [], {
-            filterId: activeChannelFilter
-          }),
-          ownerLabel ? `Sorumlu: ${ownerLabel}` : ""
-        ].filter(Boolean);
-        metaLine.textContent = parts.join(" · ");
-        body.appendChild(metaLine);
+        if (ownerLabel) {
+          const ownerLine = document.createElement("div");
+          ownerLine.className = "daily-entry-meta daily-entry-owner";
+          ownerLine.textContent = `Sorumlu: ${ownerLabel}`;
+          body.appendChild(ownerLine);
+        }
         
         // Footer'ı HER ZAMAN oluştur (Excel olsun olmasın)
         const footer = document.createElement("div");

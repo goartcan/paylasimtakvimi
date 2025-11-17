@@ -4525,6 +4525,9 @@ async function loadResponsibleUsers() {
   }
   try {
     const response = await apiFetch("/users/approved");
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
     const data = await response.json();
     responsibleUsers = Array.isArray(data) ? data : [];
     responsibleUserMap.clear();
@@ -4533,9 +4536,13 @@ async function loadResponsibleUsers() {
         responsibleUserMap.set(Number(user.id), user.email || "");
       }
     });
+    console.log("Sorumlu kullanıcılar yüklendi:", responsibleUsers.length, "kullanıcı");
     populateOwnerSelectOptions();
   } catch (err) {
-    console.warn("Sorumlu kişi listesi yüklenemedi:", err.message);
+    console.error("Sorumlu kişi listesi yüklenemedi:", err);
+    responsibleUsers = [];
+    responsibleUserMap.clear();
+    populateOwnerSelectOptions();
   }
   if (
     selectedDateKey &&

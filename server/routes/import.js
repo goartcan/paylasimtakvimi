@@ -199,6 +199,10 @@ function processWorkbook(filePath, userId) {
 }
 
 router.post("/", requireAuth, (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ error: "Excel yükleme yetkisi sadece adminlerde." });
+  }
+
   const { filePath } = req.body;
   if (!filePath) {
     return res.status(400).json({ error: "Dosya yolu gerekli." });
@@ -213,6 +217,10 @@ router.post("/", requireAuth, (req, res) => {
 });
 
 router.post("/upload", requireAuth, (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ error: "Excel yükleme yetkisi sadece adminlerde." });
+  }
+
   const { filename, data } = req.body || {};
   if (!filename || !data) {
     return res.status(400).json({ error: "Geçerli bir dosya seç." });

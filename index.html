@@ -5047,7 +5047,7 @@ if (modalFormSection) {
       }
       if (excelUploadBtn) {
         const canUpload =
-          Boolean(isLoggedIn && currentUser && currentUser.role === "admin" && isViewingOwnData());
+          Boolean(isLoggedIn && currentUser && currentUser.role === "admin");
         excelUploadBtn.style.display = canUpload ? "inline-flex" : "none";
         excelUploadBtn.disabled = !canUpload;
         if (resetEntriesBtn) {

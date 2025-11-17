@@ -2271,21 +2271,11 @@
       gap: 2px;
     }
     .summary-item-badge.excel {
-      background: #217346;
-      color: #ffffff;
-      border-color: #217346;
-      font-size: 10px;
-      padding: 0;
-      line-height: 1;
-      font-weight: 700;
-      width: 20px;
-      height: 20px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 3px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      letter-spacing: -0.5px;
+      background: #e0e7ff;
+      color: #1d4ed8;
+      border-color: #c7d2fe;
+      font-size: 7px;
+      padding: 1px 5px;
     }
     .summary-item-footer {
       margin-top: 0px;
@@ -2667,9 +2657,9 @@
       color: #f8fafc;
     }
     body.dark .summary-item-badge.excel {
-      background: #217346;
-      border-color: #217346;
-      color: #ffffff;
+      background: #1d4ed8;
+      border-color: transparent;
+      color: #f8fafc;
     }
     body.dark .summary-item-copy-icon {
       border-color: #4c1d95;
@@ -6009,9 +5999,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         if (entry.source && entry.source.toLowerCase() === "excel") {
           const badge = document.createElement("span");
           badge.className = "summary-item-badge excel";
-          badge.textContent = "X";
-          badge.setAttribute("title", "Excel'den içe aktarıldı");
-          badge.setAttribute("aria-label", "Excel");
+          badge.textContent = "Excel";
           footer.appendChild(badge);
         }
         
@@ -6382,9 +6370,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         if (item.source === "excel") {
           const excelBadge = document.createElement("span");
           excelBadge.className = "summary-item-badge excel";
-          excelBadge.textContent = "X";
-          excelBadge.setAttribute("title", "Excel'den içe aktarıldı");
-          excelBadge.setAttribute("aria-label", "Excel");
+          excelBadge.textContent = "Excel";
           statusWrap.appendChild(excelBadge);
         }
         const timeChip = document.createElement("span");

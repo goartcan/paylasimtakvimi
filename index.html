@@ -3704,6 +3704,21 @@ function getHexFromColorToken(value, fallbackToken = DEFAULT_ENTRY_COLOR) {
 let scrollPosition = 0;
 
 function preventBodyScroll(e) {
+  // Modal içindeki scroll edilebilir alanları kontrol et
+  let target = e.target;
+  while (target && target !== document.body) {
+    const style = window.getComputedStyle(target);
+    const overflowY = style.overflowY;
+    
+    // Eğer element scroll edilebilirse ve scroll alanı varsa, event'i geçir
+    if ((overflowY === 'auto' || overflowY === 'scroll') && target.scrollHeight > target.clientHeight) {
+      // Element scroll edilebilir, event'i engelleme
+      return;
+    }
+    target = target.parentElement;
+  }
+  
+  // Scroll edilebilir alan yoksa, engelle
   e.preventDefault();
   e.stopPropagation();
   return false;
@@ -3721,7 +3736,7 @@ function openModalHelper(modalElement) {
   document.body.style.width = '100%';
   document.body.classList.add('modal-open');
   
-  // Wheel ve touch event'lerini engelle
+  // Wheel ve touch event'lerini kontrol et
   document.addEventListener('wheel', preventBodyScroll, { passive: false });
   document.addEventListener('touchmove', preventBodyScroll, { passive: false });
   

@@ -6348,9 +6348,15 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         const headerLeft = document.createElement("div");
         headerLeft.className = "summary-item-header-left";
 
-        const colorDot = document.createElement("span");
-        colorDot.className = "summary-color-dot";
-        headerLeft.appendChild(colorDot);
+        // Status ikonu (Gün Detayı panelindeki gibi)
+        const statusState = getDailyRowStatus(item);
+        if (statusState) {
+          const statusIcon = document.createElement("span");
+          statusIcon.className = `daily-entry-status status-${statusState.key}`;
+          statusIcon.textContent = statusState.symbol;
+          statusIcon.title = formatStatusLabel(item.status);
+          headerLeft.appendChild(statusIcon);
+        }
 
         const title = document.createElement("div");
         title.className = "summary-item-title";
@@ -6360,30 +6366,27 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
 
         const statusWrap = document.createElement("div");
         statusWrap.className = "summary-item-header-right";
-        // "Planlandı" durumunda etiket gösterme, sadece "done" ve "missed"
-        if (statusKey === "done" || statusKey === "missed") {
-          const statusBadge = document.createElement("span");
-          statusBadge.className = `summary-item-status status-${statusKey}`;
-          statusBadge.textContent = formatStatusLabel(item.status);
-          statusWrap.appendChild(statusBadge);
+        
+        // Saat chip'i
+        if (time) {
+          const timeChip = document.createElement("span");
+          timeChip.className = "summary-item-time-chip";
+          const timeIcon = document.createElement("span");
+          timeIcon.className = "icon-clock";
+          timeIcon.textContent = "⏰";
+          timeChip.appendChild(timeIcon);
+          timeChip.appendChild(document.createTextNode(time));
+          statusWrap.appendChild(timeChip);
         }
+        
+        // Excel badge
         if (item.source === "excel") {
           const excelBadge = document.createElement("span");
           excelBadge.className = "summary-item-badge excel";
           excelBadge.textContent = "Excel";
           statusWrap.appendChild(excelBadge);
         }
-        const timeChip = document.createElement("span");
-        timeChip.className = "summary-item-time-chip";
-        const timeValue = document.createElement("span");
-        timeValue.className = "time-value";
-        timeValue.textContent = time ? time : "Saat seçilmedi";
-        const timeIcon = document.createElement("span");
-        timeIcon.className = "icon-clock";
-        timeIcon.textContent = "⏰";
-        timeChip.appendChild(timeValue);
-        timeChip.appendChild(timeIcon);
-        statusWrap.appendChild(timeChip);
+        
         header.appendChild(statusWrap);
 
         wrap.appendChild(header);

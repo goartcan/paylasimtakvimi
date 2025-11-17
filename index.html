@@ -3701,19 +3701,52 @@ function getHexFromColorToken(value, fallbackToken = DEFAULT_ENTRY_COLOR) {
 }
 
 // Ortak modal helper fonksiyonları
+let scrollPosition = 0;
+
+function preventBodyScroll(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  return false;
+}
+
 function openModalHelper(modalElement) {
   if (!modalElement) return;
-  modalElement.style.display = "flex";
+  
+  // Mevcut scroll pozisyonunu kaydet
+  scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+  
+  // Body'yi sabitle
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${scrollPosition}px`;
+  document.body.style.width = '100%';
   document.body.classList.add('modal-open');
+  
+  // Wheel ve touch event'lerini engelle
+  document.addEventListener('wheel', preventBodyScroll, { passive: false });
+  document.addEventListener('touchmove', preventBodyScroll, { passive: false });
+  
+  modalElement.style.display = "flex";
 }
 
 function closeModalHelper(modalElement) {
   if (!modalElement) return;
   modalElement.style.display = "none";
+  
   // Başka açık modal var mı kontrol et
   const anyModalOpen = document.querySelector('.modal[style*="display: flex"], .login-overlay.active, .admin-overlay.active');
   if (!anyModalOpen) {
+    // Event listener'ları kaldır
+    document.removeEventListener('wheel', preventBodyScroll, { passive: false });
+    document.removeEventListener('touchmove', preventBodyScroll, { passive: false });
+    
+    // Body'yi eski haline getir
     document.body.classList.remove('modal-open');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    
+    // Scroll pozisyonunu geri yükle
+    window.scrollTo(0, scrollPosition);
   }
 }
 

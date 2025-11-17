@@ -1273,7 +1273,7 @@
   cursor: pointer;
   transition: box-shadow 0.12s ease, border-color 0.12s ease;
   margin-bottom: 4px;
-  min-height: 78px;
+  min-height: 68px;
 }
 .daily-entry-row:last-child {
   margin-bottom: 0;
@@ -1316,7 +1316,6 @@
       width: 16px;
       height: 16px;
       flex-shrink: 0;
-      font-size: 16px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -1325,9 +1324,11 @@
     }
     .daily-entry-status.status-done {
       color: #16a34a;
+      font-size: 14px;
     }
     .daily-entry-status.status-missed {
       color: #dc2626;
+      font-size: 10px;
     }
     .daily-entry-status.status-scheduled {
       color: #2563eb;
@@ -1344,6 +1345,25 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      margin-bottom: 2px;
+    }
+    .daily-entry-time-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 6px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 500;
+      color: #1e40af;
+      flex-shrink: 0;
+      line-height: 1.2;
+    }
+    .daily-entry-time-chip-icon {
+      font-size: 8px;
+      line-height: 1;
     }
     .daily-entry-title {
       font-size: 11px;
@@ -2745,6 +2765,11 @@
     }
     body.dark .daily-entry-status.status-pending {
       color: #94a3b8;
+    }
+    body.dark .daily-entry-time-chip {
+      background: #1e3a5f;
+      border-color: #1e40af;
+      color: #93c5fd;
     }
     body.dark .daily-entry-time-icon {
       color: #facc15;
@@ -5908,7 +5933,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         const body = document.createElement("div");
         body.className = "daily-entry-body";
 
-        // Header: ikon + başlık aynı satırda
+        // Header: ikon + başlık + saat chip
         const header = document.createElement("div");
         header.className = "daily-entry-header";
         
@@ -5926,24 +5951,23 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         title.textContent = formatEntryPreviewText(entry, 90);
         header.appendChild(title);
         
-        body.appendChild(header);
-
-        const timeLine = document.createElement("p");
+        // Saat chip'i sağda
         const hasTime = Boolean(entry.time);
-        timeLine.className = hasTime
-          ? "daily-entry-meta daily-entry-time"
-          : "daily-entry-meta";
         if (hasTime) {
+          const timeChip = document.createElement("span");
+          timeChip.className = "daily-entry-time-chip";
+          
           const clockIcon = document.createElement("span");
-          clockIcon.className = "daily-entry-time-icon";
+          clockIcon.className = "daily-entry-time-chip-icon";
           clockIcon.textContent = "⏰";
           clockIcon.setAttribute("aria-hidden", "true");
-          timeLine.appendChild(clockIcon);
-          timeLine.appendChild(document.createTextNode(entry.time));
-        } else {
-          timeLine.textContent = "Saat seçilmedi";
+          timeChip.appendChild(clockIcon);
+          
+          timeChip.appendChild(document.createTextNode(entry.time));
+          header.appendChild(timeChip);
         }
-        body.appendChild(timeLine);
+        
+        body.appendChild(header);
 
         const metaLine = document.createElement("p");
         metaLine.className = "daily-entry-meta";

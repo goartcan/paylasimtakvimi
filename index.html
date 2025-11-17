@@ -1255,12 +1255,12 @@
     .daily-entry-heading {
       font-weight: 600;
       color: #1e293b;
-      font-size: 11.5px;
+      font-size: 13.5px;
       margin: 4px 0 6px;
-      padding: 4px 6px;
+      padding: 6px 8px;
       background: #f1f5f9;
       border-radius: 6px;
-      border-left: 3px solid #3b82f6;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     }
 .daily-entry-row {
   --daily-card-color: rgba(15, 23, 42, 0.12);
@@ -1275,8 +1275,8 @@
   cursor: pointer;
   transition: box-shadow 0.12s ease, border-color 0.12s ease;
   margin-bottom: 4px;
-  min-height: 70px;
-  max-height: 70px;
+  min-height: 76px;
+  max-height: 76px;
   overflow: hidden;
 }
 .daily-entry-row:last-child {
@@ -1317,11 +1317,11 @@
       outline-offset: 2px;
     }
     .daily-entry-status {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       flex-shrink: 0;
-      font-size: 10px;
+      font-size: 8.5px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -1353,7 +1353,7 @@
       gap: 1px;
       min-height: 0;
       position: relative;
-      padding-bottom: 18px;
+      padding-bottom: 20px;
     }
     .daily-entry-title {
       font-size: 11px;
@@ -2727,7 +2727,7 @@
     body.dark .daily-entry-heading {
       background: #1e293b;
       color: #f1f5f9;
-      border-left-color: #60a5fa;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
     body.dark .daily-entry-row {
       background: #111827;

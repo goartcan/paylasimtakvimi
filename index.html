@@ -624,14 +624,24 @@
   align-items: stretch;
   width: 100%;
 }
-/* Takvim + sağ panel hizası */
+/* Takvim + sağ panel hizası (3 kolonlu: Takvim | Gün Detayı | Görev Panosu) */
 .container.calendar-layout {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1.1fr);
-  gap: 24px;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr) 340px;
+  gap: 20px;
   align-items: flex-start;
   width: 100%;
   min-height: 0;
+}
+
+/* Mobilde görev panosunu gizle */
+@media (max-width: 1280px) {
+  .container.calendar-layout {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1.1fr);
+  }
+  .task-board-panel {
+    display: none !important;
+  }
 }
 .calendar-shell {
   flex: 1 1 auto;
@@ -1093,6 +1103,207 @@
   padding: 8px 10px;
   background: #ffffff;
 }
+/* Görev Panosu - Trello benzeri stil */
+.task-board-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 340px;
+  height: fit-content;
+}
+
+.task-board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.task-board-header h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.task-board-add-btn {
+  padding: 4px 10px;
+  font-size: 12px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.task-board-add-btn:hover {
+  background: #2563eb;
+}
+
+.task-board-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.task-board-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.task-board-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.task-board-column-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.task-board-column-count {
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 12px;
+}
+
+.task-board-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-board-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.task-board-card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  transform: translateY(-1px);
+}
+
+.task-board-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.task-board-card-description {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.task-board-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.task-board-card-assignee {
+  font-size: 11px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.task-board-card-assignee::before {
+  content: "👤";
+  font-size: 12px;
+}
+
+.task-board-card-priority {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.task-board-card-priority.high {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.task-board-card-priority.medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.task-board-card-priority.low {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+/* Kolon renkleri */
+.task-board-column[data-status="todo"] .task-board-column-title::before {
+  content: "📋";
+  font-size: 14px;
+}
+
+.task-board-column[data-status="in-progress"] .task-board-column-title::before {
+  content: "⚡";
+  font-size: 14px;
+}
+
+.task-board-column[data-status="done"] .task-board-column-title::before {
+  content: "✅";
+  font-size: 14px;
+}
+
+.task-board-empty-state {
+  text-align: center;
+  padding: 20px;
+  color: #9ca3af;
+  font-size: 12px;
+  font-style: italic;
+}
+
 .summary-scroll-area {
   display: flex;
   flex-direction: column;
@@ -3073,6 +3284,18 @@
           </div>
         </div>
       </div>
+
+      <!-- GÖREV PANOSU -->
+      <div class="task-board-panel">
+        <div class="task-board-header">
+          <h2>Görevler</h2>
+          <button class="task-board-add-btn" id="taskBoardAddBtn" title="Yeni görev ekle">+ Görev</button>
+        </div>
+        <div class="task-board-container" id="taskBoardContainer">
+          <!-- TODO: Görevler için backend entegrasyonu eklenecek (Firestore/DB modeli) -->
+          <!-- Görev kolonları JavaScript ile render edilecek -->
+        </div>
+      </div>
     </div>
   </div>
 
@@ -3434,6 +3657,10 @@ const channelFilter = document.getElementById("channelFilter");
 const channelFilterButtons = channelFilter
   ? Array.from(channelFilter.querySelectorAll("button[data-channel]"))
   : [];
+
+// Görev Panosu elementleri
+const taskBoardContainer = document.getElementById("taskBoardContainer");
+const taskBoardAddBtn = document.getElementById("taskBoardAddBtn");
 const assigneeFilterButtons = Array.from(
   document.querySelectorAll(".assignee-filter-btn")
 );
@@ -7816,6 +8043,174 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       showLoginOverlay(false);
     });
 
+    /* ==================== GÖREV PANOSU ==================== */
+    // TODO: Backend entegrasyonu yapılacak - Firestore veya SQL DB modeli
+    // Şimdilik dummy verilerle çalışıyoruz
+    
+    let taskBoardData = [
+      {
+        id: 1,
+        title: "Instagram görseli tasarla",
+        description: "Kasım ayı kampanya görselleri için 3 adet post tasarımı hazırla",
+        status: "todo",
+        assignee: "designer@goart.com",
+        priority: "high"
+      },
+      {
+        id: 2,
+        title: "Blog yazısı yaz",
+        description: "Sosyal medya stratejileri hakkında 1500 kelimelik blog yazısı",
+        status: "todo",
+        assignee: "editor@goart.com",
+        priority: "medium"
+      },
+      {
+        id: 3,
+        title: "Video montajı",
+        description: "YouTube için ürün tanıtım videosu hazırla, 2-3 dakika",
+        status: "in-progress",
+        assignee: "video@goart.com",
+        priority: "high"
+      },
+      {
+        id: 4,
+        title: "Analitik raporu hazırla",
+        description: "Ekim ayı sosyal medya performans raporu",
+        status: "in-progress",
+        assignee: "analyst@goart.com",
+        priority: "medium"
+      },
+      {
+        id: 5,
+        title: "LinkedIn paylaşımı",
+        description: "Şirket başarı hikayesi paylaşımı hazırla",
+        status: "done",
+        assignee: "community@goart.com",
+        priority: "low"
+      },
+      {
+        id: 6,
+        title: "Email kampanyası",
+        description: "Haftalık newsletter tasarımı ve içerik yazımı",
+        status: "done",
+        assignee: "marketing@goart.com",
+        priority: "medium"
+      }
+    ];
+
+    const taskBoardColumns = [
+      { id: "todo", title: "Yapılacak", status: "todo" },
+      { id: "in-progress", title: "Devam Ediyor", status: "in-progress" },
+      { id: "done", title: "Tamamlandı", status: "done" }
+    ];
+
+    function renderTaskBoard() {
+      if (!taskBoardContainer) return;
+      
+      taskBoardContainer.innerHTML = "";
+      
+      taskBoardColumns.forEach(column => {
+        const tasks = taskBoardData.filter(task => task.status === column.status);
+        
+        const columnEl = document.createElement("div");
+        columnEl.className = "task-board-column";
+        columnEl.setAttribute("data-status", column.status);
+        
+        // Kolon başlığı
+        const headerEl = document.createElement("div");
+        headerEl.className = "task-board-column-header";
+        
+        const titleEl = document.createElement("div");
+        titleEl.className = "task-board-column-title";
+        titleEl.textContent = column.title;
+        
+        const countEl = document.createElement("span");
+        countEl.className = "task-board-column-count";
+        countEl.textContent = tasks.length;
+        
+        headerEl.appendChild(titleEl);
+        headerEl.appendChild(countEl);
+        columnEl.appendChild(headerEl);
+        
+        // Kartlar container
+        const cardsEl = document.createElement("div");
+        cardsEl.className = "task-board-cards";
+        
+        if (tasks.length === 0) {
+          const emptyEl = document.createElement("div");
+          emptyEl.className = "task-board-empty-state";
+          emptyEl.textContent = "Görev yok";
+          cardsEl.appendChild(emptyEl);
+        } else {
+          tasks.forEach(task => {
+            const cardEl = createTaskCard(task);
+            cardsEl.appendChild(cardEl);
+          });
+        }
+        
+        columnEl.appendChild(cardsEl);
+        taskBoardContainer.appendChild(columnEl);
+      });
+    }
+
+    function createTaskCard(task) {
+      const cardEl = document.createElement("div");
+      cardEl.className = "task-board-card";
+      cardEl.setAttribute("data-task-id", task.id);
+      
+      // Başlık
+      const titleEl = document.createElement("div");
+      titleEl.className = "task-board-card-title";
+      titleEl.textContent = task.title;
+      cardEl.appendChild(titleEl);
+      
+      // Açıklama
+      if (task.description) {
+        const descEl = document.createElement("div");
+        descEl.className = "task-board-card-description";
+        descEl.textContent = task.description;
+        cardEl.appendChild(descEl);
+      }
+      
+      // Meta bilgiler
+      const metaEl = document.createElement("div");
+      metaEl.className = "task-board-card-meta";
+      
+      // Sorumlu
+      const assigneeEl = document.createElement("div");
+      assigneeEl.className = "task-board-card-assignee";
+      assigneeEl.textContent = task.assignee;
+      metaEl.appendChild(assigneeEl);
+      
+      // Öncelik
+      if (task.priority) {
+        const priorityEl = document.createElement("div");
+        priorityEl.className = `task-board-card-priority ${task.priority}`;
+        priorityEl.textContent = task.priority === "high" ? "Yüksek" : 
+                                  task.priority === "medium" ? "Orta" : "Düşük";
+        metaEl.appendChild(priorityEl);
+      }
+      
+      cardEl.appendChild(metaEl);
+      
+      // Kart tıklama eventi (şimdilik console.log)
+      cardEl.addEventListener("click", () => {
+        console.log("Görev kartı tıklandı:", task);
+        // TODO: Görev detay modal'ı açılacak
+      });
+      
+      return cardEl;
+    }
+
+    // Yeni görev butonu click eventi
+    if (taskBoardAddBtn) {
+      taskBoardAddBtn.addEventListener("click", () => {
+        console.log("Yeni görev ekleme modal'ı açılacak");
+        // TODO: Yeni görev ekleme modal'ı implementasyonu
+        alert("Yeni görev ekleme özelliği yakında eklenecek!\n\nŞu an dummy verilerle çalışıyoruz.");
+      });
+    }
+
     /* Olaylar ve init */
     async function init() {
       // Sayfa yüklendiğinde modal-open class'ını temizle
@@ -7825,6 +8220,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       currentMonth = today.getMonth();
       ensureRangeInputsInitialized();
       renderCalendar();
+      renderTaskBoard(); // Görev panosunu render et
       if (authToken) {
         try {
           const meResponse = await apiFetch("/auth/me");

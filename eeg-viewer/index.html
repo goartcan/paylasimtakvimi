@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hüseyin'in Minik EEG Botu</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Hüseyin'in Minik EEG Botu</h1>
+            <p class="subtitle">Zenin Meditasyon EEG Görselleştirici</p>
+        </header>
+
+        <div class="control-panel">
+            <div class="control-group">
+                <label for="csvFile">CSV Dosyası Yükle:</label>
+                <input type="file" id="csvFile" accept=".csv">
+            </div>
+
+            <div class="control-row">
+                <div class="control-group">
+                    <label for="bandSelect">Beyin Dalgası:</label>
+                    <select id="bandSelect">
+                        <option value="">-- Seçiniz --</option>
+                        <option value="All">🌈 Tümü (Delta–Theta–Alpha–Beta–Gamma)</option>
+                        <option value="Delta">Delta (0.5-4 Hz)</option>
+                        <option value="Theta">Theta (4-8 Hz)</option>
+                        <option value="Alpha">Alpha (8-13 Hz)</option>
+                        <option value="Beta">Beta (13-30 Hz)</option>
+                        <option value="Gamma">Gamma (30-100 Hz)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="channelSelect">Kanal:</label>
+                    <select id="channelSelect">
+                        <option value="">-- Seçiniz --</option>
+                        <option value="Average">⭐ Ortalama (5 Kanal)</option>
+                        <option value="TP9">TP9 (Sol Kulak)</option>
+                        <option value="AF7">AF7 (Sol Alın)</option>
+                        <option value="AF8">AF8 (Sağ Alın)</option>
+                        <option value="TP10">TP10 (Sağ Kulak)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-row">
+                <div class="control-group speed-control">
+            <label for="speedSlider">Animasyon Hızı: <span id="speedValue">0.5</span>x (Çok Yavaş ← → Hızlı)</label>
+            <input type="range" id="speedSlider" min="0.1" max="2" step="0.1" value="0.5">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button id="playBtn" class="btn btn-play" disabled>▶ Oynat</button>
+                <button id="pauseBtn" class="btn btn-pause" disabled>⏸ Duraklat</button>
+                <button id="resetBtn" class="btn btn-reset" disabled>⟲ Sıfırla</button>
+            </div>
+
+            <div id="statusText" class="status-text">
+                Başlamak için bir CSV dosyası yükleyin...
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="watermark-logo">
+                <img src="aaa.svg" alt="Logo">
+            </div>
+            <canvas id="eegChart"></canvas>
+            <button id="viewProfileBtn" class="view-profile-btn hidden">
+                <span class="btn-icon">👁️</span>
+                <span class="btn-text">Profili Gör</span>
+            </button>
+        </div>
+        
+        <!-- Profile Detail Modal -->
+        <div id="profileModal" class="profile-modal hidden">
+            <div class="profile-modal-content">
+                <button class="profile-modal-close" id="closeModalBtn">✕</button>
+                <div class="profile-modal-header">
+                    <div class="profile-modal-rank">🏆 1. SIRA</div>
+                    <h2 class="profile-modal-title" id="modalProfileName">Denge Ustası</h2>
+                </div>
+                <div class="profile-modal-body">
+                    <p id="modalProfileDesc" class="profile-modal-description">
+                        Beyin dalgalarınız burada açıklanacak...
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <section id="profile-section">
+            <div class="profile-header">
+                <span class="profile-header-label">Anlık Zihin Profili</span>
+                <span class="profile-header-caption">Grafik ilerledikçe en olası profiller burada sıralanır.</span>
+            </div>
+            <div id="profile-list" class="profile-list">
+                <!-- JS ile kartlar eklenecek -->
+            </div>
+        </section>
+
+        <footer>
+            <p>Zenin Meditasyon EEG ölçüm programı.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

@@ -644,7 +644,7 @@
 /* Takvim + sağ panel hizası (3 kolonlu: Takvim | Gün Detayı | Görev Panosu) */
 .container.calendar-layout {
   display: grid;
-  grid-template-columns: 1.8fr 1fr 1.2fr; /* Takvim 45%, Gün Detayı 25%, Görevler 30% */
+  grid-template-columns: 1.95fr 0.7fr 1.35fr; /* Takvim 48.75%, Gün Detayı 17.5%, Görevler 33.75% */
   gap: 24px;
   align-items: flex-start;
   width: 100%;
@@ -663,7 +663,7 @@
 /* Geniş ekranlar (1440px - 1919px) */
 @media (min-width: 1440px) and (max-width: 1919px) {
   .container.calendar-layout {
-    grid-template-columns: 1.8fr 1fr 1.2fr;
+    grid-template-columns: 1.95fr 0.7fr 1.35fr;
   }
 }
 
@@ -1149,8 +1149,13 @@
   overflow: hidden;
   border: 1px solid #dde2ff;
   border-radius: 10px;
-  padding: 8px 10px;
+  padding: 6px 8px; /* Kompakt: 8px 10px → 6px 8px */
   background: #ffffff;
+}
+
+.summary-shell .form h2 {
+  font-size: 14px; /* Daha kompakt başlık */
+  margin: 0 0 4px 0;
 }
 /* Görev Panosu - Trello benzeri stil */
 .task-board-panel {
@@ -1505,25 +1510,25 @@
 }
 .schedule-search input {
   width: 100%;
-  padding: 6px 9px;
+  padding: 5px 7px; /* Kompakt: 6px 9px → 5px 7px */
   border-radius: 6px;
   border: 1px solid #d1d5db;
-  font-size: 12px;
+  font-size: 11px; /* Kompakt: 12px → 11px */
   outline: none;
 }
     .schedule-view-toggle {
       margin: 3px 0 2px;
       display: inline-flex;
-      gap: 6px;
+      gap: 4px; /* Kompakt: 6px → 4px */
       background: #f1f5f9;
       border-radius: 999px;
-      padding: 3px;
+      padding: 2px; /* Kompakt: 3px → 2px */
     }
     .schedule-view-btn {
       border: none;
       background: transparent;
-      padding: 4px 11px;
-      font-size: 11px;
+      padding: 3px 8px; /* Kompakt: 4px 11px → 3px 8px */
+      font-size: 10px; /* Kompakt: 11px → 10px */
       font-weight: 600;
       border-radius: 999px;
       color: #475569;

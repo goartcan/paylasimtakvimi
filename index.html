@@ -4498,6 +4498,8 @@ function toggleNotificationPanel(forceOpen = null) {
     notificationPanel.classList.add("open");
     notificationPanelOpen = true;
     notificationToggleBtn.setAttribute("aria-expanded", "true");
+    // Body scroll'u kilitle
+    document.body.style.overflow = 'hidden';
   } else {
     closeNotificationPanel();
   }
@@ -4508,6 +4510,8 @@ function closeNotificationPanel() {
   notificationPanel.classList.remove("open");
   notificationPanelOpen = false;
   notificationToggleBtn.setAttribute("aria-expanded", "false");
+  // Body scroll kilidini aç
+  document.body.style.overflow = '';
 }
 
 function handleNotificationItemClick(notificationId) {
@@ -6550,12 +6554,34 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     }
 
     function renderEmptySchedule(message) {
+      const container = document.createElement("div");
+      container.style.cssText = "display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px 16px;";
+      
       const empty = document.createElement("p");
       empty.className = "small";
+      empty.style.cssText = "margin: 0; text-align: center; color: #64748b;";
       empty.textContent = scheduleSearchQuery
         ? "Aramanızla eşleşen gün bulunamadı."
         : message;
-      scheduleList.appendChild(empty);
+      container.appendChild(empty);
+      
+      // Arama yoksa ve seçili bir tarih varsa "Paylaşım oluştur" butonu ekle
+      if (!scheduleSearchQuery && selectedDateKey) {
+        const createBtn = document.createElement("button");
+        createBtn.className = "secondary-btn";
+        createBtn.style.cssText = "padding: 10px 20px; font-size: 14px; font-weight: 600;";
+        createBtn.textContent = "+ Paylaşım oluştur";
+        createBtn.onclick = () => {
+          // Seçili tarih için yeni kart oluşturma formunu aç
+          clearFormOnly();
+          activeItemId = null;
+          modalFormSection.style.display = "block";
+          openModal();
+        };
+        container.appendChild(createBtn);
+      }
+      
+      scheduleList.appendChild(container);
     }
 
     function renderWeeklySchedule() {
@@ -8186,56 +8212,96 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     // TODO: Backend entegrasyonu yapılacak - Firestore veya SQL DB modeli
     // Şimdilik dummy verilerle çalışıyoruz
     
-    let taskBoardData = [
-      {
-        id: 1,
-        title: "Instagram görseli tasarla",
-        description: "Kasım ayı kampanya görselleri için 3 adet post tasarımı hazırla",
-        status: "todo",
-        assignee: "designer@goart.com",
-        priority: "high"
+    /* 
+     * GÖREV YÖNETİMİ SİSTEMİ
+     * TODO: Backend entegrasyonu için /tasks endpoint'leri eklenecek
+     * - GET /tasks - tüm görevleri getir
+     * - POST /tasks - yeni görev oluştur
+     * - PUT /tasks/:id - görevi güncelle (status değişimi vs.)
+     * - DELETE /tasks/:id - görevi sil
+     * Şimdilik localStorage kullanıyoruz.
+     */
+    
+    // localStorage'dan görevleri yükle
+    function loadTasks() {
+      const stored = localStorage.getItem('taskBoardData');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch (e) {
+          console.error('Görevler yüklenirken hata:', e);
+          return getDefaultTasks();
+        }
+      }
+      return getDefaultTasks();
+    }
+    
+    // Görevleri localStorage'a kaydet
+    function saveTasks(tasks) {
+      localStorage.setItem('taskBoardData', JSON.stringify(tasks));
+    }
+    
+    // İlk kurulum için örnek görevler
+    function getDefaultTasks() {
+      return [
+        {
+          id: Date.now() + 1,
+          title: "Instagram görseli tasarla",
+          description: "Kasım ayı kampanya görselleri için 3 adet post tasarımı hazırla",
+          status: "todo",
+          assignee: "designer@goart.com",
+          priority: "high",
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: Date.now() + 2,
+          title: "Blog yazısı yaz",
+          description: "Sosyal medya stratejileri hakkında 1500 kelimelik blog yazısı",
+          status: "todo",
+          assignee: "editor@goart.com",
+          priority: "medium",
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: Date.now() + 3,
+          title: "Video montajı",
+          description: "YouTube için ürün tanıtım videosu hazırla, 2-3 dakika",
+          status: "in-progress",
+          assignee: "video@goart.com",
+          priority: "high",
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: Date.now() + 4,
+          title: "Analitik raporu hazırla",
+          description: "Ekim ayı sosyal medya performans raporu",
+          status: "in-progress",
+          assignee: "analyst@goart.com",
+        priority: "medium",
+        createdAt: new Date().toISOString()
       },
       {
-        id: 2,
-        title: "Blog yazısı yaz",
-        description: "Sosyal medya stratejileri hakkında 1500 kelimelik blog yazısı",
-        status: "todo",
-        assignee: "editor@goart.com",
-        priority: "medium"
-      },
-      {
-        id: 3,
-        title: "Video montajı",
-        description: "YouTube için ürün tanıtım videosu hazırla, 2-3 dakika",
-        status: "in-progress",
-        assignee: "video@goart.com",
-        priority: "high"
-      },
-      {
-        id: 4,
-        title: "Analitik raporu hazırla",
-        description: "Ekim ayı sosyal medya performans raporu",
-        status: "in-progress",
-        assignee: "analyst@goart.com",
-        priority: "medium"
-      },
-      {
-        id: 5,
+        id: Date.now() + 5,
         title: "LinkedIn paylaşımı",
         description: "Şirket başarı hikayesi paylaşımı hazırla",
         status: "done",
         assignee: "community@goart.com",
-        priority: "low"
+        priority: "low",
+        createdAt: new Date().toISOString()
       },
       {
-        id: 6,
+        id: Date.now() + 6,
         title: "Email kampanyası",
         description: "Haftalık newsletter tasarımı ve içerik yazımı",
         status: "done",
         assignee: "marketing@goart.com",
-        priority: "medium"
+        priority: "medium",
+        createdAt: new Date().toISOString()
       }
     ];
+    }
+    
+    let taskBoardData = loadTasks();
 
     const taskBoardColumns = [
       { id: "todo", title: "Bekliyor", status: "todo" },
@@ -8332,21 +8398,94 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       
       cardEl.appendChild(metaEl);
       
-      // Kart tıklama eventi (şimdilik console.log)
-      cardEl.addEventListener("click", () => {
-        console.log("Görev kartı tıklandı:", task);
-        // TODO: Görev detay modal'ı açılacak
+      // Aksiyon butonları (status değiştir ve sil)
+      const actionsEl = document.createElement("div");
+      actionsEl.style.cssText = "display: flex; gap: 4px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e2e8f0;";
+      
+      // Status değiştir dropdown
+      const statusSelect = document.createElement("select");
+      statusSelect.style.cssText = "flex: 1; padding: 4px 6px; font-size: 11px; border-radius: 4px; border: 1px solid #cbd5e1;";
+      statusSelect.innerHTML = `
+        <option value="todo" ${task.status === 'todo' ? 'selected' : ''}>Bekliyor</option>
+        <option value="in-progress" ${task.status === 'in-progress' ? 'selected' : ''}>Yapılıyor</option>
+        <option value="done" ${task.status === 'done' ? 'selected' : ''}>Tamamlandı</option>
+      `;
+      statusSelect.addEventListener("change", (e) => {
+        e.stopPropagation();
+        updateTask(task.id, { status: e.target.value });
       });
+      actionsEl.appendChild(statusSelect);
+      
+      // Sil butonu
+      const deleteBtn = document.createElement("button");
+      deleteBtn.textContent = "×";
+      deleteBtn.style.cssText = "padding: 4px 8px; font-size: 16px; color: #dc2626; background: #fee2e2; border: none; border-radius: 4px; cursor: pointer;";
+      deleteBtn.title = "Görevi sil";
+      deleteBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (confirm(`"${task.title}" görevini silmek istediğinize emin misiniz?`)) {
+          deleteTask(task.id);
+        }
+      });
+      actionsEl.appendChild(deleteBtn);
+      
+      cardEl.appendChild(actionsEl);
       
       return cardEl;
     }
 
+    // Yeni görev ekle
+    function addTask(taskData) {
+      const newTask = {
+        id: Date.now(),
+        title: taskData.title,
+        description: taskData.description || "",
+        status: taskData.status || "todo",
+        assignee: taskData.assignee || "",
+        priority: taskData.priority || "medium",
+        createdAt: new Date().toISOString()
+      };
+      taskBoardData.push(newTask);
+      saveTasks(taskBoardData);
+      renderTaskBoard();
+      return newTask;
+    }
+    
+    // Görevi güncelle (status değişimi vs.)
+    function updateTask(taskId, updates) {
+      const index = taskBoardData.findIndex(t => t.id === taskId);
+      if (index === -1) return false;
+      taskBoardData[index] = { ...taskBoardData[index], ...updates };
+      saveTasks(taskBoardData);
+      renderTaskBoard();
+      return true;
+    }
+    
+    // Görevi sil
+    function deleteTask(taskId) {
+      taskBoardData = taskBoardData.filter(t => t.id !== taskId);
+      saveTasks(taskBoardData);
+      renderTaskBoard();
+    }
+    
     // Yeni görev butonu click eventi
     if (taskBoardAddBtn) {
       taskBoardAddBtn.addEventListener("click", () => {
-        console.log("Yeni görev ekleme modal'ı açılacak");
-        // TODO: Yeni görev ekleme modal'ı implementasyonu
-        alert("Yeni görev ekleme özelliği yakında eklenecek!\n\nŞu an dummy verilerle çalışıyoruz.");
+        const title = prompt("Görev başlığı:");
+        if (!title || !title.trim()) return;
+        
+        const description = prompt("Görev açıklaması (opsiyonel):");
+        const assignee = prompt("Sorumlu email (opsiyonel):");
+        
+        addTask({
+          title: title.trim(),
+          description: description ? description.trim() : "",
+          assignee: assignee ? assignee.trim() : "",
+          status: "todo",
+          priority: "medium"
+        });
+        
+        alert("Görev başarıyla eklendi!");
       });
     }
 

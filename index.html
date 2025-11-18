@@ -644,7 +644,7 @@
 /* Takvim + sağ panel hizası (3 kolonlu: Takvim | Gün Detayı | Görev Panosu) */
 .container.calendar-layout {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 1.5fr; /* Takvim 40%, Gün Detayı 30%, Görevler 30% */
+  grid-template-columns: 1.8fr 1fr 1.2fr; /* Takvim 45%, Gün Detayı 25%, Görevler 30% */
   gap: 24px;
   align-items: flex-start;
   width: 100%;
@@ -663,7 +663,7 @@
 /* Geniş ekranlar (1440px - 1919px) */
 @media (min-width: 1440px) and (max-width: 1919px) {
   .container.calendar-layout {
-    grid-template-columns: 2fr 1.5fr 1.5fr;
+    grid-template-columns: 1.8fr 1fr 1.2fr;
   }
 }
 
@@ -1203,16 +1203,23 @@
 }
 
 .task-board-container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 kolon yan yana */
   gap: 12px;
   padding: 10px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   max-height: calc(100vh - 180px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: hidden; /* Container scroll etmeyecek, kolonlar scroll edecek */
+}
+
+/* Tablet ve küçük ekranlarda tek kolon */
+@media (max-width: 1200px) {
+  .task-board-container {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
 }
 
 .task-board-column {
@@ -1223,17 +1230,20 @@
   border-radius: 8px;
   padding: 10px;
   border: 1px solid #e5e7eb;
+  min-height: 0; /* Flexbox scroll için gerekli */
+  overflow: hidden; /* Column kendisi scroll edecek */
 }
 
 .task-board-column-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  flex-shrink: 0; /* Header sabit kalacak */
 }
 
 .task-board-column-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #374151;
   display: flex;
@@ -1244,26 +1254,53 @@
 .task-board-column-count {
   background: #e5e7eb;
   color: #6b7280;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   padding: 2px 6px;
   border-radius: 12px;
+  min-width: 20px;
+  text-align: center;
 }
 
 .task-board-cards {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  overflow-y: auto; /* Her kolon kendi scroll'u */
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
+  padding-right: 4px;
+}
+
+/* Kolon scroll bar stilini iyileştir */
+.task-board-cards::-webkit-scrollbar {
+  width: 6px;
+}
+
+.task-board-cards::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 3px;
+}
+
+.task-board-cards::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.task-board-cards::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }
 
 .task-board-card {
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-  padding: 10px;
+  padding: 8px;
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
 }
 
 .task-board-card:hover {
@@ -1273,18 +1310,22 @@
 }
 
 .task-board-card-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: #111827;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .task-board-card-description {
-  font-size: 12px;
+  font-size: 11px;
   color: #6b7280;
   line-height: 1.4;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -1295,30 +1336,37 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding-top: 8px;
+  gap: 6px;
+  padding-top: 6px;
   border-top: 1px solid #f3f4f6;
+  flex-wrap: wrap;
 }
 
 .task-board-card-assignee {
-  font-size: 11px;
+  font-size: 10px;
   color: #6b7280;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 .task-board-card-assignee::before {
   content: "👤";
-  font-size: 12px;
+  font-size: 11px;
+  flex-shrink: 0;
 }
 
 .task-board-card-priority {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
-  padding: 2px 6px;
+  padding: 2px 5px;
   border-radius: 4px;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .task-board-card-priority.high {
@@ -8150,8 +8198,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     ];
 
     const taskBoardColumns = [
-      { id: "todo", title: "Yapılacak", status: "todo" },
-      { id: "in-progress", title: "Devam Ediyor", status: "in-progress" },
+      { id: "todo", title: "Bekliyor", status: "todo" },
+      { id: "in-progress", title: "Yapılıyor", status: "in-progress" },
       { id: "done", title: "Tamamlandı", status: "done" }
     ];
 

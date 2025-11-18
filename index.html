@@ -139,14 +139,31 @@
     }
     #appRoot {
       width: 100%;
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 10px 14px 16px;
+      max-width: none; /* Geniş ekranlarda sınırsız genişlik */
+      margin: 0;
+      padding: 10px 20px 16px;
       display: flex;
       flex-direction: column;
       gap: 8px;
       min-height: 100vh;
     }
+
+    /* Geniş ekranlarda padding artır */
+    @media (min-width: 1440px) {
+      #appRoot {
+        padding: 10px 32px 16px;
+      }
+    }
+
+    /* Orta ekranlarda eski davranışı koru */
+    @media (max-width: 1280px) {
+      #appRoot {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 10px 14px 16px;
+      }
+    }
+
 #viewCalendar {
   width: 100%;
   display: block;
@@ -627,20 +644,45 @@
 /* Takvim + sağ panel hizası (3 kolonlu: Takvim | Gün Detayı | Görev Panosu) */
 .container.calendar-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr) 340px;
-  gap: 20px;
+  grid-template-columns: 2fr 1.5fr 1.5fr; /* Takvim 40%, Gün Detayı 30%, Görevler 30% */
+  gap: 24px;
   align-items: flex-start;
   width: 100%;
   min-height: 0;
+  justify-content: flex-start;
 }
 
-/* Mobilde görev panosunu gizle */
-@media (max-width: 1280px) {
+/* Çok geniş ekranlarda (1920px+) maximum genişlik sınırı */
+@media (min-width: 1920px) {
+  .container.calendar-layout {
+    max-width: 1800px;
+    margin: 0; /* Sola dayalı */
+  }
+}
+
+/* Geniş ekranlar (1440px - 1919px) */
+@media (min-width: 1440px) and (max-width: 1919px) {
+  .container.calendar-layout {
+    grid-template-columns: 2fr 1.5fr 1.5fr;
+  }
+}
+
+/* Orta ekranlar - 2 kolon (1024px - 1439px) */
+@media (max-width: 1439px) {
   .container.calendar-layout {
     grid-template-columns: minmax(0, 2fr) minmax(0, 1.1fr);
+    gap: 20px;
   }
   .task-board-panel {
     display: none !important;
+  }
+}
+
+/* Küçük ekranlar - tek kolon */
+@media (max-width: 900px) {
+  .container.calendar-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
 .calendar-shell {
@@ -1088,8 +1130,15 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-width: 360px;
+  max-width: none; /* Geniş ekranlarda sınırsız */
   width: 100%;
+}
+
+/* Orta ekranlarda max-width sınırı */
+@media (max-width: 1439px) {
+  .summary-shell {
+    max-width: 360px;
+  }
 }
 .summary-shell .form {
   display: flex;
@@ -1109,8 +1158,15 @@
   flex-direction: column;
   gap: 6px;
   width: 100%;
-  max-width: 340px;
+  max-width: none; /* Geniş ekranlarda sınırsız */
   height: fit-content;
+}
+
+/* Orta ekranlarda max-width sınırı */
+@media (max-width: 1439px) {
+  .task-board-panel {
+    max-width: 340px;
+  }
 }
 
 .task-board-header {
@@ -3078,11 +3134,6 @@
       background: #475569;
     }
 
-    @media (max-width: 900px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
-    }
     @media (max-width: 780px) {
       .modal-columns {
         grid-template-columns: 1fr;

@@ -21,40 +21,35 @@ router.post("/", requireAuth, (req, res) => {
   try {
     console.log("[POST /tasks] Yeni görev oluşturuluyor, body:", req.body);
     
-    const {
-      title = "",
-      description = "",
-      note = "",
-      status = "todo",
-      assignee = "",
-      priority = "medium",
-      dueDate = null,
-      owner_id = null
-    } = req.body;
+    const { title, description, note, dueDate, owner_id, assignee, priority, status = 'todo' } = req.body;
 
     if (!title || !title.trim()) {
       console.warn("[POST /tasks] Başlık eksik");
       return res.status(400).json({ error: "Görev başlığı gerekli." });
     }
 
+    const due_date = dueDate || null;
+
     const normalizedStatus = ["todo", "in-progress", "done"].includes(status)
       ? status
       : "todo";
 
     const insertStmt = db.prepare(`
-      INSERT INTO tasks (user_id, title, description, note, status, assignee, priority, due_date, owner_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO tasks 
+      (user_id, title, description, note, status, assignee, priority, due_date, owner_id, created_at, updated_at) 
+      VALUES 
+      (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
     `);
 
     const result = insertStmt.run(
       req.userId,
       title.trim(),
-      description || "",
-      note || "",
+      description || null,
+      note || null,
       normalizedStatus,
-      assignee || "",
-      priority || "medium",
-      dueDate || null,
+      assignee || null,
+      priority || null,
+      due_date,
       owner_id || null
     );
 

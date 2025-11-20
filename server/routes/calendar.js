@@ -306,18 +306,20 @@ router.delete("/reset", requireAuth, (req, res) => {
   let deletedEntries = 0;
   if (scope !== "highlights") {
     const filter = clauses[scope];
+    // Admin TÜM kullanıcıların kayıtlarını siler
     const stmt = db.prepare(
-      `DELETE FROM entries WHERE user_id = ? AND ${filter}`
+      `DELETE FROM entries WHERE ${filter}`
     );
-    const info = stmt.run(req.userId);
+    const info = stmt.run();
     deletedEntries = info.changes || 0;
   }
 
   let deletedHighlights = 0;
   if (scope === "highlights" || scope === "all") {
+    // Admin TÜM kullanıcıların gün renklerini siler
     const info = db
-      .prepare("DELETE FROM day_flags WHERE user_id = ?")
-      .run(req.userId);
+      .prepare("DELETE FROM day_flags")
+      .run();
     deletedHighlights = info.changes || 0;
   }
 

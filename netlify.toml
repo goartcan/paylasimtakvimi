@@ -4,8 +4,8 @@
 [build]
   # Frontend için build komutu yok (Vanilla JS), sadece dosyaları publish et
   publish = "."
-  # Backend server/ klasörünü ignore et
-  ignore = "git diff --quiet HEAD^ HEAD server/"
+  # Backend server/ klasörünü ignore et (KAPALI - her değişiklikte deploy et)
+  # ignore = "git diff --quiet HEAD^ HEAD server/"
 
 # Netlify Functions için (opsiyonel - şu an kullanılmıyor)
 [build.environment]

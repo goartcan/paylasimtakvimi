@@ -157,4 +157,22 @@ ensureTable("notifications", `
   )
 `);
 
+// Runtime'da tasks tablosunun varlığını garanti altına al (Görev Panosu)
+ensureTable("tasks", `
+  CREATE TABLE tasks (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT,
+    status TEXT NOT NULL DEFAULT 'todo',
+    column_name TEXT NOT NULL DEFAULT 'todo',
+    order_index INTEGER NOT NULL DEFAULT 0,
+    owner_id INTEGER,
+    created_by INTEGER NOT NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    FOREIGN KEY (owner_id) REFERENCES users(id),
+    FOREIGN KEY (created_by) REFERENCES users(id)
+  )
+`);
+
 export default db;

@@ -7,6 +7,7 @@ import calendarRoutes from "./routes/calendar.js";
 import importRoutes from "./routes/import.js";
 import usersRoutes from "./routes/users.js";
 import notificationsRoutes from "./routes/notifications.js";
+import tasksRoutes from "./routes/tasks.js";
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use("/calendar", calendarRoutes);
 app.use("/import", importRoutes);
 app.use("/users", usersRoutes);
 app.use("/notifications", notificationsRoutes);
+app.use("/tasks", tasksRoutes);
 
 app.get("/", (_req, res) => {
   res.json({ ok: true, message: "Paylaşım Takvimi API" });

@@ -8875,100 +8875,33 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
      * Şimdilik localStorage kullanıyoruz.
      */
     
-    // localStorage'dan görevleri yükle
-    function loadTasks() {
-      const stored = safeLocalStorageGet('taskBoardData', null);
-      if (stored) {
-        try {
-          const tasks = JSON.parse(stored);
-          // Veri bütünlüğü kontrolü: status alanı eksik olan görevleri düzelt
-          return tasks.map(task => ({
-            ...task,
-            status: task.status || "todo" // status eksikse default olarak "todo" yap
-          }));
-        } catch (e) {
-          console.error('Görevler yüklenirken hata:', e);
-          showErrorToast('Görevler okunamadı');
-          return getDefaultTasks();
-        }
-      }
-      return getDefaultTasks();
-    }
-    
-    // Görevleri localStorage'a kaydet
-    function saveTasks(tasks) {
+    // API'den görevleri yükle
+    async function loadTasksFromAPI() {
       try {
-        const success = safeLocalStorageSet('taskBoardData', JSON.stringify(tasks));
-        if (!success) {
-          console.error('[saveTasks] Kayıt başarısız');
-        }
-      } catch (err) {
-        console.error('[saveTasks] JSON stringify hatası:', err);
-        showErrorToast('Görevler kaydedilemedi');
+        const tasks = await apiFetch('/tasks', { method: 'GET' });
+        // Backend'den gelen görevleri frontend formatına çevir
+        return tasks.map(task => ({
+          id: task.id,
+          title: task.title,
+          description: task.description || "",
+          note: "", // Backend'de note alanı yok şimdilik
+          status: task.columnName || task.status || "todo",
+          assignee: task.ownerEmail || "Belirlenmedi",
+          owner_id: task.ownerId || null,
+          priority: "medium", // Backend'de priority yok, default medium
+          dueDate: null, // Backend'de dueDate yok şimdilik
+          createdAt: task.createdAt ? new Date(task.createdAt).toISOString() : new Date().toISOString()
+        }));
+      } catch (e) {
+        console.error('Görevler yüklenirken hata:', e);
+        showErrorToast('Görevler yüklenemedi');
+        return [];
       }
     }
     
-    // İlk kurulum için örnek görevler
-    function getDefaultTasks() {
-      return [
-        {
-          id: Date.now() + 1,
-          title: "Instagram görseli tasarla",
-          description: "Kasım ayı kampanya görselleri için 3 adet post tasarımı hazırla",
-          status: "todo",
-          assignee: "designer@goart.com",
-          priority: "high",
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: Date.now() + 2,
-          title: "Blog yazısı yaz",
-          description: "Sosyal medya stratejileri hakkında 1500 kelimelik blog yazısı",
-          status: "todo",
-          assignee: "editor@goart.com",
-          priority: "medium",
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: Date.now() + 3,
-          title: "Video montajı",
-          description: "YouTube için ürün tanıtım videosu hazırla, 2-3 dakika",
-          status: "in-progress",
-          assignee: "video@goart.com",
-          priority: "high",
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: Date.now() + 4,
-          title: "Analitik raporu hazırla",
-          description: "Ekim ayı sosyal medya performans raporu",
-          status: "in-progress",
-          assignee: "analyst@goart.com",
-        priority: "medium",
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: Date.now() + 5,
-        title: "LinkedIn paylaşımı",
-        description: "Şirket başarı hikayesi paylaşımı hazırla",
-        status: "done",
-        assignee: "community@goart.com",
-        priority: "low",
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: Date.now() + 6,
-        title: "Email kampanyası",
-        description: "Haftalık newsletter tasarımı ve içerik yazımı",
-        status: "done",
-        assignee: "marketing@goart.com",
-        priority: "medium",
-        createdAt: new Date().toISOString()
-      }
-    ];
-    }
+    // localStorage desteği kaldırıldı - tüm görevler backend'de
     
-    let taskBoardData = loadTasks();
+    let taskBoardData = []; // API'den yüklenecek
 
     const taskBoardColumns = [
       { id: "todo", title: "Bekliyor", status: "todo" },
@@ -9085,9 +9018,9 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         <option value="in-progress" ${task.status === 'in-progress' ? 'selected' : ''}>Yapılıyor</option>
         <option value="done" ${task.status === 'done' ? 'selected' : ''}>Tamamlandı</option>
       `;
-      statusSelect.addEventListener("change", (e) => {
+      statusSelect.addEventListener("change", async (e) => {
         e.stopPropagation();
-        updateTask(task.id, { status: e.target.value });
+        await updateTask(task.id, { status: e.target.value });
       });
       actionsEl.appendChild(statusSelect);
       
@@ -9105,49 +9038,77 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       return cardEl;
     }
 
-    // Yeni görev ekle
-    function addTask(taskData) {
-      const newTask = {
-        id: Date.now(),
-        title: taskData.title,
-        description: taskData.description || "",
-        note: taskData.note || "",
-        dueDate: taskData.dueDate || null,
-        status: taskData.status || "todo",
-        assignee: taskData.assignee || "",
-        owner_id: taskData.owner_id || null,
-        priority: taskData.priority || "medium",
-        createdAt: new Date().toISOString()
-      };
-      taskBoardData.push(newTask);
-      saveTasks(taskBoardData);
-      renderTaskBoard();
-      return newTask;
+    // Yeni görev ekle (API)
+    async function addTask(taskData) {
+      try {
+        const payload = {
+          title: taskData.title,
+          description: taskData.description || "",
+          columnName: taskData.status || "todo",
+          ownerId: taskData.owner_id || null
+        };
+        
+        const newTask = await apiFetch('/tasks', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        
+        // Başarılı - görevleri yeniden yükle
+        await refreshTaskBoard();
+        showSuccessToast('Görev oluşturuldu');
+        return newTask;
+      } catch (err) {
+        console.error('[addTask] Hata:', err);
+        showErrorToast('Görev oluşturulamadı');
+        return null;
+      }
     }
     
-    // Görevi güncelle (status değişimi vs.)
-    function updateTask(taskId, updates) {
-      const index = taskBoardData.findIndex(t => t.id === taskId);
-      if (index === -1) return false;
-      
-      // undefined değerleri filtreleyerek güncelle (mevcut değerleri korumak için)
-      const cleanedUpdates = {};
-      Object.keys(updates).forEach(key => {
-        if (updates[key] !== undefined) {
-          cleanedUpdates[key] = updates[key];
+    // Görevi güncelle (API)
+    async function updateTask(taskId, updates) {
+      try {
+        // Frontend formatını backend formatına çevir
+        const payload = {};
+        if (updates.title !== undefined) payload.title = updates.title;
+        if (updates.description !== undefined) payload.description = updates.description;
+        if (updates.status !== undefined) {
+          payload.columnName = updates.status;
+          payload.status = updates.status;
         }
-      });
-      
-      taskBoardData[index] = { ...taskBoardData[index], ...cleanedUpdates };
-      saveTasks(taskBoardData);
-      renderTaskBoard();
-      return true;
+        if (updates.owner_id !== undefined) payload.ownerId = updates.owner_id;
+        
+        await apiFetch(`/tasks/${taskId}`, {
+          method: 'PATCH',
+          body: JSON.stringify(payload)
+        });
+        
+        // Başarılı - görevleri yeniden yükle
+        await refreshTaskBoard();
+        return true;
+      } catch (err) {
+        console.error('[updateTask] Hata:', err);
+        showErrorToast('Görev güncellenemedi');
+        return false;
+      }
     }
     
-    // Görevi sil
-    function deleteTask(taskId) {
-      taskBoardData = taskBoardData.filter(t => t.id !== taskId);
-      saveTasks(taskBoardData);
+    // Görevi sil (API)
+    async function deleteTask(taskId) {
+      try {
+        await apiFetch(`/tasks/${taskId}`, { method: 'DELETE' });
+        
+        // Başarılı - görevleri yeniden yükle
+        await refreshTaskBoard();
+        showSuccessToast('Görev silindi');
+      } catch (err) {
+        console.error('[deleteTask] Hata:', err);
+        showErrorToast('Görev silinemedi');
+      }
+    }
+    
+    // Task board'u yenile (API'den görevleri çek ve render et)
+    async function refreshTaskBoard() {
+      taskBoardData = await loadTasksFromAPI();
       renderTaskBoard();
     }
     
@@ -9256,7 +9217,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     // NOT: populateTaskOwnerSelect() fonksiyonu artık loadResponsibleUsers() yanında tanımlı (satır ~5300 civarı)
     
     // Görev kaydetme fonksiyonu
-    function saveTaskFromModal() {
+    async function saveTaskFromModal() {
       // Zorunlu alanları kontrol et
       const taskName = taskNameInput.value.trim();
       const dueDate = taskDueDateInput.value;
@@ -9317,7 +9278,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           const ownerChanged = selectedOwnerId !== null && selectedOwnerId !== previousOwnerId;
           
           // Mevcut görevi güncelle
-          updateTask(currentEditingTaskId, taskData);
+          await updateTask(currentEditingTaskId, taskData);
           
           // Güncellenmiş görevi kontrol et
           const updatedTask = taskBoardData.find(t => t.id === currentEditingTaskId);
@@ -9334,10 +9295,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
             });
           }
           
-          showSuccessToast("Görev başarıyla güncellendi!");
+          // Toast mesajı updateTask içinde gösteriliyor
         } else {
           // Yeni görev ekle
-          const newTask = addTask(taskData);
+          const newTask = await addTask(taskData);
           
           // Sorumlu kişi varsa bildirim gönder
           if (selectedOwnerId !== null && ownerEmail && newTask) {
@@ -9349,8 +9310,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
               dayKey: null
             });
           }
-          
-          showSuccessToast("Görev başarıyla eklendi!");
+          // Toast mesajı addTask içinde gösteriliyor
         }
         
         closeTaskModal();
@@ -9410,7 +9370,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     
     // Sil butonu - görevi sil ve modalı kapat
     if (taskDeleteBtn) {
-      taskDeleteBtn.addEventListener("click", () => {
+      taskDeleteBtn.addEventListener("click", async () => {
         if (!currentEditingTaskId) return;
         
         // Silme onayı iste
@@ -9418,8 +9378,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         if (!task) return;
         
         if (confirm(`"${task.title}" görevini silmek istediğinize emin misiniz?`)) {
-          deleteTask(currentEditingTaskId);
-          showSuccessToast("Görev başarıyla silindi!");
+          await deleteTask(currentEditingTaskId);
+          // Toast mesajı deleteTask içinde gösteriliyor
           closeTaskModal();
         }
       });
@@ -9458,7 +9418,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       currentMonth = today.getMonth();
       ensureRangeInputsInitialized();
       renderCalendar();
-      renderTaskBoard(); // Görev panosunu render et
+      await refreshTaskBoard(); // Görev panosunu API'den yükle ve render et
       if (authToken) {
         try {
           const meResponse = await apiFetch("/auth/me");

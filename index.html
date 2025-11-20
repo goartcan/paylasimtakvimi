@@ -8877,100 +8877,72 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
      * Şimdilik localStorage kullanıyoruz.
      */
     
-    // localStorage'dan görevleri yükle
-    function loadTasks() {
-      const stored = safeLocalStorageGet('taskBoardData', null);
-      if (stored) {
-        try {
-          const tasks = JSON.parse(stored);
-          // Veri bütünlüğü kontrolü: status alanı eksik olan görevleri düzelt
-          return tasks.map(task => ({
-            ...task,
-            status: task.status || "todo" // status eksikse default olarak "todo" yap
-          }));
-        } catch (e) {
-          console.error('Görevler yüklenirken hata:', e);
-          showErrorToast('Görevler okunamadı');
-          return getDefaultTasks();
-        }
-      }
-      return getDefaultTasks();
-    }
-    
-    // Görevleri localStorage'a kaydet
-    function saveTasks(tasks) {
+    // Server'dan görevleri yükle (Artık localStorage değil, backend API kullanılıyor)
+    async function loadTasksFromServer() {
       try {
-        const success = safeLocalStorageSet('taskBoardData', JSON.stringify(tasks));
-        if (!success) {
-          console.error('[saveTasks] Kayıt başarısız');
+        // Kullanıcı giriş yapmamışsa boş dizi döndür
+        if (!authToken) {
+          return [];
         }
+
+        const response = await apiFetch("/tasks");
+        const data = await response.json();
+        
+        // Veri bütünlüğü kontrolü: status alanı eksik olan görevleri düzelt
+        return data.map(task => ({
+          ...task,
+          status: task.status || "todo"
+        }));
       } catch (err) {
-        console.error('[saveTasks] JSON stringify hatası:', err);
-        showErrorToast('Görevler kaydedilemedi');
+        console.warn('[loadTasksFromServer] Görevler yüklenemedi:', err.message);
+        return [];
       }
     }
     
-    // İlk kurulum için örnek görevler
-    function getDefaultTasks() {
-      return [
-        {
-          id: Date.now() + 1,
-          title: "Instagram görseli tasarla",
-          description: "Kasım ayı kampanya görselleri için 3 adet post tasarımı hazırla",
-          status: "todo",
-          assignee: "designer@goart.com",
-          priority: "high",
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: Date.now() + 2,
-          title: "Blog yazısı yaz",
-          description: "Sosyal medya stratejileri hakkında 1500 kelimelik blog yazısı",
-          status: "todo",
-          assignee: "editor@goart.com",
-          priority: "medium",
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: Date.now() + 3,
-          title: "Video montajı",
-          description: "YouTube için ürün tanıtım videosu hazırla, 2-3 dakika",
-          status: "in-progress",
-          assignee: "video@goart.com",
-          priority: "high",
-          createdAt: new Date().toISOString()
-        },
-        {
-          id: Date.now() + 4,
-          title: "Analitik raporu hazırla",
-          description: "Ekim ayı sosyal medya performans raporu",
-          status: "in-progress",
-          assignee: "analyst@goart.com",
-        priority: "medium",
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: Date.now() + 5,
-        title: "LinkedIn paylaşımı",
-        description: "Şirket başarı hikayesi paylaşımı hazırla",
-        status: "done",
-        assignee: "community@goart.com",
-        priority: "low",
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: Date.now() + 6,
-        title: "Email kampanyası",
-        description: "Haftalık newsletter tasarımı ve içerik yazımı",
-        status: "done",
-        assignee: "marketing@goart.com",
-        priority: "medium",
-        createdAt: new Date().toISOString()
+    // Yeni görev oluştur (Backend'e kaydet)
+    async function createTask(taskData) {
+      try {
+        const response = await apiFetch("/tasks", {
+          method: "POST",
+          body: JSON.stringify(taskData)
+        });
+        return await response.json();
+      } catch (err) {
+        console.error('[createTask] Hata:', err);
+        showErrorToast(err.message || 'Görev oluşturulamadı');
+        throw err;
       }
-    ];
     }
     
-    let taskBoardData = loadTasks();
+    // Görevi güncelle (Backend'e kaydet)
+    async function updateTask(taskId, updates) {
+      try {
+        const response = await apiFetch(`/tasks/${taskId}`, {
+          method: "PUT",
+          body: JSON.stringify(updates)
+        });
+        return await response.json();
+      } catch (err) {
+        console.error('[updateTask] Hata:', err);
+        showErrorToast(err.message || 'Görev güncellenemedi');
+        throw err;
+      }
+    }
+    
+    // Görevi sil (Backend'den sil)
+    async function deleteTask(taskId) {
+      try {
+        await apiFetch(`/tasks/${taskId}`, {
+          method: "DELETE"
+        });
+      } catch (err) {
+        console.error('[deleteTask] Hata:', err);
+        showErrorToast(err.message || 'Görev silinemedi');
+        throw err;
+      }
+    }
+    
+    let taskBoardData = [];
 
     const taskBoardColumns = [
       { id: "todo", title: "Bekliyor", status: "todo" },
@@ -9087,9 +9059,14 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         <option value="in-progress" ${task.status === 'in-progress' ? 'selected' : ''}>Yapılıyor</option>
         <option value="done" ${task.status === 'done' ? 'selected' : ''}>Tamamlandı</option>
       `;
-      statusSelect.addEventListener("change", (e) => {
+      statusSelect.addEventListener("change", async (e) => {
         e.stopPropagation();
-        updateTask(task.id, { status: e.target.value });
+        try {
+          await updateTask(task.id, { status: e.target.value });
+          await refreshTaskBoard();
+        } catch (err) {
+          // Hata zaten updateTask içinde gösterildi
+        }
       });
       actionsEl.appendChild(statusSelect);
       
@@ -9107,49 +9084,9 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       return cardEl;
     }
 
-    // Yeni görev ekle
-    function addTask(taskData) {
-      const newTask = {
-        id: Date.now(),
-        title: taskData.title,
-        description: taskData.description || "",
-        note: taskData.note || "",
-        dueDate: taskData.dueDate || null,
-        status: taskData.status || "todo",
-        assignee: taskData.assignee || "",
-        owner_id: taskData.owner_id || null,
-        priority: taskData.priority || "medium",
-        createdAt: new Date().toISOString()
-      };
-      taskBoardData.push(newTask);
-      saveTasks(taskBoardData);
-      renderTaskBoard();
-      return newTask;
-    }
-    
-    // Görevi güncelle (status değişimi vs.)
-    function updateTask(taskId, updates) {
-      const index = taskBoardData.findIndex(t => t.id === taskId);
-      if (index === -1) return false;
-      
-      // undefined değerleri filtreleyerek güncelle (mevcut değerleri korumak için)
-      const cleanedUpdates = {};
-      Object.keys(updates).forEach(key => {
-        if (updates[key] !== undefined) {
-          cleanedUpdates[key] = updates[key];
-        }
-      });
-      
-      taskBoardData[index] = { ...taskBoardData[index], ...cleanedUpdates };
-      saveTasks(taskBoardData);
-      renderTaskBoard();
-      return true;
-    }
-    
-    // Görevi sil
-    function deleteTask(taskId) {
-      taskBoardData = taskBoardData.filter(t => t.id !== taskId);
-      saveTasks(taskBoardData);
+    // Görevleri yeniden yükle ve ekranı güncelle
+    async function refreshTaskBoard() {
+      taskBoardData = await loadTasksFromServer();
       renderTaskBoard();
     }
     
@@ -9258,7 +9195,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     // NOT: populateTaskOwnerSelect() fonksiyonu artık loadResponsibleUsers() yanında tanımlı (satır ~5300 civarı)
     
     // Görev kaydetme fonksiyonu
-    function saveTaskFromModal() {
+    async function saveTaskFromModal() {
       // Zorunlu alanları kontrol et
       const taskName = taskNameInput.value.trim();
       const dueDate = taskDueDateInput.value;
@@ -9319,10 +9256,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           const ownerChanged = selectedOwnerId !== null && selectedOwnerId !== previousOwnerId;
           
           // Mevcut görevi güncelle
-          updateTask(currentEditingTaskId, taskData);
-          
-          // Güncellenmiş görevi kontrol et
-          const updatedTask = taskBoardData.find(t => t.id === currentEditingTaskId);
+          const updatedTask = await updateTask(currentEditingTaskId, taskData);
+          await refreshTaskBoard();
           console.log("[saveTaskFromModal] Güncellenen görev:", updatedTask);
           
           // Sorumlu kişi değiştiyse bildirim gönder
@@ -9339,7 +9274,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           showSuccessToast("Görev başarıyla güncellendi!");
         } else {
           // Yeni görev ekle
-          const newTask = addTask(taskData);
+          const newTask = await createTask(taskData);
+          await refreshTaskBoard();
           
           // Sorumlu kişi varsa bildirim gönder
           if (selectedOwnerId !== null && ownerEmail && newTask) {
@@ -9420,9 +9356,14 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         if (!task) return;
         
         if (confirm(`"${task.title}" görevini silmek istediğinize emin misiniz?`)) {
-          deleteTask(currentEditingTaskId);
-          showSuccessToast("Görev başarıyla silindi!");
-          closeTaskModal();
+          try {
+            await deleteTask(currentEditingTaskId);
+            await refreshTaskBoard();
+            showSuccessToast("Görev başarıyla silindi!");
+            closeTaskModal();
+          } catch (err) {
+            // Hata zaten deleteTask içinde gösterildi
+          }
         }
       });
     }
@@ -9471,6 +9412,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           await loadEntriesFromServer();
           await loadResponsibleUsers();
           await ensureColorDescriptionsLoaded();
+          await refreshTaskBoard(); // Görevleri backend'den yükle
           hideLoginOverlay();
         } catch (err) {
           console.error(err);
@@ -9511,6 +9453,9 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           // Arka planda sessizce verileri yenile (Admin başka kullanıcı görüntülüyorsa onun verilerini yükle)
           const targetUserId = adminSelectedUserId || null;
           await loadEntriesFromServer(targetUserId);
+
+          // Görevleri de yenile (Görev Panosu senkronizasyonu)
+          await refreshTaskBoard();
 
         } catch (err) {
           // Hata olursa sessizce logla, kullanıcıyı rahatsız etme

@@ -36,9 +36,9 @@ router.post("/", requireAuth, (req, res) => {
 
     const insertStmt = db.prepare(`
       INSERT INTO tasks 
-      (user_id, title, description, note, status, assignee, priority, due_date, owner_id, created_at, updated_at) 
+      (user_id, title, description, note, status, assignee, priority, due_date, owner_id, created_by, created_at, updated_at) 
       VALUES 
-      (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+      (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
     `);
 
     const result = insertStmt.run(
@@ -50,7 +50,8 @@ router.post("/", requireAuth, (req, res) => {
       assignee || null,
       priority || null,
       due_date,
-      owner_id || null
+      owner_id || null,
+      req.userId  // created_by = user_id (kim oluşturdu)
     );
 
     const inserted = db

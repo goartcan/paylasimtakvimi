@@ -25,7 +25,8 @@ export function runAutoMigrations() {
       { name: 'due_date', sql: 'ALTER TABLE tasks ADD COLUMN due_date TEXT' },
       { name: 'owner_id', sql: 'ALTER TABLE tasks ADD COLUMN owner_id INTEGER REFERENCES users(id)' },
       { name: 'assignee', sql: 'ALTER TABLE tasks ADD COLUMN assignee TEXT' },
-      { name: 'priority', sql: 'ALTER TABLE tasks ADD COLUMN priority TEXT' }
+      { name: 'priority', sql: 'ALTER TABLE tasks ADD COLUMN priority TEXT' },
+      { name: 'created_by', sql: 'ALTER TABLE tasks ADD COLUMN created_by INTEGER' }
     ];
     
     let addedCount = 0;

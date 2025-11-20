@@ -66,7 +66,7 @@ router.post("/", requireAuth, (req, res) => {
   }
 });
 
-// Görevi güncelle (Admin herhangi bir görevi, normal kullanıcı kendi görevini güncelleyebilir)
+// Görevi güncelle (Tüm kullanıcılar herhangi bir görevi güncelleyebilir)
 router.put("/:id", requireAuth, (req, res) => {
   try {
     const taskId = Number(req.params.id);
@@ -74,20 +74,8 @@ router.put("/:id", requireAuth, (req, res) => {
       return res.status(400).json({ error: "Geçersiz görev kimliği." });
     }
 
-    // Admin kontrolü
-    const user = db.prepare("SELECT role FROM users WHERE id = ?").get(req.userId);
-    const isAdmin = user && user.role === "admin";
-
-    let existing;
-    if (isAdmin) {
-      // Admin herhangi bir görevi güncelleyebilir
-      existing = db.prepare("SELECT * FROM tasks WHERE id = ?").get(taskId);
-    } else {
-      // Normal kullanıcı sadece kendisine atanan (assignee) veya sorumlu olduğu (owner_id) görevi güncelleyebilir
-      existing = db
-        .prepare("SELECT * FROM tasks WHERE id = ? AND (user_id = ? OR assignee = ? OR owner_id = ?)")
-        .get(taskId, req.userId, req.userId, req.userId);
-    }
+    // Görev var mı kontrol et (kullanıcı filtresi yok - herkes düzenleyebilir)
+    const existing = db.prepare("SELECT * FROM tasks WHERE id = ?").get(taskId);
 
     if (!existing) {
       return res.status(404).json({ error: "Görev bulunamadı." });
@@ -132,7 +120,7 @@ router.put("/:id", requireAuth, (req, res) => {
   }
 });
 
-// Görevi sil (Admin herhangi bir görevi, normal kullanıcı kendi görevini silebilir)
+// Görevi sil (Tüm kullanıcılar herhangi bir görevi silebilir)
 router.delete("/:id", requireAuth, (req, res) => {
   try {
     const taskId = Number(req.params.id);
@@ -140,20 +128,8 @@ router.delete("/:id", requireAuth, (req, res) => {
       return res.status(400).json({ error: "Geçersiz görev kimliği." });
     }
 
-    // Admin kontrolü
-    const user = db.prepare("SELECT role FROM users WHERE id = ?").get(req.userId);
-    const isAdmin = user && user.role === "admin";
-
-    let info;
-    if (isAdmin) {
-      // Admin herhangi bir görevi silebilir
-      info = db.prepare("DELETE FROM tasks WHERE id = ?").run(taskId);
-    } else {
-      // Normal kullanıcı sadece kendisine atanan veya sorumlu olduğu görevi silebilir
-      info = db
-        .prepare("DELETE FROM tasks WHERE id = ? AND (user_id = ? OR assignee = ? OR owner_id = ?)")
-        .run(taskId, req.userId, req.userId, req.userId);
-    }
+    // Görevi sil (kullanıcı filtresi yok - herkes silebilir)
+    const info = db.prepare("DELETE FROM tasks WHERE id = ?").run(taskId);
 
     if (info.changes === 0) {
       return res.status(404).json({ error: "Görev bulunamadı." });

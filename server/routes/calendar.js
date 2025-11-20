@@ -210,18 +210,8 @@ router.put("/:id", requireAuth, (req, res) => {
     return res.status(400).json({ error: "Geçersiz kayıt kimliği." });
   }
 
-  // Admin ise herhangi bir kaydı güncelleyebilir, normal kullanıcı sadece kendi kayıtlarını güncelleyebilir
-  const user = db.prepare("SELECT role FROM users WHERE id = ?").get(req.userId);
-  const isAdmin = user && user.role === "admin";
-
-  let existing;
-  if (isAdmin) {
-    // Admin herhangi bir kaydı güncelleyebilir
-    existing = db.prepare("SELECT * FROM entries WHERE id = ?").get(entryId);
-  } else {
-    // Normal kullanıcı sadece kendisine atanan (owner_id) veya oluşturduğu kayıtları güncelleyebilir
-    existing = db.prepare("SELECT * FROM entries WHERE id = ? AND (user_id = ? OR owner_id = ?)").get(entryId, req.userId, req.userId);
-  }
+  // Kayıt var mı kontrol et (kullanıcı filtresi yok - herkes düzenleyebilir)
+  const existing = db.prepare("SELECT * FROM entries WHERE id = ?").get(entryId);
 
   if (!existing) {
     return res.status(404).json({ error: "Kayıt bulunamadı." });
@@ -343,18 +333,8 @@ router.delete("/:id", requireAuth, (req, res) => {
     return res.status(400).json({ error: "Geçersiz kayıt kimliği." });
   }
 
-  // Admin ise herhangi bir kaydı silebilir, normal kullanıcı sadece kendi kayıtlarını silebilir
-  const user = db.prepare("SELECT role FROM users WHERE id = ?").get(req.userId);
-  const isAdmin = user && user.role === "admin";
-
-  let info;
-  if (isAdmin) {
-    // Admin herhangi bir kaydı silebilir
-    info = db.prepare("DELETE FROM entries WHERE id = ?").run(entryId);
-  } else {
-    // Normal kullanıcı sadece kendisine atanan veya oluşturduğu kayıtları silebilir
-    info = db.prepare("DELETE FROM entries WHERE id = ? AND (user_id = ? OR owner_id = ?)").run(entryId, req.userId, req.userId);
-  }
+  // Kaydı sil (kullanıcı filtresi yok - herkes silebilir)
+  const info = db.prepare("DELETE FROM entries WHERE id = ?").run(entryId);
 
   if (info.changes === 0) {
     return res.status(404).json({ error: "Kayıt bulunamadı." });

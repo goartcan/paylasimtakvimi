@@ -418,6 +418,21 @@
 .notification-mark-all-read:hover {
   background: #eff6ff;
 }
+.notification-clear-all {
+  font-size: 12px;
+  font-weight: 500;
+  color: #ef4444;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+  margin-left: 4px;
+}
+.notification-clear-all:hover {
+  background: #fef2f2;
+}
 .notification-list {
   display: flex;
   flex-direction: column;
@@ -2929,6 +2944,12 @@
     body.dark .notification-mark-all-read:hover {
       background: #1e3a8a;
     }
+    body.dark .notification-clear-all {
+      color: #f87171;
+    }
+    body.dark .notification-clear-all:hover {
+      background: #7f1d1d;
+    }
     body.dark .notification-item {
       background: #0b1120;
       border-color: transparent;
@@ -3458,6 +3479,7 @@
           <div class="notification-panel-header">
             <span>Bildirimler</span>
             <button type="button" class="notification-mark-all-read" id="markAllReadBtn" style="display:none;">Tümünü okundu yap</button>
+            <button type="button" class="notification-clear-all" id="clearAllNotificationsBtn" style="display:none;">Tümünü sil</button>
           </div>
           <div class="notification-list" id="notificationList"></div>
           <p class="notification-empty" id="notificationEmptyState">Bildirim yok</p>
@@ -4838,11 +4860,13 @@ function updateNotificationBadge() {
 function renderNotificationList() {
   if (!notificationListEl || !notificationEmptyState) return;
   const markAllReadBtn = document.getElementById("markAllReadBtn");
+  const clearAllBtn = document.getElementById("clearAllNotificationsBtn");
   notificationListEl.innerHTML = "";
   
   if (!notifications.length) {
     notificationEmptyState.style.display = "block";
     if (markAllReadBtn) markAllReadBtn.style.display = "none";
+    if (clearAllBtn) clearAllBtn.style.display = "none";
     return;
   }
   
@@ -4850,6 +4874,10 @@ function renderNotificationList() {
   const hasUnread = notifications.some(n => !n.isRead);
   if (markAllReadBtn) {
     markAllReadBtn.style.display = hasUnread ? "block" : "none";
+  }
+  // "Tümünü sil" butonu her zaman görünür (bildirim varsa)
+  if (clearAllBtn) {
+    clearAllBtn.style.display = "block";
   }
   
   notifications.forEach((notification) => {
@@ -5128,6 +5156,44 @@ async function markAllNotificationsAsRead() {
         writeNotificationsForEmail(email, notifications);
       }
     }
+  }
+}
+
+// Tüm bildirimleri sil (localStorage + backend)
+async function clearAllNotifications() {
+  if (!notifications.length) return;
+  
+  // Kullanıcıya onay sor (yanlışlıkla silmeyi önle)
+  if (!confirm("Tüm bildirimler silinecek. Emin misiniz?")) {
+    return;
+  }
+  
+  // Local state'i temizle
+  notifications = [];
+  
+  // UI'yi güncelle
+  updateNotificationBadge();
+  renderNotificationList();
+  
+  // localStorage'dan temizle
+  const email = getCurrentUserEmail();
+  if (email) {
+    try {
+      localStorage.removeItem(`notifications_${email}`);
+    } catch (err) {
+      console.error('[clearAllNotifications] localStorage temizleme hatası:', err);
+    }
+  }
+  
+  // Backend'den temizle
+  try {
+    await apiFetch("/notifications/clear-all", {
+      method: "DELETE"
+    });
+  } catch (err) {
+    console.error('[clearAllNotifications] API hatası:', err);
+    // API hata verse de local temizlik yapıldı, kullanıcıya bildir
+    showToast("Bildirimler temizlendi (senkronizasyon hatası)", "warning");
   }
 }
 
@@ -5911,6 +5977,15 @@ if (markAllReadBtn) {
   markAllReadBtn.addEventListener("click", (event) => {
     event.stopPropagation();
     markAllNotificationsAsRead();
+  });
+}
+
+// "Tümünü sil" butonu event listener
+const clearAllNotificationsBtn = document.getElementById("clearAllNotificationsBtn");
+if (clearAllNotificationsBtn) {
+  clearAllNotificationsBtn.addEventListener("click", (event) => {
+    event.stopPropagation(); // Panel'in kapanmasını önle
+    clearAllNotifications();
   });
 }
 

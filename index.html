@@ -9459,6 +9459,15 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         showLoginOverlay();
         await ensureColorDescriptionsLoaded();
       }
+      
+      // --- AUTO REFRESH (POLLING) ---
+      setInterval(() => {
+        if (authToken) {
+          console.log("🔄 Auto-refreshing data...");
+          loadCalendarData(currentYear, currentMonth); // Takvimi yenile
+          refreshTaskBoard(); // Görevleri yenile
+        }
+      }, 30000); // 30 saniye
     }
 
     /* 🔄 Otomatik Senkronizasyon Mekanizması (Polling) */

@@ -69,6 +69,20 @@ db.exec(`
     label TEXT NOT NULL,
     description TEXT NOT NULL DEFAULT ''
   );
+
+  CREATE TABLE IF NOT EXISTS notifications (
+    id TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    message TEXT NOT NULL,
+    share_id INTEGER,
+    card_id TEXT,
+    day_key TEXT,
+    from_email TEXT,
+    is_read INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  );
 `);
 
 function ensureColumn(table, column, definition) {

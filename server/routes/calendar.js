@@ -210,9 +210,19 @@ router.put("/:id", requireAuth, (req, res) => {
     return res.status(400).json({ error: "Geçersiz kayıt kimliği." });
   }
 
-  const existing = db
-    .prepare("SELECT * FROM entries WHERE id = ? AND user_id = ?")
-    .get(entryId, req.userId);
+  // Admin ise herhangi bir kaydı güncelleyebilir, normal kullanıcı sadece kendi kayıtlarını güncelleyebilir
+  const user = db.prepare("SELECT role FROM users WHERE id = ?").get(req.userId);
+  const isAdmin = user && user.role === "admin";
+
+  let existing;
+  if (isAdmin) {
+    // Admin herhangi bir kaydı güncelleyebilir
+    existing = db.prepare("SELECT * FROM entries WHERE id = ?").get(entryId);
+  } else {
+    // Normal kullanıcı sadece kendi kayıtlarını güncelleyebilir
+    existing = db.prepare("SELECT * FROM entries WHERE id = ? AND user_id = ?").get(entryId, req.userId);
+  }
+
   if (!existing) {
     return res.status(404).json({ error: "Kayıt bulunamadı." });
   }
@@ -244,10 +254,11 @@ router.put("/:id", requireAuth, (req, res) => {
       : new Date().toISOString();
   const ownerIdValue = resolveOwnerId(ownerId);
 
+  // Admin herhangi bir kaydı güncelleyebilir, normal kullanıcı zaten yukarıda kontrol edildi
   db.prepare(`
     UPDATE entries
     SET date = ?, time = ?, text = ?, files = ?, communication = ?, communication_type = ?, platforms = ?, source = ?, color = ?, note = ?, status = ?, checked_at = ?, owner_id = ?
-    WHERE id = ? AND user_id = ?
+    WHERE id = ?
   `).run(
     date,
     time,
@@ -262,8 +273,7 @@ router.put("/:id", requireAuth, (req, res) => {
     normalizedStatus,
     checkedAtValue,
     ownerIdValue,
-    entryId,
-    req.userId
+    entryId
   );
 
   const updated = db
@@ -331,9 +341,19 @@ router.delete("/:id", requireAuth, (req, res) => {
     return res.status(400).json({ error: "Geçersiz kayıt kimliği." });
   }
 
-  const info = db
-    .prepare("DELETE FROM entries WHERE id = ? AND user_id = ?")
-    .run(entryId, req.userId);
+  // Admin ise herhangi bir kaydı silebilir, normal kullanıcı sadece kendi kayıtlarını silebilir
+  const user = db.prepare("SELECT role FROM users WHERE id = ?").get(req.userId);
+  const isAdmin = user && user.role === "admin";
+
+  let info;
+  if (isAdmin) {
+    // Admin herhangi bir kaydı silebilir
+    info = db.prepare("DELETE FROM entries WHERE id = ?").run(entryId);
+  } else {
+    // Normal kullanıcı sadece kendi kayıtlarını silebilir
+    info = db.prepare("DELETE FROM entries WHERE id = ? AND user_id = ?").run(entryId, req.userId);
+  }
+
   if (info.changes === 0) {
     return res.status(404).json({ error: "Kayıt bulunamadı." });
   }

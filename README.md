@@ -1,97 +1,238 @@
-# Paylaşım Takvimi
+# 📅 Paylaşım Takvimi
 
-Takımın sosyal medya ve içerik planlarını ortak bir takvimde takip etmesi için hazırlanmış web uygulaması.  
-Ön yüz tarayıcıda çalışan tek sayfalık bir arayüz (`index.html`), arka plan servisleri ise Node.js/Express ile yazılmıştır (`server/` klasörü).
+> **Takımınızın sosyal medya ve içerik planlarını tek bir takvimde yönetin!**
 
-## 1. Hızlı Başlangıç (Yerel)
+Modern, kullanıcı dostu bir web tabanlı içerik takvimi uygulaması. Ekip üyeleri kendi paylaşımlarını planlayabilir, görevler atayabilir ve tüm takım aktivitelerini tek bir yerden takip edebilir.
+
+---
+
+## 🤖 AI-First Geliştirme
+
+> **⚡ Bu proje tamamen AI-first metodolojisi ile geliştiriliyor!**  
+> Tüm kod değişiklikleri, özellik geliştirmeleri ve bug fix'ler **Cursor AI + Claude Sonnet 4.5** (duruma göre Claude Sonnet Thinking) ile yapılıyor. Geleneksel kodlama süreçleri yerine AI-destekli pair programming yaklaşımı kullanılıyor.
+
+---
+
+## 🚀 Özellikler
+
+- ✅ **Aylık Takvim Görünümü** - Tüm paylaşımları bir bakışta görün
+- ✅ **Kullanıcı Rolleri** - Admin, Moderator ve Normal kullanıcı yetkileri
+- ✅ **Excel Import/Export** - Toplu veri aktarımı
+- ✅ **Gerçek Zamanlı Güncelleme** - Anlık takvim senkronizasyonu
+- ✅ **Responsive Tasarım** - Mobil, tablet ve masaüstü uyumlu
+- ✅ **Dark/Light Mode** - Göz dostu tema desteği
+- ✅ **Offline Storage** - LocalStorage ile çevrimdışı çalışma
+
+---
+
+## 🛠️ Kullanılan Teknolojiler
+
+### Frontend (İstemci Tarafı)
+- **HTML5** - Semantic markup
+- **CSS3** - Modern styling, Flexbox & Grid
+- **Vanilla JavaScript** (ES6+) - Framework'siz, saf JavaScript
+- **LocalStorage API** - Tarayıcı tabanlı veri saklama
+- **Fetch API** - Backend iletişimi
+
+### Backend (Sunucu Tarafı)
+- **Node.js** (v20+)
+- **Express.js** - RESTful API
+- **SQLite** (better-sqlite3) - Veritabanı
+- **JWT** - Kimlik doğrulama
+- **bcrypt** - Şifre hashleme
+
+### Geliştirme Araçları
+- **Cursor AI** - AI-powered code editor
+- **Claude Sonnet 4.5** - AI pair programming assistant
+- **Git** - Version control
+
+---
+
+## 📦 Kurulum ve Çalıştırma
+
+### Ön Gereksinimler
+- Node.js v20 veya üzeri
+- Modern bir web tarayıcı (Chrome, Firefox, Safari, Edge)
+- Live Server eklentisi (opsiyonel, geliştirme için)
+
+### Backend Kurulumu
 
 ```bash
-# 1) Depoyu klonla
-git clone <repo-url>
+# 1. Proje dizinine gidin
 cd paylasimtakvimi
 
-# 2) Ortam değişkenlerini hazırla
-cp .env.example .env
-# .env içindeki değerleri ihtiyacına göre düzenle
-
-# 3) Backend bağımlılıklarını yükle
+# 2. Backend klasörüne gidin
 cd server
+
+# 3. Bağımlılıkları yükleyin
 npm install
 
-# 4) Backend'i çalıştır
-npm start   # varsayılan olarak http://localhost:4000
+# 4. Ortam değişkenlerini ayarlayın
+# .env dosyası oluşturun ve gerekli değerleri girin
+# (PORT, JWT_SECRET, ADMIN_EMAILS, DATABASE_FILE)
+
+# 5. Sunucuyu başlatın
+npm start
+# Varsayılan olarak http://localhost:4000 adresinde çalışır
 ```
 
-Ön yüz için ekstra derleme gerekmiyor; `index.html` dosyasını tarayıcıda açman yeterli.  
-Yerelde test ederken `index.html` içindeki `API_BASE` sabiti varsayılan `http://localhost:4000` değerini kullanır.
+### Frontend Çalıştırma
 
-## 2. Ortam Değişkenleri
+**Seçenek 1: Live Server ile (Önerilen)**
+1. VS Code'da Live Server eklentisini yükleyin
+2. `index.html` dosyasına sağ tıklayın
+3. "Open with Live Server" seçeneğini tıklayın
+4. Tarayıcıda otomatik olarak açılır (genellikle `http://127.0.0.1:5500`)
 
-Aşağıdaki değerleri `.env` dosyanda tanımlayabilirsin:
+**Seçenek 2: Doğrudan Tarayıcıda**
+1. `index.html` dosyasını çift tıklayarak tarayıcıda açın
+2. ⚠️ Not: Bu yöntemde bazı özellikler (CORS, LocalStorage) sınırlı çalışabilir
 
-| Değişken       | Açıklama                                                                                  |
-| -------------- | ----------------------------------------------------------------------------------------- |
-| `PORT`         | Express sunucusunun dinleyeceği port. Varsayılan `4000`.                                  |
-| `JWT_SECRET`   | Oturum token'larının imzalanması için gizli anahtar. Üretimde rastgele, uzun bir değer olmalı. |
-| `ADMIN_EMAILS` | Virgül ile ayrılmış admin email listesi. Bu email'ler kayıt olduğunda otomatik onaylanır. |
-| `DATABASE_FILE`| SQLite dosyasının tam ya da göreli yolu. Verilmezse sistemin geçici klasöründe saklanır.  |
+**Seçenek 3: Python HTTP Server**
+```bash
+# Proje kök dizininde
+python3 -m http.server 8000
+# http://localhost:8000 adresinden erişin
+```
 
-> **Not:** Üretimde kalıcı depolama için `DATABASE_FILE` ayarlaman önerilir (ör. `storage/calendar.db`).
+---
 
-## 3. Proje Yapısı
+## 📁 Proje Yapısı
 
 ```
 paylasimtakvimi/
-├── index.html        # Tek sayfalık arayüz ve tüm istemci mantığı
-├── goart-logo.png
-└── server/
-    ├── server.js     # Express uygulaması ve HTTP sunucusu
-    ├── db.js         # SQLite bağlantısı, tablo başlangıçları
-    ├── middleware/   # Kimlik doğrulama (requireAuth, requireAdmin)
-    ├── routes/       # auth, calendar, import, users API uçları
-    └── package.json  # Backend bağımlılıkları ve npm scriptleri
+│
+├── index.html              # Ana uygulama dosyası (Frontend - 8800+ satır)
+├── goart-logo.png          # Logo dosyası
+├── README.md               # Bu dosya
+├── _headers                # Netlify/Vercel header yapılandırması
+│
+├── docs/                   # Dokümantasyon
+│   ├── DEPLOY.md          # Deployment rehberi
+│   └── UI_NUMBERS.md      # UI metrikleri ve tasarım detayları
+│
+├── eeg-viewer/            # EEG Viewer ek modülü
+│   ├── index.html
+│   ├── script.js
+│   └── style.css
+│
+└── server/                # Backend API
+    ├── server.js          # Express server
+    ├── db.js              # SQLite veritabanı
+    ├── package.json       # Dependencies
+    ├── middleware/        # Auth middleware
+    │   └── auth.js
+    └── routes/            # API endpoints
+        ├── auth.js        # Login/Register
+        ├── calendar.js    # Takvim işlemleri
+        ├── import.js      # Excel import/export
+        └── users.js       # Kullanıcı yönetimi
 ```
 
-## 4. Canlıya Alma Yol Haritası
+---
 
-1. **Yapılandırma**  
-   - `.env` dosyasını üretim değerleri ile doldur (özellikle `JWT_SECRET`, `ADMIN_EMAILS`, `DATABASE_FILE`).  
-   - Admin kullanıcıları önceden belirleyip parolalarını paylaş.
+## 🎯 Kullanım
 
-2. **Backend Dağıtımı**  
-   - Node.js destekli bir platform seç (Render, Railway, Fly.io, DigitalOcean App Platform vb.).  
-   - `server` klasörünü deploy et, `.env` değerlerini platformda tanımla.  
-   - Üretim ortamında Node 20.x kullan; Render gibi servislerde `NODE_VERSION=20` ortam değişkeni ekleyip build komutunu `npm install --omit=dev && npm rebuild better-sqlite3` olarak ayarla (better-sqlite3 Linux üzerinde kaynak koddan derlenir).
-   - Kalıcı dosya depolaması gerekir; SQLite kullanıyorsan `DATABASE_FILE` yolu için volume/persistent disk ayarla ya da yönetilen bir PostgreSQL servis planla.  
-   - CORS’a izin verilmesi gereken alan adlarını belirt (`app.use(cors())` varsayılan olarak açık).
+1. **İlk Giriş**: Backend başlatıldıktan sonra frontend'i açın
+2. **Kayıt Olun**: Email ve şifre ile yeni kullanıcı oluşturun
+3. **Admin Onayı**: Admin kullanıcı tarafından onaylanmanız gerekir
+4. **Takvimi Görüntüleyin**: Ana sayfada aylık takvim görünümü açılır
+5. **Paylaşım Ekleyin**: "+" butonuna tıklayarak yeni etkinlik oluşturun
+6. **Excel İle Toplu Ekleme**: Admin panelinden Excel dosyası yükleyin
 
-3. **Frontend Yayını**  
-   - Basit senaryo: `index.html` ve varlıkları statik hosting'e koy (Netlify, Vercel, GitHub Pages).  
-   - Yayınladığın ortam için `index.html` içindeki `API_BASE` sabitini backend URL’sine güncelle; otomatikleştirmek istersen build adımında ortam değişkeni kullan.
+---
 
-4. **Alan Adı & SSL**  
-   - Şirket alan adında alt alan (örn. `takvim.sirket.com`) belirle ve frontend hosting’e yönlendir.  
-  - Backend için de HTTPS destekli bir alan adı kullan; gerekirse ters proxy (Cloudflare, Nginx) kur.
+## 🔐 Kullanıcı Rolleri
 
-5. **CI/CD & Test**  
-   - GitHub Actions vb. ile `server` ve frontend için ayrı deploy iş akışları oluştur.  
-   - Excel içe aktarma, admin sıfırlama, giriş akışı için manuel test senaryolarını dökümante et.  
-   - Gerektiğinde otomatik testler (ör. Jest ile API testleri) ekle.
+| Role | Yetkiler |
+|------|----------|
+| **👤 Normal User** | Kendi paylaşımlarını görüntüleme/düzenleme |
+| **🛡️ Moderator** | Tüm paylaşımları görüntüleme/düzenleme |
+| **👑 Admin** | Tam yetki: Kullanıcı yönetimi, Excel import/export, sistem ayarları |
 
-6. **Ekip Onboarding**  
-   - Kullanıcı rolleri, giriş, Excel yükleme, sıfırlama süreci için kısa bir “kullanıcı kılavuzu” oluştur.  
-   - Günlük/haftalık rapor formatını (“Yapılanlar, Sorunlar, Kararlar, Açık Sorular, Testler, Nasıl yönlendirildim, Sonraki adımlar”) ekibin erişebileceği şekilde paylaş.
+---
 
-## 5. Yararlı NPM Komutları
+## 🧪 Test Adımları
 
-`server` klasöründe:
+### Manuel Test Checklist
 
-- `npm start` – Express sunucusunu çalıştırır.  
-- `npm run dev` – (Varsa) Nodemon ile geliştirme modunda çalıştırır.  
-- `npm install --production` – Üretim dağıtımı için yalnızca runtime bağımlılıklarını kurar.
+1. **Giriş/Çıkış Testi**
+   - [ ] Kayıt olma işlemi çalışıyor mu?
+   - [ ] Login başarılı oluyor mu?
+   - [ ] Token localStorage'a kaydediliyor mu?
 
-## 6. Sorular / Destek
+2. **Takvim Görünümü**
+   - [ ] Güncel ay doğru gösteriliyor mu?
+   - [ ] Önceki/sonraki ay navigasyonu çalışıyor mu?
+   - [ ] Paylaşımlar doğru günlerde görünüyor mu?
 
-Takıldığın adım olursa kodun yanına açıklama satırları bırakabilir veya README’de ek notlar açabilirsin. Live ortama geçmeden önce, özellikle veri saklama (SQLite path) ve admin parolalarının güvenliğini iki kez kontrol etmeyi unutma.  
+3. **Paylaşım İşlemleri**
+   - [ ] Yeni paylaşım ekleme çalışıyor mu?
+   - [ ] Mevcut paylaşım düzenleme çalışıyor mu?
+   - [ ] Paylaşım silme çalışıyor mu?
 
-Hazırlık planının sonraki adımlarını birlikte yürütmek istersen haber ver.
+4. **Excel Import/Export**
+   - [ ] Excel dosyası yükleme başarılı mı?
+   - [ ] Dışa aktarma doğru veri içeriyor mu?
+
+5. **Responsive Tasarım**
+   - [ ] Mobil görünüm düzgün mü?
+   - [ ] Tablet görünüm çalışıyor mu?
+
+---
+
+## 🌐 Canlıya Alma (Deployment)
+
+### Frontend Deployment
+- **Netlify** / **Vercel** / **GitHub Pages** gibi static hosting servisleri
+- `index.html` dosyası ve varlıkları yükleyin
+- `API_BASE` değişkenini production backend URL'sine güncelleyin
+
+### Backend Deployment
+- **Render** / **Railway** / **Fly.io** / **DigitalOcean** gibi Node.js hosting
+- Ortam değişkenlerini (`.env`) platform üzerinde ayarlayın
+- SQLite için kalıcı volume/disk yapılandırması yapın
+- CORS ayarlarını frontend domain'i için açın
+
+Detaylı deployment rehberi için `docs/DEPLOY.md` dosyasına bakın.
+
+---
+
+## 🤝 Katkıda Bulunma
+
+Bu proje AI-first metodolojisi ile geliştirildiği için, katkılar da benzer bir yaklaşımla yapılmalıdır:
+
+1. Cursor AI kullanarak kod değişikliklerini yapın
+2. Her değişiklikte "Demir Kurallar"a uyun (workspace rules)
+3. Pull request açın ve AI ile yapılan değişiklikleri açıklayın
+
+---
+
+## 📝 Lisans
+
+Bu proje özel kullanım için geliştirilmiştir.
+
+---
+
+## 📞 İletişim ve Destek
+
+Sorularınız için proje sahibi ile iletişime geçin.
+
+---
+
+## 🎨 Tasarım Felsefesi
+
+- **Minimalist** - Gereksiz öğeler yok, sadece ihtiyaç duyulanlar
+- **Kullanıcı Odaklı** - Kolay öğrenilebilir, sezgisel arayüz
+- **Performanslı** - Hızlı yükleme, düşük memory kullanımı
+- **Güvenli** - XSS koruması, input validation, JWT auth
+
+---
+
+<div align="center">
+
+**⚡ Powered by AI • Built with ❤️ using Vanilla JavaScript**
+
+*Cursor AI + Claude Sonnet 4.5 ile geliştirilmiştir*
+
+</div>

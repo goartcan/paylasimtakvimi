@@ -675,7 +675,7 @@
 /* Takvim + sağ panel hizası (3 kolonlu: Takvim | Gün Detayı | Görev Panosu) */
 .container.calendar-layout {
   display: grid;
-  grid-template-columns: 1.95fr 0.7fr 1.35fr; /* Takvim 48.75%, Gün Detayı 17.5%, Görevler 33.75% */
+  grid-template-columns: 1.7fr 0.65fr 1.65fr; /* Takvim daraltıldı, Görevler genişletildi */
   gap: 24px;
   align-items: flex-start;
   width: 100%;
@@ -694,7 +694,7 @@
 /* Geniş ekranlar (1440px - 1919px) */
 @media (min-width: 1440px) and (max-width: 1919px) {
   .container.calendar-layout {
-    grid-template-columns: 1.95fr 0.7fr 1.35fr;
+    grid-template-columns: 1.7fr 0.65fr 1.65fr; /* Takvim daraltıldı, Görevler genişletildi */
   }
 }
 
@@ -981,14 +981,18 @@
       display: flex;
       align-items: center;
       width: 100%;
-      padding: 1px 7px;
+      padding: 1px 5px; /* Padding azaltıldı (7px → 5px) - Daralan takvim için */
       margin-top: 1px;
       border-radius: 999px;
       background: #f3f4f6;
       border: 1px solid #e5e7eb;
-      font-size: 9px;
+      font-size: 8.5px; /* Font boyutu küçültüldü (9px → 8.5px) - Daralan takvim için */
       color: #0f172a;
       font-weight: 600;
+      /* Metin taşmasını önle */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .day[data-color] .day-summary {
       color: var(--day-text);
@@ -1188,14 +1192,16 @@
   font-size: 14px; /* Daha kompakt başlık */
   margin: 0 0 4px 0;
 }
-/* Görev Panosu - Trello benzeri stil */
+/* Görev Panosu - Gün Detayı Paneli ile aynı yapı */
 .task-board-panel {
   display: flex;
   flex-direction: column;
   gap: 6px;
   width: 100%;
   max-width: none; /* Geniş ekranlarda sınırsız */
-  height: fit-content;
+  flex: 1; /* Gün Detayı Paneli ile aynı hizada esneyecek */
+  min-height: 0; /* Flexbox scroll için gerekli */
+  overflow: hidden; /* Panel kendisi taşmayacak */
 }
 
 /* Orta ekranlarda max-width sınırı */
@@ -1213,6 +1219,7 @@
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
+  flex-shrink: 0; /* Header sabit kalacak, scroll etmeyecek */
 }
 
 .task-board-header h2 {
@@ -1238,6 +1245,29 @@
   background: #2563eb;
 }
 
+/* Scroll wrapper - Gün Detayı Paneli ile aynı mantık */
+.task-board-scroll-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  overscroll-behavior: contain;
+}
+
+.task-board-scroll-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.task-board-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5f5;
+  border-radius: 999px;
+}
+
+.task-board-scroll-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .task-board-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3 kolon yan yana */
@@ -1246,86 +1276,87 @@
   background: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  max-height: calc(100vh - 180px);
-  overflow: hidden; /* Container scroll etmeyecek, kolonlar scroll edecek */
+  height: 100%; /* Tüm yüksekliği kullan - Kanban stili için gerekli */
 }
 
 /* Tablet ve küçük ekranlarda tek kolon */
 @media (max-width: 1200px) {
   .task-board-container {
     grid-template-columns: 1fr;
-    overflow-y: auto;
+    height: auto; /* Tek sütunda auto yükseklik */
   }
 }
 
+/* Kanban/Trello Stili - Her sütun bağımsız scroll */
 .task-board-column {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  height: 100%; /* Tüm yüksekliği kullan */
   background: #ffffff;
   border-radius: 8px;
   padding: 10px;
   border: 1px solid #e5e7eb;
   min-height: 0; /* Flexbox scroll için gerekli */
-  overflow: hidden; /* Column kendisi scroll edecek */
+  overflow: hidden; /* Sütunun kendisi taşmayacak */
 }
 
 .task-board-column-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
-  flex-shrink: 0; /* Header sabit kalacak */
+  flex-shrink: 0; /* Başlık sabit kalacak, scroll etmeyecek - Trello stili */
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  flex-shrink: 0; /* Header SABİT KALACAK - scroll etmeyecek */
+  flex-grow: 0; /* Boyutu değişmeyecek */
 }
 
 .task-board-column-title {
-  font-size: 12px;
+  font-size: 9px;
   font-weight: 700;
   color: #374151;
   display: flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.task-board-column-count {
-  background: #e5e7eb;
-  color: #6b7280;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 12px;
-  min-width: 20px;
-  text-align: center;
-}
-
+/* Kartlar container - SADECE BU KISIM SCROLL OLACAK */
 .task-board-cards {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  overflow-y: auto; /* Her kolon kendi scroll'u */
+  overflow-y: auto; /* Dikey scroll - Kanban stili */
   overflow-x: hidden;
-  flex: 1;
-  min-height: 0;
+  flex: 1; /* Kalan tüm alanı kapla */
+  min-height: 0; /* Flexbox scroll trick */
   padding-right: 4px;
+  overscroll-behavior: contain; /* Scroll dışarı taşmasın */
 }
 
-/* Kolon scroll bar stilini iyileştir */
+/* Custom Scrollbar - İnce ve estetik (Trello/Kanban stili) */
 .task-board-cards::-webkit-scrollbar {
-  width: 6px;
+  width: 5px; /* İnce scrollbar */
 }
 
 .task-board-cards::-webkit-scrollbar-track {
-  background: #f3f4f6;
-  border-radius: 3px;
+  background: transparent; /* Görünmez track */
+  border-radius: 4px;
 }
 
 .task-board-cards::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 3px;
+  background: #cbd5e1; /* Gri scrollbar */
+  border-radius: 4px;
+  transition: background 0.2s;
 }
 
 .task-board-cards::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: #94a3b8; /* Hover'da daha koyu */
 }
 
 .task-board-card {
@@ -2089,7 +2120,7 @@
     }
     .modal-body {
       flex: 1;
-      overflow: hidden;
+      overflow: hidden; /* Modal body scroll etmez, içindeki elementler scroll eder */
       padding: 16px 24px 24px;
       display: flex;
       flex-direction: column;
@@ -2348,10 +2379,10 @@
     .modal-form-section {
       border: 1px solid #e5e7eb;
       border-radius: 12px;
-      padding: 16px;
+      padding: 14px; /* 16px → 14px (biraz daha kompakt) */
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px; /* 12px → 8px (form elemanları arası daha yakın) */
       background: #ffffff;
       overflow-y: auto;
       max-height: 100%;
@@ -2368,10 +2399,10 @@
       background: transparent;
     }
     .form-row {
-      margin-bottom: 8px;
+      margin-bottom: 10px; /* 8px → 10px (biraz daha kompakt) */
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px; /* 4px → 3px (label ile input arası daha yakın) */
     }
     textarea {
       resize: vertical;
@@ -2398,7 +2429,8 @@
       display: none;
     }
     input[type="text"],
-    input[type="time"] {
+    input[type="time"],
+    input[type="date"] {
       padding: 6px;
       font-size: 12px;
       font-family: inherit;
@@ -2944,7 +2976,8 @@
     body.dark .modal-title { color: #f9fafb; }
     body.dark textarea,
     body.dark input[type="text"],
-    body.dark input[type="time"] {
+    body.dark input[type="time"],
+    body.dark input[type="date"] {
       background: #020617;
       color: #f9fafb;
       border-color: #475569;
@@ -2959,6 +2992,46 @@
     }
     body.dark .color-help-row {
       color: #f9fafb;
+    }
+
+    /* Dark mode - Görev Panosu Kanban Stili */
+    body.dark .task-board-column-header {
+      background: #1f2937;
+      border-color: #374151;
+    }
+    body.dark .task-board-column-title {
+      color: #9ca3af;
+    }
+    body.dark .task-board-column-count {
+      background: #1e3a8a;
+      color: #93c5fd;
+      border-color: #1e40af;
+    }
+    body.dark .task-board-column {
+      background: #111827;
+      border-color: #1f2937;
+    }
+    body.dark .task-board-card {
+      background: #1f2937;
+      border-color: #374151;
+    }
+    body.dark .task-board-card:hover {
+      border-color: #3b82f6;
+    }
+    /* Dark mode - Kolon scrollbar */
+    body.dark .task-board-cards::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+    body.dark .task-board-cards::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+    /* Dark mode - Panel scrollbar */
+    body.dark .task-board-scroll-wrapper::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+    body.dark .task-board-container {
+      background: #111827;
+      border-color: #1f2937;
     }
 
     body.dark .summary-item {
@@ -3223,9 +3296,73 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* === HATA YÖNETİMİ TOAST STİLLERİ === */
+    .error-toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .error-toast {
+      background: #dc2626;
+      color: #ffffff;
+      padding: 14px 18px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      font-size: 14px;
+      font-weight: 500;
+      max-width: 350px;
+      word-wrap: break-word;
+      pointer-events: auto;
+      animation: slideInRight 0.3s ease-out;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .error-toast.hiding {
+      animation: slideOutRight 0.3s ease-in forwards;
+    }
+    @keyframes slideInRight {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    @keyframes slideOutRight {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
+    @media (max-width: 640px) {
+      .error-toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+      }
+      .error-toast {
+        max-width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
+  <!-- GLOBAL HATA YÖNETİMİ: Toast mesajları için container -->
+  <div id="errorToastContainer" class="error-toast-container"></div>
+  
   <div id="loginOverlay" class="login-overlay">
     <div class="login-card">
       <h2>Paylaşım Takvimi</h2>
@@ -3428,11 +3565,13 @@
       <div class="task-board-panel">
         <div class="task-board-header">
           <h2>Görevler</h2>
-          <button class="task-board-add-btn" id="taskBoardAddBtn" title="Yeni görev ekle">+ Görev</button>
+          <button class="task-board-add-btn" id="taskBoardAddBtn" title="Yeni görev ekle">+ Görev Oluştur</button>
         </div>
-        <div class="task-board-container" id="taskBoardContainer">
-          <!-- TODO: Görevler için backend entegrasyonu eklenecek (Firestore/DB modeli) -->
-          <!-- Görev kolonları JavaScript ile render edilecek -->
+        <div class="task-board-scroll-wrapper">
+          <div class="task-board-container" id="taskBoardContainer">
+            <!-- TODO: Görevler için backend entegrasyonu eklenecek (Firestore/DB modeli) -->
+            <!-- Görev kolonları JavaScript ile render edilecek -->
+          </div>
         </div>
       </div>
     </div>
@@ -3588,9 +3727,19 @@
             ></textarea>
           </div>
 
-          <div class="form-row">
-            <label for="timeInput">Paylaşım saati</label>
-            <input type="time" id="timeInput" />
+          <!-- Paylaşım saati ve Sorumlu kişi yan yana (50%-50%) -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-row">
+              <label for="timeInput">Paylaşım saati</label>
+              <input type="time" id="timeInput" />
+            </div>
+
+            <div class="form-row">
+              <label for="ownerSelect">Sorumlu kişi</label>
+              <select id="ownerSelect" style="font-size:12px;padding:6px;border-radius:6px;">
+                <option value="">Seçilmedi</option>
+              </select>
+            </div>
           </div>
 
           <div class="form-row">
@@ -3599,13 +3748,6 @@
               id="noteInput"
               placeholder="Örn: görsel güncellenmeli, farklı link kullanılacak"
             ></textarea>
-          </div>
-
-          <div class="form-row">
-            <label for="ownerSelect">Sorumlu kişi</label>
-            <select id="ownerSelect" style="font-size:12px;padding:6px;border-radius:6px;">
-              <option value="">Seçilmedi</option>
-            </select>
           </div>
 
           <div class="form-row">
@@ -3699,6 +3841,105 @@
     </div>
   </div>
 
+  <!-- Modal: Görev Oluştur/Düzenle -->
+  <div class="modal" id="taskModal">
+    <div class="modal-content">
+      <div class="modal-header-block">
+        <div class="modal-header">
+          <div class="modal-title" id="taskModalTitle">Yeni Görev Oluştur</div>
+          <button class="modal-close" id="taskModalCloseBtn" aria-label="Kapat">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-form-section">
+          
+          <div class="form-row">
+            <label for="taskNameInput">Görev İsmi <span style="color:#ef4444;">*</span></label>
+            <input 
+              type="text" 
+              id="taskNameInput" 
+              placeholder="Görev başlığını girin"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <label for="taskDescriptionInput">Görev Açıklaması</label>
+            <textarea
+              id="taskDescriptionInput"
+              placeholder="Görevin detaylarını açıklayın"
+              rows="2"
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <label for="taskNoteInput">Not (isteğe bağlı)</label>
+            <textarea
+              id="taskNoteInput"
+              placeholder="Görevle ilgili ek notlar"
+              rows="1"
+            ></textarea>
+          </div>
+
+          <!-- Teslim Tarihi ve Sorumlu Kişi yan yana (2 sütun) -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="form-row" style="margin-bottom:0;">
+              <label for="taskDueDateInput">Teslim Tarihi <span style="color:#ef4444;">*</span></label>
+              <div style="display:flex;gap:6px;">
+                <input 
+                  type="date" 
+                  id="taskDueDateInput" 
+                  style="flex:1;"
+                  required
+                />
+                <input 
+                  type="time" 
+                  id="taskDueTimeInput" 
+                  style="flex:1;"
+                  value="17:00"
+                />
+              </div>
+            </div>
+
+            <div class="form-row" style="margin-bottom:0;">
+              <label for="taskOwnerSelect">Sorumlu Kişi</label>
+              <select id="taskOwnerSelect" style="font-size:12px;padding:6px;border-radius:6px;width:100%;">
+                <option value="">Seçilmedi</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-bottom:8px;margin-top:8px;">
+            <label>Öncelik <span style="color:#ef4444;">*</span></label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+                <input type="radio" name="taskPriority" value="low" checked />
+                <span style="padding:3px 8px;background:#dbeafe;color:#1e40af;border-radius:6px;font-size:11px;font-weight:600;">Düşük</span>
+              </label>
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+                <input type="radio" name="taskPriority" value="medium" />
+                <span style="padding:3px 8px;background:#fef3c7;color:#92400e;border-radius:6px;font-size:11px;font-weight:600;">Orta</span>
+              </label>
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+                <input type="radio" name="taskPriority" value="high" />
+                <span style="padding:3px 8px;background:#fee2e2;color:#991b1b;border-radius:6px;font-size:11px;font-weight:600;">Yüksek</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-buttons" style="margin-top:12px;">
+            <div class="form-button-actions">
+              <button type="button" id="taskDeleteBtn" style="background:#dc2626;padding:8px 16px;border:none;border-radius:8px;color:white;cursor:pointer;font-size:13px;font-weight:600;display:none;">Sil</button>
+              <button type="button" id="taskClearBtn" style="background:#6b7280;padding:8px 16px;border:none;border-radius:8px;color:white;cursor:pointer;font-size:13px;font-weight:600;">Temizle</button>
+              <button type="button" id="taskSaveBtn" style="background:#3b82f6;padding:8px 20px;border:none;border-radius:8px;color:white;cursor:pointer;font-size:13px;font-weight:600;">Kaydet</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="copyPopoverBackdrop" class="copy-popover-backdrop">
     <div class="copy-popover" id="copyPopover">
       <div class="copy-popover-header">
@@ -3718,8 +3959,176 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script>
+    // ========================================
+    // GLOBAL HATA YÖNETİMİ SİSTEMİ
+    // ========================================
+    
+    /**
+     * Hata mesajını tarayıcıda toast olarak gösterir (kırmızı arka plan, 5 saniye sonra kaybolur)
+     * @param {string} message - Gösterilecek hata mesajı
+     */
+    function showErrorToast(message) {
+      try {
+        const container = document.getElementById('errorToastContainer');
+        if (!container) {
+          console.error('[Toast] Container bulunamadı:', message);
+          return;
+        }
+        
+        // Toast elementi oluştur
+        const toast = document.createElement('div');
+        toast.className = 'error-toast';
+        toast.textContent = message || 'Bir hata oluştu';
+        
+        // Container'a ekle
+        container.appendChild(toast);
+        
+        // 5 saniye sonra kaldır
+        setTimeout(() => {
+          toast.classList.add('hiding');
+          // Animasyon bitince DOM'dan kaldır (300ms animasyon süresi)
+          setTimeout(() => {
+            if (toast.parentNode === container) {
+              container.removeChild(toast);
+            }
+          }, 300);
+        }, 5000);
+      } catch (err) {
+        // Toast gösterirken bile hata olursa, en azından console'a yazdır
+        console.error('[Toast Hatası]', err, '| Mesaj:', message);
+      }
+    }
+    
+    /**
+     * Başarı mesajını tarayıcıda toast olarak gösterir (yeşil arka plan, 3 saniye sonra kaybolur)
+     * @param {string} message - Gösterilecek başarı mesajı
+     */
+    function showSuccessToast(message) {
+      try {
+        const container = document.getElementById('errorToastContainer');
+        if (!container) {
+          console.error('[Toast] Container bulunamadı:', message);
+          return;
+        }
+        
+        // Toast elementi oluştur
+        const toast = document.createElement('div');
+        toast.className = 'error-toast'; // Aynı class'ı kullanıyoruz ama yeşil yapacağız
+        toast.style.background = '#10b981'; // Yeşil arka plan
+        toast.textContent = message || 'İşlem başarılı';
+        
+        // Container'a ekle
+        container.appendChild(toast);
+        
+        // 3 saniye sonra kaldır (başarı mesajları daha kısa)
+        setTimeout(() => {
+          toast.classList.add('hiding');
+          setTimeout(() => {
+            if (toast.parentNode === container) {
+              container.removeChild(toast);
+            }
+          }, 300);
+        }, 3000);
+      } catch (err) {
+        console.error('[Toast Hatası]', err, '| Mesaj:', message);
+      }
+    }
+    
+    /**
+     * Global hata yakalayıcı - Yakalanmamış JavaScript hataları için
+     */
+    window.onerror = function(message, source, lineno, colno, error) {
+      const errorMsg = error?.message || message || 'Bilinmeyen bir hata oluştu';
+      const errorDetails = `Satır: ${lineno || '?'}, Sütun: ${colno || '?'}`;
+      
+      console.error('[Global Error]', {
+        message: errorMsg,
+        source,
+        line: lineno,
+        column: colno,
+        error
+      });
+      
+      // Kullanıcıya toast göster
+      showErrorToast(`Hata: ${errorMsg}`);
+      
+      // Hata propagasyonunu engelle (sayfa çökmesini önle)
+      return true;
+    };
+    
+    /**
+     * Global promise rejection yakalayıcı - Yakalanmamış async/await hataları için
+     */
+    window.addEventListener('unhandledrejection', function(event) {
+      const errorMsg = event.reason?.message || event.reason || 'Asenkron işlem hatası';
+      
+      console.error('[Unhandled Promise Rejection]', {
+        reason: event.reason,
+        promise: event.promise
+      });
+      
+      // Kullanıcıya toast göster
+      showErrorToast(`Beklenmeyen hata: ${errorMsg}`);
+      
+      // Varsayılan hata davranışını engelle
+      event.preventDefault();
+    });
+    
+    /**
+     * Güvenli localStorage.getItem - Try-catch ile korumalı
+     * @param {string} key - localStorage anahtarı
+     * @param {string} defaultValue - Hata durumunda döndürülecek varsayılan değer
+     * @returns {string} localStorage'dan alınan değer veya varsayılan değer
+     */
+    function safeLocalStorageGet(key, defaultValue = '') {
+      try {
+        return localStorage.getItem(key) || defaultValue;
+      } catch (err) {
+        console.error(`[localStorage.getItem] Hata (${key}):`, err);
+        showErrorToast('Yerel depolama okuma hatası');
+        return defaultValue;
+      }
+    }
+    
+    /**
+     * Güvenli localStorage.setItem - Try-catch ile korumalı
+     * @param {string} key - localStorage anahtarı
+     * @param {string} value - Kaydedilecek değer
+     * @returns {boolean} Başarılı ise true, hata varsa false
+     */
+    function safeLocalStorageSet(key, value) {
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (err) {
+        console.error(`[localStorage.setItem] Hata (${key}):`, err);
+        showErrorToast('Yerel depolama yazma hatası');
+        return false;
+      }
+    }
+    
+    /**
+     * Güvenli localStorage.removeItem - Try-catch ile korumalı
+     * @param {string} key - localStorage anahtarı
+     * @returns {boolean} Başarılı ise true, hata varsa false
+     */
+    function safeLocalStorageRemove(key) {
+      try {
+        localStorage.removeItem(key);
+        return true;
+      } catch (err) {
+        console.error(`[localStorage.removeItem] Hata (${key}):`, err);
+        showErrorToast('Yerel depolama silme hatası');
+        return false;
+      }
+    }
+    
+    // ========================================
+    // ANA UYGULAMA KODU BAŞLANGIÇ
+    // ========================================
+    
     const API_BASE = "https://paylasimtakvimi.onrender.com";
-    let authToken = localStorage.getItem("contentCalendar_token") || "";
+    let authToken = safeLocalStorageGet("contentCalendar_token", "");
     let entriesById = new Map();
     let entriesByDate = new Map();
 
@@ -4026,12 +4435,12 @@ const CHANNEL_FILTER_DEFINITIONS = {
 };
 const CHANNEL_FILTER_STORAGE_KEY = "calendar_channel_filter";
 let activeChannelFilter =
-  localStorage.getItem(CHANNEL_FILTER_STORAGE_KEY) || "all";
+  safeLocalStorageGet(CHANNEL_FILTER_STORAGE_KEY, "all");
 if (!CHANNEL_FILTER_DEFINITIONS[activeChannelFilter]) {
   activeChannelFilter = "all";
 }
 let assigneeFilter =
-  localStorage.getItem(ASSIGNEE_FILTER_STORAGE_KEY) || "all";
+  safeLocalStorageGet(ASSIGNEE_FILTER_STORAGE_KEY, "all");
 if (assigneeFilter !== "all" && assigneeFilter !== "mine") {
   assigneeFilter = "all";
 }
@@ -4178,11 +4587,13 @@ function getEntryDateTime(entry) {
 
 function readSharedCalendarEntries() {
   try {
-    const raw = localStorage.getItem(CALENDAR_STORAGE_KEY);
+    const raw = safeLocalStorageGet(CALENDAR_STORAGE_KEY, null);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
-  } catch {
+  } catch (err) {
+    console.error('[readSharedCalendarEntries] JSON parse hatası:', err);
+    showErrorToast('Takvim verileri okunamadı');
     return [];
   }
 }
@@ -4191,8 +4602,14 @@ let isBootstrappingFromStorage = false;
 
 function writeSharedCalendarEntries(entries) {
   try {
-    localStorage.setItem(CALENDAR_STORAGE_KEY, JSON.stringify(entries));
-  } catch {}
+    const success = safeLocalStorageSet(CALENDAR_STORAGE_KEY, JSON.stringify(entries));
+    if (!success) {
+      console.error('[writeSharedCalendarEntries] Kayıt başarısız');
+    }
+  } catch (err) {
+    console.error('[writeSharedCalendarEntries] JSON stringify hatası:', err);
+    showErrorToast('Takvim verileri kaydedilemedi');
+  }
 }
 
 function persistEntriesToSharedStorage() {
@@ -4313,11 +4730,13 @@ function readNotificationsForEmail(email) {
   const key = getNotificationStorageKey(email);
   if (!key) return [];
   try {
-    const raw = localStorage.getItem(key);
+    const raw = safeLocalStorageGet(key, null);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed : [];
-  } catch {
+  } catch (err) {
+    console.error('[readNotificationsForEmail] JSON parse hatası:', err);
+    showErrorToast('Bildirimler okunamadı');
     return [];
   }
 }
@@ -4326,8 +4745,14 @@ function writeNotificationsForEmail(email, list) {
   const key = getNotificationStorageKey(email);
   if (!key) return;
   try {
-    localStorage.setItem(key, JSON.stringify(list));
-  } catch {}
+    const success = safeLocalStorageSet(key, JSON.stringify(list));
+    if (!success) {
+      console.error('[writeNotificationsForEmail] Kayıt başarısız');
+    }
+  } catch (err) {
+    console.error('[writeNotificationsForEmail] JSON stringify hatası:', err);
+    showErrorToast('Bildirimler kaydedilemedi');
+  }
 }
 
 function normalizeNotificationRecord(item) {
@@ -4357,7 +4782,8 @@ function sortNotificationsDesc(list) {
     .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 }
 
-function loadNotificationsForCurrentUser() {
+// Backend API'den bildirimleri çek
+async function loadNotificationsForCurrentUser() {
   const email = getCurrentUserEmail();
   if (!email) {
     notifications = [];
@@ -4365,13 +4791,35 @@ function loadNotificationsForCurrentUser() {
     renderNotificationList();
     return;
   }
-  const stored = readNotificationsForEmail(email)
-    .map((item) => normalizeNotificationRecord(item))
-    .filter(Boolean);
-  notifications = sortNotificationsDesc(stored);
-  writeNotificationsForEmail(email, notifications);
-  updateNotificationBadge();
-  renderNotificationList();
+  
+  try {
+    // Backend'den bildirimleri al
+    const response = await apiFetch("/notifications");
+    if (response.ok) {
+      const data = await response.json();
+      notifications = sortNotificationsDesc(data);
+      updateNotificationBadge();
+      renderNotificationList();
+    } else {
+      console.error('[loadNotificationsForCurrentUser] API hatası:', response.status);
+      // Fallback: localStorage'dan yükle (eski sistem için backward compatibility)
+      const stored = readNotificationsForEmail(email)
+        .map((item) => normalizeNotificationRecord(item))
+        .filter(Boolean);
+      notifications = sortNotificationsDesc(stored);
+      updateNotificationBadge();
+      renderNotificationList();
+    }
+  } catch (err) {
+    console.error('[loadNotificationsForCurrentUser] Hata:', err);
+    // Fallback: localStorage'dan yükle
+    const stored = readNotificationsForEmail(email)
+      .map((item) => normalizeNotificationRecord(item))
+      .filter(Boolean);
+    notifications = sortNotificationsDesc(stored);
+    updateNotificationBadge();
+    renderNotificationList();
+  }
 }
 
 function updateNotificationBadge() {
@@ -4535,8 +4983,11 @@ function focusNotificationTarget(notification) {
   }
 }
 
-function markNotificationAsRead(notificationId) {
+// Bildirimi okundu olarak işaretle (Backend API kullan)
+async function markNotificationAsRead(notificationId) {
   if (!notificationId) return;
+  
+  // Önce local state'i güncelle (UI hızlı tepki versin)
   let changed = false;
   notifications = notifications.map((item) => {
     if (item.id === notificationId && !item.isRead) {
@@ -4545,20 +4996,32 @@ function markNotificationAsRead(notificationId) {
     }
     return item;
   });
+  
   if (changed) {
-    const email = getCurrentUserEmail();
-    if (email) {
-      const stored = readNotificationsForEmail(email).map((item) =>
-        item.id === notificationId ? { ...item, isRead: true } : item
-      );
-      writeNotificationsForEmail(email, stored);
-    }
     updateNotificationBadge();
     renderNotificationList();
+    
+    // Sonra backend'e kaydet
+    try {
+      await apiFetch(`/notifications/${notificationId}/read`, {
+        method: "PATCH"
+      });
+    } catch (err) {
+      console.error('[markNotificationAsRead] API hatası:', err);
+      // Fallback: localStorage'a kaydet (eski sistem için)
+      const email = getCurrentUserEmail();
+      if (email) {
+        const stored = readNotificationsForEmail(email).map((item) =>
+          item.id === notificationId ? { ...item, isRead: true } : item
+        );
+        writeNotificationsForEmail(email, stored);
+      }
+    }
   }
 }
 
-function addNotificationForAssignee({
+// Backend'e bildirim gönder (API kullan)
+async function addNotificationForAssignee({
   userEmail,
   shareId,
   cardId,
@@ -4568,21 +5031,60 @@ function addNotificationForAssignee({
   dateKey
 }) {
   const targetId = shareId || cardId;
-  if (!userEmail || !targetId) return;
+  // Bildirim oluşturulamıyorsa debug logla
+  if (!userEmail || !targetId) {
+    console.warn('[addNotificationForAssignee] Bildirim oluşturulamadı:', { userEmail, targetId, shareId, cardId });
+    return;
+  }
+  
+  // Backend API'ye bildirim gönder
+  try {
+    const response = await apiFetch("/notifications", {
+      method: "POST",
+      body: JSON.stringify({
+        targetUserEmail: userEmail,
+        title: title || "Yeni içerik",
+        message: message || `${getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim"} seni şu karta sorumlu yaptı: ${title || "Bu kart"}`,
+        shareId: shareId || null,
+        cardId: cardId || null,
+        dayKey: dayKey || dateKey || null
+      })
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      console.log('[addNotificationForAssignee] Bildirim başarıyla gönderildi:', data);
+      
+      // Eğer bildirim kendi kullanıcımıza gönderildiyse, local state'i güncelle
+      if (userEmail === getCurrentUserEmail()) {
+        notifications = sortNotificationsDesc([data, ...notifications]);
+        updateNotificationBadge();
+        renderNotificationList();
+      }
+    } else {
+      console.error('[addNotificationForAssignee] API hatası:', response.status);
+      // Fallback: localStorage'a kaydet (eski sistem için)
+      fallbackAddNotificationLocally({ userEmail, shareId, cardId, title, message, dayKey, dateKey });
+    }
+  } catch (err) {
+    console.error('[addNotificationForAssignee] Hata:', err);
+    // Fallback: localStorage'a kaydet
+    fallbackAddNotificationLocally({ userEmail, shareId, cardId, title, message, dayKey, dateKey });
+  }
+}
+
+// Fallback: Eski localStorage sistemi (backward compatibility)
+function fallbackAddNotificationLocally({ userEmail, shareId, cardId, title, message, dayKey, dateKey }) {
+  const targetId = shareId || cardId;
   const notification = {
-    id: `ntf_${targetId}_${Date.now()}_${Math.random()
-      .toString(36)
-      .slice(2, 8)}`,
+    id: `ntf_${targetId}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
     createdAt: Date.now(),
     shareId: targetId,
     dayKey: dayKey || dateKey || null,
     title: title || "Yeni içerik",
     from: getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim",
     to: userEmail,
-    message:
-      message ||
-      `${getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim"} seni şu karta sorumlu yaptı: ${title ||
-        "Bu kart"}`,
+    message: message || `${getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim"} seni şu karta sorumlu yaptı: ${title || "Bu kart"}`,
     isRead: false
   };
   const stored = readNotificationsForEmail(userEmail);
@@ -4595,8 +5097,11 @@ function addNotificationForAssignee({
   }
 }
 
-function markAllNotificationsAsRead() {
+// Tüm bildirimleri okundu olarak işaretle (Backend API kullan)
+async function markAllNotificationsAsRead() {
   if (!notifications.length) return;
+  
+  // Önce local state'i güncelle (UI hızlı tepki versin)
   let changed = false;
   notifications = notifications.map((item) => {
     if (!item.isRead) {
@@ -4607,12 +5112,22 @@ function markAllNotificationsAsRead() {
   });
   
   if (changed) {
-    const email = getCurrentUserEmail();
-    if (email) {
-      writeNotificationsForEmail(email, notifications);
-    }
     updateNotificationBadge();
     renderNotificationList();
+    
+    // Sonra backend'e kaydet
+    try {
+      await apiFetch("/notifications/mark-all-read", {
+        method: "POST"
+      });
+    } catch (err) {
+      console.error('[markAllNotificationsAsRead] API hatası:', err);
+      // Fallback: localStorage'a kaydet
+      const email = getCurrentUserEmail();
+      if (email) {
+        writeNotificationsForEmail(email, notifications);
+      }
+    }
   }
 }
 
@@ -4704,7 +5219,8 @@ async function handleCopyConfirm() {
     closeCopyPopover();
     showToast("Paylaşım kopyalandı.");
   } catch (err) {
-    alert(err.message || "Paylaşım kopyalanamadı.");
+    console.error('[copyEntry] Hata:', err);
+    showErrorToast(err.message || "Paylaşım kopyalanamadı");
   } finally {
     if (copyConfirmBtn) copyConfirmBtn.disabled = false;
   }
@@ -4776,9 +5292,7 @@ function setActiveChannelFilter(nextFilter) {
     nextFilter = "all";
   }
   activeChannelFilter = nextFilter;
-  try {
-    localStorage.setItem(CHANNEL_FILTER_STORAGE_KEY, activeChannelFilter);
-  } catch {}
+  safeLocalStorageSet(CHANNEL_FILTER_STORAGE_KEY, activeChannelFilter);
   channelFilterButtons.forEach((btn) => {
     const target = btn.dataset.channel || "all";
     btn.classList.toggle("active", target === activeChannelFilter);
@@ -4802,9 +5316,7 @@ function setAssigneeFilter(nextFilter) {
   const normalized = allowedViews.includes(nextFilter) ? nextFilter : "all";
   if (assigneeFilter === normalized) return;
   assigneeFilter = normalized;
-  try {
-    localStorage.setItem(ASSIGNEE_FILTER_STORAGE_KEY, assigneeFilter);
-  } catch {}
+  safeLocalStorageSet(ASSIGNEE_FILTER_STORAGE_KEY, assigneeFilter);
   updateAssigneeFilterUI();
   renderCalendar();
   updateScheduleList();
@@ -4843,22 +5355,30 @@ const COLOR_SETTINGS_STORAGE_KEY = "goartCalendarColorSettings";
 
 function readColorSettingsFromStorage() {
   try {
-    const raw = localStorage.getItem(COLOR_SETTINGS_STORAGE_KEY);
+    const raw = safeLocalStorageGet(COLOR_SETTINGS_STORAGE_KEY, null);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     return parsed && typeof parsed === "object" ? parsed : null;
-  } catch {
+  } catch (err) {
+    console.error('[readColorSettingsFromStorage] JSON parse hatası:', err);
+    showErrorToast('Renk ayarları okunamadı');
     return null;
   }
 }
 
 function writeColorSettingsToStorage(settings) {
   try {
-    localStorage.setItem(
+    const success = safeLocalStorageSet(
       COLOR_SETTINGS_STORAGE_KEY,
       JSON.stringify(settings)
     );
-  } catch {}
+    if (!success) {
+      console.error('[writeColorSettingsToStorage] Kayıt başarısız');
+    }
+  } catch (err) {
+    console.error('[writeColorSettingsToStorage] JSON stringify hatası:', err);
+    showErrorToast('Renk ayarları kaydedilemedi');
+  }
 }
 
 async function loadColorDescriptions(force = false) {
@@ -4891,6 +5411,7 @@ async function loadResponsibleUsers() {
     responsibleUsers = [];
     responsibleUserMap.clear();
     populateOwnerSelectOptions();
+    populateTaskOwnerSelect(); // Görev modalı için de dropdown'ı güncelle
     return;
   }
   try {
@@ -4907,12 +5428,14 @@ async function loadResponsibleUsers() {
       }
     });
     console.log("Sorumlu kullanıcılar yüklendi:", responsibleUsers.length, "kullanıcı");
-    populateOwnerSelectOptions();
+    populateOwnerSelectOptions(); // Paylaşım formu için dropdown'ı güncelle
+    populateTaskOwnerSelect(); // Görev modalı için de dropdown'ı güncelle
   } catch (err) {
     console.error("Sorumlu kişi listesi yüklenemedi:", err);
     responsibleUsers = [];
     responsibleUserMap.clear();
     populateOwnerSelectOptions();
+    populateTaskOwnerSelect(); // Görev modalı için de dropdown'ı güncelle
   }
   if (
     selectedDateKey &&
@@ -4940,6 +5463,29 @@ function populateOwnerSelectOptions() {
     ownerSelect.value = previousValue;
   } else {
     ownerSelect.value = "";
+  }
+}
+
+// Görev modalındaki sorumlu kişi dropdown'ını doldur
+function populateTaskOwnerSelect() {
+  // taskOwnerSelect elementi henüz yüklenmemiş olabilir (sayfa ilk açılışta)
+  const taskOwnerSelect = document.getElementById("taskOwnerSelect");
+  if (!taskOwnerSelect) return;
+  
+  const previousValue = taskOwnerSelect.value;
+  taskOwnerSelect.innerHTML = '<option value="">Seçilmedi</option>';
+  
+  responsibleUsers.forEach((user) => {
+    if (!user || typeof user.id === "undefined") return;
+    const opt = document.createElement("option");
+    opt.value = String(user.id);
+    opt.textContent = user.email || `#${user.id}`;
+    taskOwnerSelect.appendChild(opt);
+  });
+  
+  // Önceki değeri koru
+  if (previousValue && responsibleUserMap.has(Number(previousValue))) {
+    taskOwnerSelect.value = previousValue;
   }
 }
 
@@ -5223,7 +5769,8 @@ function handleHighlightSelection(colorToken) {
       if (viewReports.style.display !== "none") renderReports();
     })
     .catch((err) => {
-      alert(err.message || "Gün işaretlenemedi.");
+      console.error('[updateDayHighlight] Hata:', err);
+      showErrorToast(err.message || "Gün işaretlenemedi");
       updateDayHighlightLocally(selectedDateKey, previousColor);
     });
 }
@@ -5387,9 +5934,9 @@ if (modalFormSection) {
     function setAuthToken(token) {
       authToken = token || "";
       if (authToken) {
-        localStorage.setItem("contentCalendar_token", authToken);
+        safeLocalStorageSet("contentCalendar_token", authToken);
       } else {
-        localStorage.removeItem("contentCalendar_token");
+        safeLocalStorageRemove("contentCalendar_token");
       }
       updateAuthUI();
     }
@@ -5687,6 +6234,7 @@ if (modalFormSection) {
       setModalViewForEntry(null);
       closeCopyPopover();
       renderCalendar();
+      updateScheduleList(); // Sağ paneldeki listeyi güncelle
       if (viewReports.style.display !== "none") renderReports();
       if (selectedDateKey) {
         currentDayItems = loadDayData(selectedDateKey).items;
@@ -5779,7 +6327,8 @@ if (modalFormSection) {
             await updateUserRole(user.id, nextRole);
             await loadAdminUsers();
           } catch (error) {
-            alert(error.message);
+            console.error('[updateUserRole] Hata:', error);
+            showErrorToast(error.message || "Rol güncellenemedi");
           } finally {
             roleSelect.disabled =
               currentUser && currentUser.id === user.id;
@@ -5814,7 +6363,8 @@ if (modalFormSection) {
               );
               closeAdminOverlay();
             } catch (error) {
-              alert(error.message);
+              console.error('[loadEntriesFromServer] Hata:', error);
+              showErrorToast(error.message || "Kullanıcı takvimi yüklenemedi");
             }
           });
           actionsDiv.appendChild(viewBtn);
@@ -5935,13 +6485,13 @@ if (modalFormSection) {
       }
     }
     function initTheme() {
-      const stored = localStorage.getItem("contentCalendar_theme");
+      const stored = safeLocalStorageGet("contentCalendar_theme", "light");
       applyTheme(stored === "dark" ? "dark" : "light");
     }
     themeToggleBtn.addEventListener("click", () => {
       const next = document.body.classList.contains("dark") ? "light" : "dark";
       applyTheme(next);
-      localStorage.setItem("contentCalendar_theme", next);
+      safeLocalStorageSet("contentCalendar_theme", next);
       if (viewReports.style.display !== "none") renderReports();
     });
 
@@ -6016,6 +6566,25 @@ if (modalFormSection) {
         daySummaryScroll.style.maxHeight = `${targetScrollHeight}px`;
       } else {
         summaryShell.style.height = `${calendarHeight}px`;
+      }
+      
+      // Görev Panosu'nu da aynı hizaya getir
+      const taskBoardPanel = document.querySelector(".task-board-panel");
+      const taskBoardScrollWrapper = document.querySelector(".task-board-scroll-wrapper");
+      
+      if (taskBoardPanel && taskBoardScrollWrapper && calendarHeight > 0) {
+        taskBoardPanel.style.height = `${calendarHeight}px`;
+        
+        // Görev Panosu'ndaki diğer içerik yüksekliğini hesapla (header + gap)
+        const taskBoardHeader = taskBoardPanel.querySelector(".task-board-header");
+        const headerHeight = taskBoardHeader ? taskBoardHeader.offsetHeight : 0;
+        const gapHeight = 6; // CSS'teki gap değeri
+        const taskBoardTargetHeight = calendarHeight - headerHeight - gapHeight - 8;
+        
+        if (taskBoardTargetHeight > 0) {
+          taskBoardScrollWrapper.style.height = `${taskBoardTargetHeight}px`;
+          taskBoardScrollWrapper.style.maxHeight = `${taskBoardTargetHeight}px`;
+        }
       }
     }
     window.addEventListener("load", syncDaySummaryHeight);
@@ -6568,15 +7137,41 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       // Arama yoksa ve seçili bir tarih varsa "Paylaşım oluştur" butonu ekle
       if (!scheduleSearchQuery && selectedDateKey) {
         const createBtn = document.createElement("button");
-        createBtn.className = "secondary-btn";
-        createBtn.style.cssText = "padding: 10px 20px; font-size: 14px; font-weight: 600;";
+        createBtn.className = "secondary-btn modal-create-btn";
+        createBtn.style.cssText = "padding: 7px 13px; font-size: 9px; font-weight: 600;";
         createBtn.textContent = "+ Paylaşım oluştur";
         createBtn.onclick = () => {
-          // Seçili tarih için yeni kart oluşturma formunu aç
-          clearFormOnly();
+          // Giriş kontrolü
+          if (!authToken) {
+            alert("Paylaşım oluşturmak için önce giriş yap.");
+            showLoginOverlay();
+            return;
+          }
+          if (!isViewingOwnData()) {
+            alert("Diğer kullanıcıların takviminde değişiklik yapamazsın.");
+            return;
+          }
+          
+          // MODALIN AÇIK OLMADIĞI DURUMDA, MODALI AÇ
+          if (dayModal.style.display === "none" || !selectedDateKey) {
+            // Eğer selectedDateKey varsa o tarihi aç, yoksa bugünü aç
+            const targetKey = selectedDateKey || todayDateKey;
+            if (targetKey) {
+              const dateObj = parseDateKeyString(targetKey);
+              if (dateObj) {
+                openModalForDate(dateObj, targetKey, null);
+                return; // Modal açıldı, fonksiyondan çık
+              }
+            }
+          }
+          
+          // Modal zaten açıksa, sadece formu temizle ve göster
           activeItemId = null;
-          modalFormSection.style.display = "block";
-          openModal();
+          modalForcePlanMode = false;
+          clearFormOnly();
+          setModalViewForEntry(null); // Bu fonksiyon form bölümünü "flex" olarak gösterir
+          deleteBtn.disabled = true;
+          renderModalSummaryList();
         };
         container.appendChild(createBtn);
       }
@@ -6600,14 +7195,15 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
 
     /* Takvim */
     function renderCalendar() {
-      const firstDay = new Date(currentYear, currentMonth, 1);
-      const lastDay = new Date(currentYear, currentMonth + 1, 0);
-      const firstWeekday = (firstDay.getDay() + 6) % 7;
-      const daysInMonth = lastDay.getDate();
+      try {
+        const firstDay = new Date(currentYear, currentMonth, 1);
+        const lastDay = new Date(currentYear, currentMonth + 1, 0);
+        const firstWeekday = (firstDay.getDay() + 6) % 7;
+        const daysInMonth = lastDay.getDate();
 
-      monthLabel.textContent = monthNames[currentMonth] + " " + currentYear;
+        monthLabel.textContent = monthNames[currentMonth] + " " + currentYear;
 
-      daysContainer.innerHTML = "";
+        daysContainer.innerHTML = "";
 
       for (let i = 0; i < firstWeekday; i++) {
         const empty = document.createElement("div");
@@ -6706,18 +7302,50 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
 
       updateScheduleList();
       syncDaySummaryHeight();
+      } catch (err) {
+        console.error('[renderCalendar] DOM manipülasyon hatası:', err);
+        showErrorToast('Takvim görüntülenemedi');
+      }
     }
 
     /* Modal içi liste */
     function renderModalSummaryList() {
-      modalSummary.innerHTML = "";
+      try {
+        modalSummary.innerHTML = "";
 
-      if (!currentDayItems.length) {
+        if (!currentDayItems.length) {
         deleteBtn.disabled = true;
         const empty = document.createElement("div");
         empty.className = "summary-empty";
         empty.textContent = "Bu gün için kayıtlı içerik yok.";
         modalSummary.appendChild(empty);
+        
+        // Boş listede "Paylaşım oluştur" butonu ekle
+        const createBtn = document.createElement("button");
+        createBtn.className = "secondary-btn modal-create-btn";
+        createBtn.style.cssText = "padding: 7px 13px; font-size: 9px; font-weight: 600; margin-top: 12px;";
+        createBtn.textContent = "+ Paylaşım oluştur";
+        createBtn.onclick = () => {
+          // Giriş kontrolü
+          if (!authToken) {
+            alert("Paylaşım oluşturmak için önce giriş yap.");
+            showLoginOverlay();
+            return;
+          }
+          if (!isViewingOwnData()) {
+            alert("Diğer kullanıcıların takviminde değişiklik yapamazsın.");
+            return;
+          }
+          // Form açma işlemleri (toggleFormBtn ile aynı)
+          activeItemId = null;
+          modalForcePlanMode = false;
+          clearFormOnly();
+          setModalViewForEntry(null); // Bu fonksiyon form bölümünü "flex" olarak gösterir
+          deleteBtn.disabled = true;
+          renderModalSummaryList();
+        };
+        modalSummary.appendChild(createBtn);
+        
         return;
       }
 
@@ -6830,6 +7458,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         modalSummary.appendChild(wrap);
       });
       updateEditingPermissions();
+      } catch (err) {
+        console.error('[renderModalSummaryList] DOM manipülasyon hatası:', err);
+        showErrorToast('Liste görüntülenemedi');
+      }
     }
 
     function selectEntryById(entryId, forcePlan = false) {
@@ -6873,6 +7505,17 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
   }
   if (controlNoteInput) {
     controlNoteInput.value = entry.note || "";
+  }
+  // Sorumlu kişi seçimini formu yüklerken de güncelle
+  if (ownerSelect) {
+    const ownerValue = entry.owner_id ? String(entry.owner_id) : "";
+    if (ownerValue && responsibleUserMap.has(Number(ownerValue))) {
+      ownerSelect.value = ownerValue;
+    } else if (currentUser && responsibleUserMap.has(currentUser.id)) {
+      ownerSelect.value = String(currentUser.id);
+    } else {
+      ownerSelect.value = "";
+    }
   }
 }
     function updatePendingCountBadge(count) {
@@ -7565,8 +8208,9 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     }
 
     function renderReports() {
-      const rangeInfo = getReportRangeInfo();
-      if (!rangeInfo) {
+      try {
+        const rangeInfo = getReportRangeInfo();
+        if (!rangeInfo) {
         reportMonthLabel.textContent = "Lütfen geçerli bir tarih aralığı seç.";
         clearReportOutputs();
         if (reportMode === "range" && reportPlatforms) {
@@ -7589,6 +8233,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         renderReportsExecuted(rangeInfo, entriesInRange);
       } else {
         renderReportsSummary(rangeInfo);
+      }
+      } catch (err) {
+        console.error('[renderReports] Rapor oluşturma hatası:', err);
+        showErrorToast('Raporlar görüntülenemedi');
       }
     }
     function renderPlatformChart(entries) {
@@ -8050,7 +8698,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           }
           alert(`İçe aktarma tamamlandı. ${message}`);
         } catch (err) {
-          alert(err.message || "Dosya yüklenemedi.");
+          console.error('[excelUpload] Hata:', err);
+          showErrorToast(err.message || "Dosya yüklenemedi");
         } finally {
           excelUploadBtn.disabled = false;
           excelUploadBtn.textContent = previousText || excelUploadDefaultText;
@@ -8136,10 +8785,14 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           body: JSON.stringify({ scope })
         });
         await response.json();
+        // Backend'den güncel veriyi yükle
         await loadEntriesFromServer();
+        // Ekrandaki kartları (schedule list) da yeniden çiz
+        updateScheduleList();
         alert(resetSuccessMessages[scope] || "Kayıtlar başarıyla silindi.");
       } catch (err) {
-        alert(err.message || "Takvim sıfırlanamadı.");
+        console.error('[resetEntries] Hata:', err);
+        showErrorToast(err.message || "Takvim sıfırlanamadı");
       } finally {
         if (resetEntriesBtn) {
           resetEntriesBtn.disabled = false;
@@ -8224,12 +8877,18 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     
     // localStorage'dan görevleri yükle
     function loadTasks() {
-      const stored = localStorage.getItem('taskBoardData');
+      const stored = safeLocalStorageGet('taskBoardData', null);
       if (stored) {
         try {
-          return JSON.parse(stored);
+          const tasks = JSON.parse(stored);
+          // Veri bütünlüğü kontrolü: status alanı eksik olan görevleri düzelt
+          return tasks.map(task => ({
+            ...task,
+            status: task.status || "todo" // status eksikse default olarak "todo" yap
+          }));
         } catch (e) {
           console.error('Görevler yüklenirken hata:', e);
+          showErrorToast('Görevler okunamadı');
           return getDefaultTasks();
         }
       }
@@ -8238,7 +8897,15 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     
     // Görevleri localStorage'a kaydet
     function saveTasks(tasks) {
-      localStorage.setItem('taskBoardData', JSON.stringify(tasks));
+      try {
+        const success = safeLocalStorageSet('taskBoardData', JSON.stringify(tasks));
+        if (!success) {
+          console.error('[saveTasks] Kayıt başarısız');
+        }
+      } catch (err) {
+        console.error('[saveTasks] JSON stringify hatası:', err);
+        showErrorToast('Görevler kaydedilemedi');
+      }
     }
     
     // İlk kurulum için örnek görevler
@@ -8315,7 +8982,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       taskBoardContainer.innerHTML = "";
       
       taskBoardColumns.forEach(column => {
-        const tasks = taskBoardData.filter(task => task.status === column.status);
+        // Status alanı eksik olan görevleri "todo" olarak kabul et (veri bütünlüğü için)
+        const tasks = taskBoardData.filter(task => (task.status || "todo") === column.status);
         
         const columnEl = document.createElement("div");
         columnEl.className = "task-board-column";
@@ -8327,14 +8995,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         
         const titleEl = document.createElement("div");
         titleEl.className = "task-board-column-title";
-        titleEl.textContent = column.title;
-        
-        const countEl = document.createElement("span");
-        countEl.className = "task-board-column-count";
-        countEl.textContent = tasks.length;
+        // Başlık ve sayıyı parantez içinde birleştir (örn: "Bekliyor (2)")
+        titleEl.textContent = `${column.title} (${tasks.length})`;
         
         headerEl.appendChild(titleEl);
-        headerEl.appendChild(countEl);
         columnEl.appendChild(headerEl);
         
         // Kartlar container
@@ -8377,6 +9041,17 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         cardEl.appendChild(descEl);
       }
       
+      // Teslim tarihi (varsa)
+      if (task.dueDate) {
+        const dueDateEl = document.createElement("div");
+        dueDateEl.style.cssText = "font-size: 10px; color: #6b7280; margin-bottom: 6px; display: flex; align-items: center; gap: 3px;";
+        const dueDate = new Date(task.dueDate);
+        const dateStr = dueDate.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const timeStr = dueDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+        dueDateEl.innerHTML = `📅 ${dateStr} - ${timeStr}`;
+        cardEl.appendChild(dueDateEl);
+      }
+      
       // Meta bilgiler
       const metaEl = document.createElement("div");
       metaEl.className = "task-board-card-meta";
@@ -8384,7 +9059,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       // Sorumlu
       const assigneeEl = document.createElement("div");
       assigneeEl.className = "task-board-card-assignee";
-      assigneeEl.textContent = task.assignee;
+      assigneeEl.textContent = task.assignee || "Belirlenmedi";
       metaEl.appendChild(assigneeEl);
       
       // Öncelik
@@ -8398,7 +9073,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       
       cardEl.appendChild(metaEl);
       
-      // Aksiyon butonları (status değiştir ve sil)
+      // Aksiyon butonları (sadece status değiştir - sil butonu kaldırıldı)
       const actionsEl = document.createElement("div");
       actionsEl.style.cssText = "display: flex; gap: 4px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e2e8f0;";
       
@@ -8416,20 +9091,16 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       });
       actionsEl.appendChild(statusSelect);
       
-      // Sil butonu
-      const deleteBtn = document.createElement("button");
-      deleteBtn.textContent = "×";
-      deleteBtn.style.cssText = "padding: 4px 8px; font-size: 16px; color: #dc2626; background: #fee2e2; border: none; border-radius: 4px; cursor: pointer;";
-      deleteBtn.title = "Görevi sil";
-      deleteBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (confirm(`"${task.title}" görevini silmek istediğinize emin misiniz?`)) {
-          deleteTask(task.id);
-        }
-      });
-      actionsEl.appendChild(deleteBtn);
-      
       cardEl.appendChild(actionsEl);
+      
+      // Karta tıklayınca düzenleme modalını aç
+      cardEl.addEventListener("click", (e) => {
+        // Eğer status dropdown'a tıklandıysa, modalı açma
+        if (e.target === statusSelect) {
+          return;
+        }
+        openTaskModal(task.id);
+      });
       
       return cardEl;
     }
@@ -8440,8 +9111,11 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         id: Date.now(),
         title: taskData.title,
         description: taskData.description || "",
+        note: taskData.note || "",
+        dueDate: taskData.dueDate || null,
         status: taskData.status || "todo",
         assignee: taskData.assignee || "",
+        owner_id: taskData.owner_id || null,
         priority: taskData.priority || "medium",
         createdAt: new Date().toISOString()
       };
@@ -8455,7 +9129,16 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     function updateTask(taskId, updates) {
       const index = taskBoardData.findIndex(t => t.id === taskId);
       if (index === -1) return false;
-      taskBoardData[index] = { ...taskBoardData[index], ...updates };
+      
+      // undefined değerleri filtreleyerek güncelle (mevcut değerleri korumak için)
+      const cleanedUpdates = {};
+      Object.keys(updates).forEach(key => {
+        if (updates[key] !== undefined) {
+          cleanedUpdates[key] = updates[key];
+        }
+      });
+      
+      taskBoardData[index] = { ...taskBoardData[index], ...cleanedUpdates };
       saveTasks(taskBoardData);
       renderTaskBoard();
       return true;
@@ -8468,24 +9151,301 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       renderTaskBoard();
     }
     
+    /* ==================== GÖREV MODAL FONKSİYONLARI ==================== */
+    
+    // Görev Modal elementleri
+    const taskModal = document.getElementById("taskModal");
+    const taskModalTitle = document.getElementById("taskModalTitle");
+    const taskModalCloseBtn = document.getElementById("taskModalCloseBtn");
+    const taskNameInput = document.getElementById("taskNameInput");
+    const taskDescriptionInput = document.getElementById("taskDescriptionInput");
+    const taskNoteInput = document.getElementById("taskNoteInput");
+    const taskDueDateInput = document.getElementById("taskDueDateInput");
+    const taskDueTimeInput = document.getElementById("taskDueTimeInput");
+    const taskOwnerSelect = document.getElementById("taskOwnerSelect");
+    const taskSaveBtn = document.getElementById("taskSaveBtn");
+    const taskClearBtn = document.getElementById("taskClearBtn");
+    const taskDeleteBtn = document.getElementById("taskDeleteBtn");
+    const taskCancelBtn = document.getElementById("taskCancelBtn");
+    
+    let currentEditingTaskId = null; // Düzenlenen görev ID'si (null ise yeni görev)
+    
+    // Görev modalını aç
+    function openTaskModal(taskId = null) {
+      if (!taskModal) return;
+      
+      // Düzenleme modunda mı yoksa yeni görev mi?
+      currentEditingTaskId = taskId;
+      
+      if (taskId) {
+        // Düzenleme modu - mevcut görevi yükle
+        const task = taskBoardData.find(t => t.id === taskId);
+        if (!task) return;
+        
+        taskModalTitle.textContent = "Görevi Düzenle";
+        taskNameInput.value = task.title || "";
+        taskDescriptionInput.value = task.description || "";
+        taskNoteInput.value = task.note || "";
+        
+        // Teslim tarihi ve saati ayarla
+        if (task.dueDate) {
+          const dueDate = new Date(task.dueDate);
+          taskDueDateInput.value = dueDate.toISOString().split('T')[0];
+          taskDueTimeInput.value = dueDate.toTimeString().slice(0, 5);
+        }
+        
+        // Sorumlu kişi seç
+        if (task.owner_id) {
+          taskOwnerSelect.value = String(task.owner_id);
+        } else {
+          taskOwnerSelect.value = "";
+        }
+        
+        // Öncelik seç
+        const priorityRadio = document.querySelector(`input[name="taskPriority"][value="${task.priority || 'low'}"]`);
+        if (priorityRadio) priorityRadio.checked = true;
+        
+      } else {
+        // Yeni görev modu - formu temizle
+        taskModalTitle.textContent = "Yeni Görev Oluştur";
+        taskNameInput.value = "";
+        taskDescriptionInput.value = "";
+        taskNoteInput.value = "";
+        
+        // Bugünün tarihi default olarak
+        const today = new Date();
+        taskDueDateInput.value = today.toISOString().split('T')[0];
+        taskDueTimeInput.value = "17:00";
+        
+        // Sorumlu kişi: Mevcut kullanıcı default olarak
+        if (currentUser && responsibleUserMap.has(currentUser.id)) {
+          taskOwnerSelect.value = String(currentUser.id);
+        } else {
+          taskOwnerSelect.value = "";
+        }
+        
+        // Öncelik: Düşük default
+        const lowPriorityRadio = document.querySelector('input[name="taskPriority"][value="low"]');
+        if (lowPriorityRadio) lowPriorityRadio.checked = true;
+      }
+      
+      // Sorumlu kişi listesini doldur
+      populateTaskOwnerSelect();
+      
+      // Sil butonunu sadece düzenleme modunda göster
+      if (taskDeleteBtn) {
+        taskDeleteBtn.style.display = taskId ? "block" : "none";
+      }
+      
+      // Modalı göster (openModalHelper ile ana sayfa scroll'unu kilitle)
+      openModalHelper(taskModal);
+      
+      // İlk input'a focus
+      if (taskNameInput) taskNameInput.focus();
+    }
+    
+    // Görev modalını kapat
+    function closeTaskModal() {
+      if (!taskModal) return;
+      
+      // closeModalHelper ile scroll pozisyonunu geri yükle
+      closeModalHelper(taskModal);
+      currentEditingTaskId = null;
+    }
+    
+    // NOT: populateTaskOwnerSelect() fonksiyonu artık loadResponsibleUsers() yanında tanımlı (satır ~5300 civarı)
+    
+    // Görev kaydetme fonksiyonu
+    function saveTaskFromModal() {
+      // Zorunlu alanları kontrol et
+      const taskName = taskNameInput.value.trim();
+      const dueDate = taskDueDateInput.value;
+      
+      if (!taskName) {
+        showErrorToast("Görev ismi zorunludur!");
+        taskNameInput.focus();
+        return;
+      }
+      
+      if (!dueDate) {
+        showErrorToast("Teslim tarihi zorunludur!");
+        taskDueDateInput.focus();
+        return;
+      }
+      
+      // Seçili önceliği al
+      const priorityRadio = document.querySelector('input[name="taskPriority"]:checked');
+      const priority = priorityRadio ? priorityRadio.value : "low";
+      
+      // Teslim tarihi + saati birleştir
+      const dueTime = taskDueTimeInput.value || "17:00";
+      const dueDateTimeString = `${dueDate}T${dueTime}:00`;
+      const dueDateObj = new Date(dueDateTimeString);
+      
+      // Sorumlu kişi bilgisi
+      const selectedOwnerId = taskOwnerSelect.value ? Number(taskOwnerSelect.value) : null;
+      const ownerEmail = selectedOwnerId ? getOwnerLabel(selectedOwnerId) : "";
+      
+      // Görev objesini oluştur
+      const taskData = {
+        title: taskName,
+        description: taskDescriptionInput.value.trim(),
+        note: taskNoteInput.value.trim(),
+        dueDate: dueDateObj.toISOString(),
+        owner_id: selectedOwnerId,
+        assignee: ownerEmail || "Belirlenmedi",
+        priority: priority
+      };
+      
+      // Yeni görev oluşturuluyorsa, status alanını ekle (düzenleme modunda status korunur)
+      if (!currentEditingTaskId) {
+        taskData.status = "todo";
+      }
+      
+      // DEBUG: Güncellenecek veriyi konsola yazdır
+      console.log("[saveTaskFromModal] Kaydedilecek veri:", taskData);
+      console.log("[saveTaskFromModal] Düzenleme modu:", !!currentEditingTaskId);
+      
+      try {
+        if (currentEditingTaskId) {
+          // Mevcut görevi bul ve mevcut status'ü kontrol et
+          const existingTask = taskBoardData.find(t => t.id === currentEditingTaskId);
+          console.log("[saveTaskFromModal] Mevcut görev:", existingTask);
+          
+          // Sorumlu kişi değişti mi kontrol et
+          const previousOwnerId = existingTask ? existingTask.owner_id : null;
+          const ownerChanged = selectedOwnerId !== null && selectedOwnerId !== previousOwnerId;
+          
+          // Mevcut görevi güncelle
+          updateTask(currentEditingTaskId, taskData);
+          
+          // Güncellenmiş görevi kontrol et
+          const updatedTask = taskBoardData.find(t => t.id === currentEditingTaskId);
+          console.log("[saveTaskFromModal] Güncellenen görev:", updatedTask);
+          
+          // Sorumlu kişi değiştiyse bildirim gönder
+          if (ownerChanged && ownerEmail) {
+            addNotificationForAssignee({
+              userEmail: ownerEmail,
+              cardId: `task_${currentEditingTaskId}`,
+              title: `Görev: ${taskName}`,
+              message: `${getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim"} seni şu göreve sorumlu yaptı: ${taskName}`,
+              dayKey: null
+            });
+          }
+          
+          showSuccessToast("Görev başarıyla güncellendi!");
+        } else {
+          // Yeni görev ekle
+          const newTask = addTask(taskData);
+          
+          // Sorumlu kişi varsa bildirim gönder
+          if (selectedOwnerId !== null && ownerEmail && newTask) {
+            addNotificationForAssignee({
+              userEmail: ownerEmail,
+              cardId: `task_${newTask.id}`,
+              title: `Görev: ${taskName}`,
+              message: `${getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim"} seni yeni bir göreve sorumlu yaptı: ${taskName}`,
+              dayKey: null
+            });
+          }
+          
+          showSuccessToast("Görev başarıyla eklendi!");
+        }
+        
+        closeTaskModal();
+        
+      } catch (err) {
+        console.error("[saveTaskFromModal] Hata:", err);
+        showErrorToast("Görev kaydedilemedi!");
+      }
+    }
+    
     // Yeni görev butonu click eventi
     if (taskBoardAddBtn) {
       taskBoardAddBtn.addEventListener("click", () => {
-        const title = prompt("Görev başlığı:");
-        if (!title || !title.trim()) return;
+        openTaskModal(); // Yeni görev modalını aç
+      });
+    }
+    
+    // Modal kapatma butonları
+    if (taskModalCloseBtn) {
+      taskModalCloseBtn.addEventListener("click", closeTaskModal);
+    }
+    
+    if (taskCancelBtn) {
+      taskCancelBtn.addEventListener("click", closeTaskModal);
+    }
+    
+    // Temizle butonu - formu sıfırla
+    if (taskClearBtn) {
+      taskClearBtn.addEventListener("click", () => {
+        // Tüm alanları temizle
+        if (taskNameInput) taskNameInput.value = "";
+        if (taskDescriptionInput) taskDescriptionInput.value = "";
+        if (taskNoteInput) taskNoteInput.value = "";
         
-        const description = prompt("Görev açıklaması (opsiyonel):");
-        const assignee = prompt("Sorumlu email (opsiyonel):");
+        // Bugünün tarihi
+        const today = new Date();
+        if (taskDueDateInput) taskDueDateInput.value = today.toISOString().split('T')[0];
+        if (taskDueTimeInput) taskDueTimeInput.value = "17:00";
         
-        addTask({
-          title: title.trim(),
-          description: description ? description.trim() : "",
-          assignee: assignee ? assignee.trim() : "",
-          status: "todo",
-          priority: "medium"
-        });
+        // Sorumlu kişi: Mevcut kullanıcı
+        if (taskOwnerSelect) {
+          if (currentUser && responsibleUserMap.has(currentUser.id)) {
+            taskOwnerSelect.value = String(currentUser.id);
+          } else {
+            taskOwnerSelect.value = "";
+          }
+        }
         
-        alert("Görev başarıyla eklendi!");
+        // Öncelik: Düşük
+        const lowPriorityRadio = document.querySelector('input[name="taskPriority"][value="low"]');
+        if (lowPriorityRadio) lowPriorityRadio.checked = true;
+        
+        // İlk input'a focus
+        if (taskNameInput) taskNameInput.focus();
+      });
+    }
+    
+    // Sil butonu - görevi sil ve modalı kapat
+    if (taskDeleteBtn) {
+      taskDeleteBtn.addEventListener("click", () => {
+        if (!currentEditingTaskId) return;
+        
+        // Silme onayı iste
+        const task = taskBoardData.find(t => t.id === currentEditingTaskId);
+        if (!task) return;
+        
+        if (confirm(`"${task.title}" görevini silmek istediğinize emin misiniz?`)) {
+          deleteTask(currentEditingTaskId);
+          showSuccessToast("Görev başarıyla silindi!");
+          closeTaskModal();
+        }
+      });
+    }
+    
+    // Kaydet butonu
+    if (taskSaveBtn) {
+      taskSaveBtn.addEventListener("click", saveTaskFromModal);
+    }
+    
+    // Modal backdrop'a tıklayınca kapat
+    if (taskModal) {
+      taskModal.addEventListener("click", (e) => {
+        if (e.target === taskModal) {
+          closeTaskModal();
+        }
+      });
+    }
+    
+    // Enter tuşu ile kaydet (textarea hariç)
+    if (taskModal) {
+      taskModal.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
+          e.preventDefault();
+          saveTaskFromModal();
+        }
       });
     }
 
@@ -8711,8 +9671,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           });
         }
       } catch (err) {
-        console.error(err);
-        alert(err.message || "Kaydedilirken bir hata oluştu.");
+        console.error('[handleSave] Hata:', err);
+        showErrorToast(err.message || "Kaydedilirken bir hata oluştu");
       } finally {
         saveBtn.disabled = false;
       }
@@ -8769,7 +9729,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         setModalViewForEntry(updatedEntry);
         updateScheduleList();
       } catch (err) {
-        alert(err.message || "Durum güncellenemedi.");
+        console.error('[handleStatusDecision] Hata:', err);
+        showErrorToast(err.message || "Durum güncellenemedi");
       } finally {
         actionButtons.forEach((btn) => btn && (btn.disabled = false));
       }
@@ -8800,12 +9761,13 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         modalFormSection.style.display = "none";
         currentDayItems = loadDayData(selectedDateKey).items;
         renderCalendar();
+        updateScheduleList(); // Sağ paneldeki listeyi güncelle
         if (viewReports.style.display !== "none") renderReports();
         renderModalSummaryList();
       } catch (err) {
-        console.error(err);
+        console.error('[handleDelete] Hata:', err);
         deleteBtn.disabled = false;
-        alert(err.message || "Kayıt silinirken bir hata oluştu.");
+        showErrorToast(err.message || "Kayıt silinirken bir hata oluştu");
       }
     }
 

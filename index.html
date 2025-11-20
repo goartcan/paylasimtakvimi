@@ -9461,13 +9461,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       }
       
       // --- AUTO REFRESH (POLLING) ---
-      setInterval(() => {
-        if (authToken) {
-          console.log("🔄 Auto-refreshing data...");
-          renderCalendar(); // Takvimi yenile
-          refreshTaskBoard(); // Görevleri yenile
-        }
-      }, 30000); // 30 saniye
+      // Not: startAutoSync() fonksiyonu zaten otomatik senkronizasyon yapıyor
+      // Bu yüzden burada tekrar polling yapmaya gerek yok (performans için kaldırıldı)
     }
 
     /* 🔄 Otomatik Senkronizasyon Mekanizması (Polling) */
@@ -9485,8 +9480,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           const isAdminPanelOpen = adminOverlay && adminOverlay.classList.contains("active");
           const isLoginOverlayOpen = loginOverlay && loginOverlay.classList.contains("active");
 
-          // Kullanıcı giriş yapmamışsa polling yapma
-          if (!authToken || isModalOpen || isAdminPanelOpen || isLoginOverlayOpen) {
+          // Kullanıcı giriş yapmamışsa veya sekme arka plandaysa polling yapma (Performans optimizasyonu)
+          if (!authToken || isModalOpen || isAdminPanelOpen || isLoginOverlayOpen || document.visibilityState !== 'visible') {
             return; // Bu döngüyü atla, bir sonrakini bekle
           }
 
@@ -9501,7 +9496,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           // Hata olursa sessizce logla, kullanıcıyı rahatsız etme
           console.warn("[AutoSync] Otomatik senkronizasyon hatası:", err.message);
         }
-      }, 10000); // 10 saniye = 10000 milisaniye (Görevler için daha hızlı senkronizasyon)
+      }, 120000); // 2 dakika (10 saniyeden 120 saniyeye çıkarıldı - performans için)
     }
 
     // Polling'i durdur (örn: kullanıcı çıkış yaptığında)

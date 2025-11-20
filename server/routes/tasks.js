@@ -8,6 +8,7 @@ const router = express.Router();
 router.get("/", requireAuth, (req, res) => {
   try {
     const rows = db.prepare("SELECT * FROM tasks ORDER BY created_at DESC").all();
+    console.log(`[GET /tasks] ${rows.length} görev döndürülüyor (user_id: ${req.userId})`);
     res.json(rows);
   } catch (err) {
     console.error("[GET /tasks] Hata:", err);
@@ -18,6 +19,8 @@ router.get("/", requireAuth, (req, res) => {
 // Yeni görev oluştur
 router.post("/", requireAuth, (req, res) => {
   try {
+    console.log("[POST /tasks] Yeni görev oluşturuluyor, body:", req.body);
+    
     const {
       title = "",
       description = "",
@@ -27,6 +30,7 @@ router.post("/", requireAuth, (req, res) => {
     } = req.body;
 
     if (!title || !title.trim()) {
+      console.warn("[POST /tasks] Başlık eksik");
       return res.status(400).json({ error: "Görev başlığı gerekli." });
     }
 
@@ -52,6 +56,7 @@ router.post("/", requireAuth, (req, res) => {
       .prepare("SELECT * FROM tasks WHERE id = ?")
       .get(result.lastInsertRowid);
 
+    console.log("[POST /tasks] Görev başarıyla oluşturuldu, id:", inserted.id);
     res.json(inserted);
   } catch (err) {
     console.error("[POST /tasks] Hata:", err);

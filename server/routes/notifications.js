@@ -8,6 +8,7 @@ const router = express.Router();
 router.get("/", requireAuth, (req, res) => {
   try {
     const userId = req.userId;
+    console.log(`[GET /notifications] Bildirimler isteniyor (user_id: ${userId})`);
     
     const notifications = db
       .prepare(
@@ -28,6 +29,8 @@ router.get("/", requireAuth, (req, res) => {
       )
       .all(userId);
     
+    console.log(`[GET /notifications] ${notifications.length} bildirim döndürülüyor`);
+    
     // is_read'i boolean'a çevir
     const formatted = notifications.map((n) => ({
       ...n,
@@ -38,6 +41,7 @@ router.get("/", requireAuth, (req, res) => {
     res.json(formatted);
   } catch (err) {
     console.error("[GET /notifications] Hata:", err);
+    console.error("[GET /notifications] Hata detayı:", err.stack);
     res.status(500).json({ error: "Bildirimler alınamadı." });
   }
 });

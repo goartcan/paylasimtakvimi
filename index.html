@@ -8882,11 +8882,14 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       try {
         // Kullanıcı giriş yapmamışsa boş dizi döndür
         if (!authToken) {
+          console.warn('[loadTasksFromServer] Token yok, görevler yüklenemiyor');
           return [];
         }
 
+        console.log('[loadTasksFromServer] Backend\'den görevler isteniyor: GET /tasks'); // Debug log
         const response = await apiFetch("/tasks");
         const data = await response.json();
+        console.log('[loadTasksFromServer] Backend\'den alınan görev sayısı:', data.length); // Debug log
         
         // Veri bütünlüğü kontrolü: status alanı eksik olan görevleri düzelt
         return data.map(task => ({
@@ -8894,7 +8897,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           status: task.status || "todo"
         }));
       } catch (err) {
-        console.warn('[loadTasksFromServer] Görevler yüklenemedi:', err.message);
+        console.error('[loadTasksFromServer] Görevler yüklenemedi:', err.message);
         return [];
       }
     }
@@ -8902,11 +8905,14 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     // Yeni görev oluştur (Backend'e kaydet)
     async function createTask(taskData) {
       try {
+        console.log('[createTask] Backend\'e gönderilecek veri:', taskData); // Debug log
         const response = await apiFetch("/tasks", {
           method: "POST",
           body: JSON.stringify(taskData)
         });
-        return await response.json();
+        const result = await response.json();
+        console.log('[createTask] Backend\'den dönen sonuç:', result); // Debug log
+        return result;
       } catch (err) {
         console.error('[createTask] Hata:', err);
         showErrorToast(err.message || 'Görev oluşturulamadı');
@@ -9086,7 +9092,9 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
 
     // Görevleri yeniden yükle ve ekranı güncelle
     async function refreshTaskBoard() {
+      console.log('[refreshTaskBoard] Görevler backend\'den yükleniyor...'); // Debug log
       taskBoardData = await loadTasksFromServer();
+      console.log('[refreshTaskBoard] Yüklenen görev sayısı:', taskBoardData.length); // Debug log
       renderTaskBoard();
     }
     
@@ -9461,7 +9469,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           // Hata olursa sessizce logla, kullanıcıyı rahatsız etme
           console.warn("[AutoSync] Otomatik senkronizasyon hatası:", err.message);
         }
-      }, 30000); // 30 saniye = 30000 milisaniye
+      }, 10000); // 10 saniye = 10000 milisaniye (Görevler için daha hızlı senkronizasyon)
     }
 
     // Polling'i durdur (örn: kullanıcı çıkış yaptığında)

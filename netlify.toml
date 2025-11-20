@@ -7,6 +7,12 @@
   # Backend server/ klasörünü ignore et (KAPALI - her değişiklikte deploy et)
   # ignore = "git diff --quiet HEAD^ HEAD server/"
 
+# Deploy Preview Ayarları (Sadece PR'lerde)
+[context.deploy-preview]
+  # Branch preview'larını kapat, sadece PR preview'ları açık
+  # Bu sayede her cursor/* branch'i için deploy olmaz (para tasarrufu)
+  publish = "."
+
 # Netlify Functions için (opsiyonel - şu an kullanılmıyor)
 [build.environment]
   NODE_VERSION = "20"

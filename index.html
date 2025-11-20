@@ -3312,121 +3312,6 @@
       background: #475569;
     }
 
-    /* =========================================
-       MODERN VS CODE DARK THEME (REVIZE)
-       ========================================= */
-    body.dark {
-        /* --- 1. Renk Paleti Değişkenleri (VS Code Standartları) --- */
-        --vscode-bg: #1F1F1F;         /* Ana Arka Plan (Editör rengi) */
-        --vscode-panel: #252526;      /* Kartlar/Sidebar (Panel rengi) */
-        --vscode-hover: #2A2D2E;      /* Liste elemanı hover rengi */
-        --vscode-border: #3E3E42;     /* İnce, zarif sınır çizgileri */
-        --vscode-input: #3C3C3C;      /* Input arka planı */
-        
-        --text-main: #CCCCCC;         /* Göz yormayan ana metin */
-        --text-bright: #FFFFFF;       /* Başlıklar */
-        --text-muted: #9D9D9D;        /* Açıklamalar */
-        
-        --accent-blue: #3794FF;       /* Modern, elektrik mavisi (Link/Buton) */
-        --accent-red: #F85149;        /* Hata/Silme */
-        --accent-green: #4EC9B0;      /* Başarı/Onay */
-
-        /* --- 2. Temel Body Ayarları --- */
-        background-color: var(--vscode-bg) !important;
-        color: var(--text-main) !important;
-    }
-
-    /* --- 3. Yapısal Bileşenler (Kartlar, Sidebar, Header) --- */
-    body.dark .card,
-    body.dark .modal-content,
-    body.dark .notification-panel,
-    body.dark .sidebar,
-    body.dark .calendar-header {
-        background-color: var(--vscode-panel) !important;
-        border: 1px solid var(--vscode-border) !important; /* Sınırları belirginleştirir */
-        box-shadow: none !important; /* Dark modda gölge kirlilik yaratır, kaldırdık */
-    }
-
-    /* --- 4. Tipografi (Metinler) --- */
-    body.dark h1, body.dark h2, body.dark h3, 
-    body.dark strong, body.dark b {
-        color: var(--text-bright) !important;
-    }
-
-    body.dark .text-secondary, 
-    body.dark small {
-        color: var(--text-muted) !important;
-    }
-
-    /* --- 5. İnteraktif Elemanlar (Inputlar) --- */
-    body.dark input,
-    body.dark select,
-    body.dark textarea {
-        background-color: var(--vscode-input) !important;
-        border: 1px solid var(--vscode-border) !important;
-        color: var(--text-bright) !important;
-    }
-
-    body.dark input::placeholder {
-        color: #6E7681 !important;
-    }
-
-    /* Focuslanınca parlayan mavi sınır */
-    body.dark input:focus,
-    body.dark select:focus,
-    body.dark textarea:focus {
-        outline: none;
-        border-color: var(--accent-blue) !important;
-    }
-
-    /* --- 6. Butonlar --- */
-    body.dark .btn-primary {
-        background-color: #0078D4 !important; /* Microsoft mavisi */
-        border: 1px solid transparent;
-        color: white;
-    }
-
-    body.dark .btn-primary:hover {
-        background-color: #006CC1 !important;
-    }
-
-    body.dark .btn-secondary {
-        background-color: #3b3b3b !important;
-        border: 1px solid var(--vscode-border) !important;
-        color: var(--text-main);
-    }
-
-    body.dark .btn-danger {
-        background-color: var(--accent-red) !important;
-        color: white;
-    }
-
-    /* --- 7. Takvim Izgarası ve Listeler (Özel Düzeltme) --- */
-    /* Takvimdeki çizgilerin kaybolma sorununu çözer */
-    body.dark table, 
-    body.dark th, 
-    body.dark td,
-    body.dark .calendar-grid-cell { 
-        border-color: var(--vscode-border) !important;
-    }
-
-    /* Liste elemanları hover efekti (VS Code list style) */
-    body.dark .notification-item:hover,
-    body.dark tr:hover {
-        background-color: var(--vscode-hover) !important;
-        cursor: pointer;
-    }
-
-    /* Linkler */
-    body.dark a {
-        color: var(--accent-blue) !important;
-        text-decoration: none;
-    }
-
-    body.dark a:hover {
-        text-decoration: underline;
-    }
-
     @media (max-width: 780px) {
       .modal-columns {
         grid-template-columns: 1fr;
@@ -10026,4 +9911,16 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
 </div>
 </body>
 </html>
+<!-- Test -->
+<!-- Auto commit test -->
+<!-- GitDoc working! -->
 
+
+
+
+
+
+<!-- Test -->
+
+
+  <!-- Final test: auto commit working -->

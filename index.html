@@ -8498,6 +8498,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         await loadEntriesFromServer();
         await loadResponsibleUsers();
         await ensureColorDescriptionsLoaded();
+        startAutoSync(); // Giriş yapıldığında otomatik senkronizasyonu başlat
         hideLoginOverlay();
       } catch (err) {
         loginError.classList.remove("success");
@@ -8837,6 +8838,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       }
       setCurrentUser(null);
       setAuthToken("");
+      stopAutoSync(); // Otomatik senkronizasyonu durdur
       adminSelectedUserId = null;
       adminViewInfo.style.display = "none";
       entriesById = new Map();
@@ -9485,6 +9487,48 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         await ensureColorDescriptionsLoaded();
       }
     }
+
+    /* 🔄 Otomatik Senkronizasyon Mekanizması (Polling) */
+    let pollingInterval = null;
+
+    // Polling fonksiyonu: Her 30 saniyede bir verileri kontrol et
+    async function startAutoSync() {
+      // Polling zaten çalışıyorsa tekrar başlatma
+      if (pollingInterval) return;
+
+      pollingInterval = setInterval(async () => {
+        try {
+          // Modal açıksa veya admin paneli açıksa polling yapma (kullanıcı işlem yapıyor olabilir)
+          const isModalOpen = dayModal && dayModal.classList.contains("active");
+          const isAdminPanelOpen = adminOverlay && adminOverlay.classList.contains("active");
+          const isLoginOverlayOpen = loginOverlay && loginOverlay.classList.contains("active");
+
+          // Kullanıcı giriş yapmamışsa polling yapma
+          if (!authToken || isModalOpen || isAdminPanelOpen || isLoginOverlayOpen) {
+            return; // Bu döngüyü atla, bir sonrakini bekle
+          }
+
+          // Arka planda sessizce verileri yenile (Admin başka kullanıcı görüntülüyorsa onun verilerini yükle)
+          const targetUserId = adminSelectedUserId || null;
+          await loadEntriesFromServer(targetUserId);
+
+        } catch (err) {
+          // Hata olursa sessizce logla, kullanıcıyı rahatsız etme
+          console.warn("[AutoSync] Otomatik senkronizasyon hatası:", err.message);
+        }
+      }, 30000); // 30 saniye = 30000 milisaniye
+    }
+
+    // Polling'i durdur (örn: kullanıcı çıkış yaptığında)
+    function stopAutoSync() {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+      }
+    }
+
+    // Init fonksiyonundan sonra polling'i başlat
+    startAutoSync();
 
     prevBtn.addEventListener("click", () => {
       currentMonth--;

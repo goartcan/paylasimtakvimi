@@ -277,8 +277,8 @@ router.put("/:id", requireAuth, (req, res) => {
   );
 
   const updated = db
-    .prepare("SELECT * FROM entries WHERE id = ? AND user_id = ?")
-    .get(entryId, req.userId);
+    .prepare("SELECT * FROM entries WHERE id = ?")
+    .get(entryId);
   res.json(updated);
 });
 

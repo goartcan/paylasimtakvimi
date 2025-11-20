@@ -29,14 +29,15 @@ router.get("/", requireAuth, (req, res) => {
       )
       .all(userId);
     
-    console.log(`[GET /notifications] ${notifications.length} bildirim döndürülüyor`);
-    
-    // is_read'i boolean'a çevir
+    // Backend-Frontend uyumluluğu için 'from' field'ı da ekle
     const formatted = notifications.map((n) => ({
       ...n,
+      from: n.fromEmail, // Eski frontend'ler için backward compatibility
       isRead: Boolean(n.isRead),
       createdAt: Number(n.createdAt)
     }));
+    
+    console.log(`[GET /notifications] ${formatted.length} bildirim döndürülüyor`);
     
     res.json(formatted);
   } catch (err) {
@@ -90,6 +91,7 @@ router.post("/", requireAuth, (req, res) => {
       cardId: cardId || null,
       dayKey: dayKey || null,
       fromEmail: fromEmail,
+      from: fromEmail, // Backward compatibility
       isRead: false,
       createdAt
     });

@@ -4767,11 +4767,11 @@ function normalizeNotificationRecord(item) {
     shareId: item.shareId || item.cardId || null,
     dayKey: item.dayKey || item.dateKey || null,
     title: item.title || "Yeni içerik",
-    from: item.from || item.userEmail || "Takvim",
+    from: item.fromEmail || item.from || item.userEmail || "Takvim",
     to: item.to || item.userEmail || "",
     message:
       item.message ||
-      `${item.from || "Takvim"} seni "${item.title || "bu kart"}" için sorumlu yaptı.`,
+      `${item.fromEmail || item.from || "Takvim"} seni "${item.title || "bu kart"}" için sorumlu yaptı.`,
     isRead: Boolean(item.isRead)
   };
 }
@@ -4895,7 +4895,7 @@ function renderNotificationList() {
     const cleanMessage = (notification.message || "")
       .replace(/seni şu karta sorumlu yaptı:.*$/i, "seni bu karta sorumlu yaptı.")
       .replace(/seni ".*?" için sorumlu yaptı/i, "seni bu karta sorumlu yaptı");
-    bodyRow.textContent = cleanMessage || `${notification.from || "Takvim"} seni bu karta sorumlu yaptı.`;
+    bodyRow.textContent = cleanMessage || `${notification.fromEmail || notification.from || "Takvim"} seni bu karta sorumlu yaptı.`;
     content.appendChild(bodyRow);
 
     item.appendChild(content);

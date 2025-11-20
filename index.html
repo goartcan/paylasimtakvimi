@@ -8878,7 +8878,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     // API'den görevleri yükle
     async function loadTasksFromAPI() {
       try {
-        const tasks = await apiFetch('/tasks', { method: 'GET' });
+        const response = await apiFetch('/tasks', { method: 'GET' });
+        const tasks = await response.json();
         // Backend'den gelen görevleri frontend formatına çevir
         return tasks.map(task => ({
           id: task.id,
@@ -9048,10 +9049,11 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           ownerId: taskData.owner_id || null
         };
         
-        const newTask = await apiFetch('/tasks', {
+        const response = await apiFetch('/tasks', {
           method: 'POST',
           body: JSON.stringify(payload)
         });
+        const newTask = await response.json();
         
         // Başarılı - görevleri yeniden yükle
         await refreshTaskBoard();
@@ -9077,10 +9079,11 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         }
         if (updates.owner_id !== undefined) payload.ownerId = updates.owner_id;
         
-        await apiFetch(`/tasks/${taskId}`, {
+        const response = await apiFetch(`/tasks/${taskId}`, {
           method: 'PATCH',
           body: JSON.stringify(payload)
         });
+        await response.json(); // Response'u consume et
         
         // Başarılı - görevleri yeniden yükle
         await refreshTaskBoard();
@@ -9095,7 +9098,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     // Görevi sil (API)
     async function deleteTask(taskId) {
       try {
-        await apiFetch(`/tasks/${taskId}`, { method: 'DELETE' });
+        const response = await apiFetch(`/tasks/${taskId}`, { method: 'DELETE' });
+        await response.json(); // Response'u consume et
         
         // Başarılı - görevleri yeniden yükle
         await refreshTaskBoard();

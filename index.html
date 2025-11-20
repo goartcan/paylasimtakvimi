@@ -9476,7 +9476,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       pollingInterval = setInterval(async () => {
         try {
           // Modal açıksa veya admin paneli açıksa polling yapma (kullanıcı işlem yapıyor olabilir)
-          const isModalOpen = dayModal && dayModal.classList.contains("active");
+          // DÜZELTİLDİ: dayModal style.display ile kontrol ediliyor (classList.contains değil!)
+          const isModalOpen = dayModal && dayModal.style.display === "flex";
           const isAdminPanelOpen = adminOverlay && adminOverlay.classList.contains("active");
           const isLoginOverlayOpen = loginOverlay && loginOverlay.classList.contains("active");
 

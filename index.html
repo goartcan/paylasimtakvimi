@@ -9356,7 +9356,7 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     
     // Sil butonu - görevi sil ve modalı kapat
     if (taskDeleteBtn) {
-      taskDeleteBtn.addEventListener("click", () => {
+      taskDeleteBtn.addEventListener("click", async () => {
         if (!currentEditingTaskId) return;
         
         // Silme onayı iste

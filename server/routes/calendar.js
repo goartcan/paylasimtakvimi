@@ -219,8 +219,8 @@ router.put("/:id", requireAuth, (req, res) => {
     // Admin herhangi bir kaydı güncelleyebilir
     existing = db.prepare("SELECT * FROM entries WHERE id = ?").get(entryId);
   } else {
-    // Normal kullanıcı sadece kendisine atanan (owner_id) veya oluşturduğu kayıtları güncelleyebilir
-    existing = db.prepare("SELECT * FROM entries WHERE id = ? AND (user_id = ? OR owner_id = ?)").get(entryId, req.userId, req.userId);
+    // Normal kullanıcı sadece kendisine atanan (owner_id), oluşturduğu (user_id) veya owner_id NULL olan kayıtları güncelleyebilir
+    existing = db.prepare("SELECT * FROM entries WHERE id = ? AND (user_id = ? OR owner_id = ? OR owner_id IS NULL)").get(entryId, req.userId, req.userId);
   }
 
   if (!existing) {
@@ -352,8 +352,8 @@ router.delete("/:id", requireAuth, (req, res) => {
     // Admin herhangi bir kaydı silebilir
     info = db.prepare("DELETE FROM entries WHERE id = ?").run(entryId);
   } else {
-    // Normal kullanıcı sadece kendisine atanan veya oluşturduğu kayıtları silebilir
-    info = db.prepare("DELETE FROM entries WHERE id = ? AND (user_id = ? OR owner_id = ?)").run(entryId, req.userId, req.userId);
+    // Normal kullanıcı sadece kendisine atanan, oluşturduğu veya owner_id NULL olan kayıtları silebilir
+    info = db.prepare("DELETE FROM entries WHERE id = ? AND (user_id = ? OR owner_id = ? OR owner_id IS NULL)").run(entryId, req.userId, req.userId);
   }
 
   if (info.changes === 0) {

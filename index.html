@@ -3960,6 +3960,16 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script>
     // ========================================
+    // ONE-TIME CLEANUP: Eski "taskBoardData" verisini temizle
+    // ========================================
+    document.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.getItem('taskBoardData')) { 
+        localStorage.removeItem('taskBoardData');
+        console.log("🧹 Legacy data cleaned.");
+      }
+    });
+
+    // ========================================
     // GLOBAL HATA YÖNETİMİ SİSTEMİ
     // ========================================
     

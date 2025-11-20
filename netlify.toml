@@ -1,0 +1,34 @@
+# Netlify Yapılandırma Dosyası
+# Paylaşım Takvimi - Frontend Deploy Settings
+
+[build]
+  # Frontend için build komutu yok (Vanilla JS), sadece dosyaları publish et
+  publish = "."
+  # Backend server/ klasörünü ignore et
+  ignore = "git diff --quiet HEAD^ HEAD server/"
+
+# Netlify Functions için (opsiyonel - şu an kullanılmıyor)
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA Routing için (tüm route'lar index.html'e yönlendirilecek)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers ayarları (_headers dosyasından alınacak, bu opsiyonel)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self' https://paylasimtakvimi.onrender.com https://cdn.jsdelivr.net; frame-ancestors 'none';"
+
+# 404 sayfası için
+[[redirects]]
+  from = "/404"
+  to = "/index.html"
+  status = 404
+

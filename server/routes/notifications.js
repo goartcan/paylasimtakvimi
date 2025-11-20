@@ -18,7 +18,7 @@ router.get("/", requireAuth, (req, res) => {
           share_id as shareId,
           card_id as cardId,
           day_key as dayKey,
-          from_email as from,
+          from_email as fromEmail,
           is_read as isRead,
           created_at as createdAt
         FROM notifications

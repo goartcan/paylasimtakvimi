@@ -101,6 +101,25 @@ function ensureColumn(table, column, definition) {
   }
 }
 
+// Runtime'da tablo varlığını kontrol edip yoksa oluşturan migration fonksiyonu
+function ensureTable(tableName, createTableSQL) {
+  try {
+    // 1. Tablo var mı kontrol et (sqlite_master tablosunu sorgula)
+    const query = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
+    const result = db.prepare(query).get(tableName);
+    
+    // 2. Yoksa oluştur
+    if (!result) {
+      db.exec(createTableSQL);
+      console.log(`✅ Tablo oluşturuldu: ${tableName}`);
+    } else {
+      console.log(`ℹ️  Tablo zaten mevcut: ${tableName}`);
+    }
+  } catch (error) {
+    console.error(`❌ Tablo oluşturma hatası (${tableName}):`, error.message);
+  }
+}
+
 ensureColumn("users", "role", "TEXT NOT NULL DEFAULT 'user'");
 ensureColumn("users", "approved", "INTEGER NOT NULL DEFAULT 0");
 ensureColumn("users", "created_at", "TEXT NOT NULL DEFAULT (datetime('now'))");
@@ -121,5 +140,21 @@ try {
   console.warn("Veritabanı sütunları güncellenirken hata oluştu:", err.message);
 }
 
+// Runtime'da notifications tablosunun varlığını garanti altına al
+ensureTable("notifications", `
+  CREATE TABLE notifications (
+    id TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    message TEXT NOT NULL,
+    share_id INTEGER,
+    card_id TEXT,
+    day_key TEXT,
+    from_email TEXT,
+    is_read INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  )
+`);
 
 export default db;

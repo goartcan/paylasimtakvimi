@@ -83,10 +83,10 @@ router.put("/:id", requireAuth, (req, res) => {
       // Admin herhangi bir görevi güncelleyebilir
       existing = db.prepare("SELECT * FROM tasks WHERE id = ?").get(taskId);
     } else {
-      // Normal kullanıcı sadece kendi görevini güncelleyebilir
+      // Normal kullanıcı sadece kendisine atanan (assignee) veya sorumlu olduğu (owner_id) görevi güncelleyebilir
       existing = db
-        .prepare("SELECT * FROM tasks WHERE id = ? AND user_id = ?")
-        .get(taskId, req.userId);
+        .prepare("SELECT * FROM tasks WHERE id = ? AND (user_id = ? OR assignee = ? OR owner_id = ?)")
+        .get(taskId, req.userId, req.userId, req.userId);
     }
 
     if (!existing) {
@@ -149,10 +149,10 @@ router.delete("/:id", requireAuth, (req, res) => {
       // Admin herhangi bir görevi silebilir
       info = db.prepare("DELETE FROM tasks WHERE id = ?").run(taskId);
     } else {
-      // Normal kullanıcı sadece kendi görevini silebilir
+      // Normal kullanıcı sadece kendisine atanan veya sorumlu olduğu görevi silebilir
       info = db
-        .prepare("DELETE FROM tasks WHERE id = ? AND user_id = ?")
-        .run(taskId, req.userId);
+        .prepare("DELETE FROM tasks WHERE id = ? AND (user_id = ? OR assignee = ? OR owner_id = ?)")
+        .run(taskId, req.userId, req.userId, req.userId);
     }
 
     if (info.changes === 0) {

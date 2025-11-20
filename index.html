@@ -8891,11 +8891,22 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         const data = await response.json();
         console.log('[loadTasksFromServer] Backend\'den alınan görev sayısı:', data.length); // Debug log
         
-        // Veri bütünlüğü kontrolü: status alanı eksik olan görevleri düzelt
-        return data.map(task => ({
-          ...task,
-          status: task.status || "todo"
-        }));
+        // Veri bütünlüğü kontrolü:
+        // 1) Geçersiz ID'lere sahip görevleri filtrele (eski localStorage verilerinden korunma)
+        // 2) Status alanı eksik olan görevleri düzelt
+        return data
+          .filter(task => {
+            // ID geçerli bir integer olmalı (backend INTEGER PRIMARY KEY kullanıyor)
+            const isValidId = typeof task.id === 'number' && Number.isInteger(task.id) && task.id > 0;
+            if (!isValidId) {
+              console.warn('[loadTasksFromServer] Geçersiz ID\'ye sahip görev filtrelendi:', task);
+            }
+            return isValidId;
+          })
+          .map(task => ({
+            ...task,
+            status: task.status || "todo"
+          }));
       } catch (err) {
         console.error('[loadTasksFromServer] Görevler yüklenemedi:', err.message);
         return [];
@@ -8923,7 +8934,13 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     // Görevi güncelle (Backend'e kaydet)
     async function updateTask(taskId, updates) {
       try {
-        const response = await apiFetch(`/tasks/${taskId}`, {
+        // ID validation: Backend integer bekliyor
+        const numericId = Number(taskId);
+        if (!Number.isInteger(numericId) || numericId <= 0) {
+          throw new Error(`Geçersiz görev ID'si: ${taskId}`);
+        }
+        
+        const response = await apiFetch(`/tasks/${numericId}`, {
           method: "PUT",
           body: JSON.stringify(updates)
         });
@@ -8938,7 +8955,13 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     // Görevi sil (Backend'den sil)
     async function deleteTask(taskId) {
       try {
-        await apiFetch(`/tasks/${taskId}`, {
+        // ID validation: Backend integer bekliyor
+        const numericId = Number(taskId);
+        if (!Number.isInteger(numericId) || numericId <= 0) {
+          throw new Error(`Geçersiz görev ID'si: ${taskId}`);
+        }
+        
+        await apiFetch(`/tasks/${numericId}`, {
           method: "DELETE"
         });
       } catch (err) {

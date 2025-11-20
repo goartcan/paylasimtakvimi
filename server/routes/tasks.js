@@ -24,9 +24,12 @@ router.post("/", requireAuth, (req, res) => {
     const {
       title = "",
       description = "",
+      note = "",
       status = "todo",
       assignee = "",
-      priority = "medium"
+      priority = "medium",
+      dueDate = null,
+      owner_id = null
     } = req.body;
 
     if (!title || !title.trim()) {
@@ -39,17 +42,20 @@ router.post("/", requireAuth, (req, res) => {
       : "todo";
 
     const insertStmt = db.prepare(`
-      INSERT INTO tasks (user_id, title, description, status, assignee, priority)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO tasks (user_id, title, description, note, status, assignee, priority, due_date, owner_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     const result = insertStmt.run(
       req.userId,
       title.trim(),
       description || "",
+      note || "",
       normalizedStatus,
       assignee || "",
-      priority || "medium"
+      priority || "medium",
+      dueDate || null,
+      owner_id || null
     );
 
     const inserted = db
@@ -94,9 +100,12 @@ router.put("/:id", requireAuth, (req, res) => {
     const {
       title = existing.title,
       description = existing.description || "",
+      note = existing.note || "",
       status = existing.status,
       assignee = existing.assignee || "",
-      priority = existing.priority || "medium"
+      priority = existing.priority || "medium",
+      dueDate = existing.due_date || null,
+      owner_id = existing.owner_id || null
     } = req.body;
 
     const normalizedStatus = ["todo", "in-progress", "done"].includes(status)
@@ -105,14 +114,17 @@ router.put("/:id", requireAuth, (req, res) => {
 
     db.prepare(`
       UPDATE tasks
-      SET title = ?, description = ?, status = ?, assignee = ?, priority = ?, updated_at = datetime('now')
+      SET title = ?, description = ?, note = ?, status = ?, assignee = ?, priority = ?, due_date = ?, owner_id = ?, updated_at = datetime('now')
       WHERE id = ?
     `).run(
       title.trim(),
       description,
+      note,
       normalizedStatus,
       assignee,
       priority,
+      dueDate,
+      owner_id,
       taskId
     );
 

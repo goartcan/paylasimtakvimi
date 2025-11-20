@@ -23,7 +23,9 @@ export function runAutoMigrations() {
     const columnsToAdd = [
       { name: 'note', sql: 'ALTER TABLE tasks ADD COLUMN note TEXT' },
       { name: 'due_date', sql: 'ALTER TABLE tasks ADD COLUMN due_date TEXT' },
-      { name: 'owner_id', sql: 'ALTER TABLE tasks ADD COLUMN owner_id INTEGER REFERENCES users(id)' }
+      { name: 'owner_id', sql: 'ALTER TABLE tasks ADD COLUMN owner_id INTEGER REFERENCES users(id)' },
+      { name: 'assignee', sql: 'ALTER TABLE tasks ADD COLUMN assignee TEXT' },
+      { name: 'priority', sql: 'ALTER TABLE tasks ADD COLUMN priority TEXT' }
     ];
     
     let addedCount = 0;

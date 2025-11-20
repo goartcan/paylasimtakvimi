@@ -142,5 +142,25 @@ router.post("/mark-all-read", requireAuth, (req, res) => {
   }
 });
 
+// Tüm bildirimleri sil
+router.delete("/clear-all", requireAuth, (req, res) => {
+  try {
+    const userId = req.userId;
+    
+    console.log(`[DELETE /notifications/clear-all] Tüm bildirimler siliniyor (user_id: ${userId})`);
+    
+    const result = db
+      .prepare("DELETE FROM notifications WHERE user_id = ?")
+      .run(userId);
+    
+    console.log(`[DELETE /notifications/clear-all] ${result.changes} bildirim silindi`);
+    
+    res.json({ ok: true, deleted: result.changes });
+  } catch (err) {
+    console.error("[DELETE /notifications/clear-all] Hata:", err);
+    res.status(500).json({ error: "Bildirimler silinemedi." });
+  }
+});
+
 export default router;
 

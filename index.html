@@ -5187,13 +5187,27 @@ async function clearAllNotifications() {
   
   // Backend'den temizle
   try {
-    await apiFetch("/notifications/clear-all", {
+    const response = await apiFetch("/notifications/clear-all", {
       method: "DELETE"
     });
+    
+    // Başarılı silme sonrası UI güncelle
+    notifications = []; // Global state temizle
+    updateNotificationBadge(); // Badge'i güncelle (sayı 0 olacak)
+    renderNotificationList(); // Liste boşaltılacak
+    
+    showToast("Tüm bildirimler temizlendi", "success");
+    
   } catch (err) {
     console.error('[clearAllNotifications] API hatası:', err);
-    // API hata verse de local temizlik yapıldı, kullanıcıya bildir
-    showToast("Bildirimler temizlendi (senkronizasyon hatası)", "warning");
+    
+    // API başarısız olsa da local temizlik yapıldı
+    // Kullanıcı hâlâ bildirimleri görmüyor ama backend'de duruyor
+    notifications = []; // Local state temizle
+    updateNotificationBadge();
+    renderNotificationList();
+    
+    showToast("Bildirimler ekranınızdan kaldırıldı (senkronizasyon hatası)", "warning");
   }
 }
 

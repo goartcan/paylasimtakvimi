@@ -89,12 +89,16 @@ db.exec(`
     user_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     description TEXT,
+    note TEXT,
     status TEXT NOT NULL DEFAULT 'todo',
     assignee TEXT,
     priority TEXT,
+    due_date TEXT,
+    owner_id INTEGER,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now')),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (owner_id) REFERENCES users(id)
   );
 `);
 
@@ -143,6 +147,9 @@ ensureColumn("entries", "status", "TEXT NOT NULL DEFAULT 'planned'");
 ensureColumn("entries", "checked_at", "TEXT");
 ensureColumn("entries", "owner_id", "INTEGER");
 ensureColumn("day_flags", "color", "TEXT NOT NULL DEFAULT '#fee2e2'");
+ensureColumn("tasks", "note", "TEXT");
+ensureColumn("tasks", "due_date", "TEXT");
+ensureColumn("tasks", "owner_id", "INTEGER");
 
 try {
   db.prepare("UPDATE users SET role = 'user' WHERE role IS NULL OR role = ''").run();

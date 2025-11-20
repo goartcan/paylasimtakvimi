@@ -23,7 +23,8 @@ router.post("/register", (req, res) => {
   const normalizedEmail = email.trim().toLowerCase();
   const isAdmin = adminEmails.includes(normalizedEmail);
   const role = isAdmin ? "admin" : "user";
-  const approved = isAdmin ? 1 : 0;
+  // GEÇİCİ: Onay mekanizması kapatıldı, herkes otomatik onaylı
+  const approved = 1; // isAdmin ? 1 : 0;
 
   const hash = bcrypt.hashSync(password, 10);
   try {
@@ -47,11 +48,12 @@ router.post("/login", (req, res) => {
   const valid = bcrypt.compareSync(password, user.password_hash);
   if (!valid) return res.status(401).json({ error: "Geçersiz bilgiler." });
 
-  if (!user.approved) {
-    return res.status(403).json({
-      error: "Hesabın onay bekliyor. Admin onayından sonra giriş yapabilirsin."
-    });
-  }
+  // GEÇİCİ: Onay kontrolü kapatıldı
+  // if (!user.approved) {
+  //   return res.status(403).json({
+  //     error: "Hesabın onay bekliyor. Admin onayından sonra giriş yapabilirsin."
+  //   });
+  // }
 
   const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "7d" });
   const userInfo = {

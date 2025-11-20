@@ -17,9 +17,10 @@ export function requireAuth(req, res, next) {
       .prepare("SELECT id, email, role, approved FROM users WHERE id = ?")
       .get(decoded.userId);
     if (!user) return res.status(401).json({ error: "Kullanıcı bulunamadı." });
-    if (!user.approved) {
-      return res.status(403).json({ error: "Hesabın onay bekliyor." });
-    }
+    // GEÇİCİ: Onay kontrolü kapatıldı
+    // if (!user.approved) {
+    //   return res.status(403).json({ error: "Hesabın onay bekliyor." });
+    // }
     req.userId = user.id;
     req.user = user;
     next();

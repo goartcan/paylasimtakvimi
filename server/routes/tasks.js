@@ -8,8 +8,18 @@ const router = express.Router();
 router.get("/", requireAuth, (req, res) => {
   try {
     const rows = db.prepare("SELECT * FROM tasks ORDER BY created_at DESC").all();
-    console.log(`[GET /tasks] ${rows.length} görev döndürülüyor (user_id: ${req.userId})`);
-    res.json(rows);
+    
+    // Sadece geçerli integer ID'li görevleri döndür (eski string ID'li görevleri filtrele)
+    const validRows = rows.filter(task => {
+      return typeof task.id === 'number' && Number.isInteger(task.id) && task.id > 0;
+    });
+    
+    if (rows.length !== validRows.length) {
+      console.log(`[GET /tasks] Uyarı: ${rows.length - validRows.length} geçersiz görev filtrelendi`);
+    }
+    
+    console.log(`[GET /tasks] ${validRows.length} görev döndürülüyor (user_id: ${req.userId})`);
+    res.json(validRows);
   } catch (err) {
     console.error("[GET /tasks] Hata:", err);
     res.status(500).json({ error: "Görevler alınamadı." });

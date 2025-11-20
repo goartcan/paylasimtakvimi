@@ -8,8 +8,12 @@ import importRoutes from "./routes/import.js";
 import usersRoutes from "./routes/users.js";
 import notificationsRoutes from "./routes/notifications.js";
 import tasksRoutes from "./routes/tasks.js";
+import { runAutoMigrations } from "./utils/auto-migrate.js";
 
 dotenv.config();
+
+// Otomatik migration: Server her başladığında eksik kolonları kontrol et ve ekle
+runAutoMigrations();
 
 const adminSeedEmails = (process.env.ADMIN_EMAILS || "")
   .split(",")

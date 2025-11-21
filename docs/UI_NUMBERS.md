@@ -38,7 +38,7 @@ Bu dokümanda projedeki tüm önemli ekranlar, modallar, paneller, toast mesajla
 | 10 | Gün Rengi Açıklamaları Paneli | Gün rengi seçicisinin yanındaki "?" butonuna tıklayınca açılan yardım paneli. |
 | 14 | Bildirim Paneli (Notification Panel) | Sağ üst köşedeki 🔔 çan ikonuna tıklayınca açılan dropdown panel. |
 | 20 | Gün Detayı Panel (Sağ Yan Panel) | Ana takvim sayfasının sağında "Gün Detayı / Takvim Özeti" başlıklı sabit panel. |
-| 25 | Görev Panosu Paneli (Task Board Panel) | Ana takvim sayfasının sağ kısmında yer alan  bölümü  |
+| 25 | Görev Panosu Paneli (Task Board Panel) | Ana sayfanın sağ kısmında yer alan  bölümü  |
 
 ---
 
@@ -121,7 +121,7 @@ Bu dokümanda projedeki tüm önemli ekranlar, modallar, paneller, toast mesajla
 
 | # | Ekran Adı | Kısa Açıklama / Nasıl Açılır |
 |---|---|---|
-| 26 | Görev Ekleme Butonu | Görev panosu başlığındaki "+ Görev" butonu. |
+| 26 | Ekleme Butonu | Görev panosu başlığındaki "+ Görev" butonu. |
 | 39 | Çıkış Yap Butonu | Sağ üst köşede kullanıcı girişi yaptıktan sonra görünen buton. |
 | 40 | Ay Navigasyon Butonları | Takvim başlığındaki sağ/sol ok butonları (önceki/sonraki ay). |
 

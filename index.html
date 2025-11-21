@@ -9090,6 +9090,24 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         // Status alanı eksik olan görevleri "todo" olarak kabul et (veri bütünlüğü için)
         const tasks = taskBoardData.filter(task => (task.status || "todo") === column.status);
         
+        // Görevleri öncelik ve teslim tarihine göre sırala
+        tasks.sort((a, b) => {
+          // Öncelik sıralaması: high=1, medium=2, low=3 (küçük sayı üstte)
+          const priorityOrder = { high: 1, medium: 2, low: 3 };
+          const aPriority = priorityOrder[a.priority] || 2; // varsayılan: orta
+          const bPriority = priorityOrder[b.priority] || 2;
+          
+          // Öncelikler farklıysa, yüksek öncelik üstte olsun
+          if (aPriority !== bPriority) {
+            return aPriority - bPriority;
+          }
+          
+          // Aynı önceliğe sahipse, teslim tarihine göre sırala (yakın olan üstte)
+          const dateA = new Date(a.dueDate).getTime();
+          const dateB = new Date(b.dueDate).getTime();
+          return dateA - dateB;
+        });
+        
         const columnEl = document.createElement("div");
         columnEl.className = "task-board-column";
         columnEl.setAttribute("data-status", column.status);

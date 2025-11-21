@@ -5001,6 +5001,18 @@ function handleNotificationItemClick(notificationId) {
 function focusNotificationTarget(notification) {
   if (!notification) return;
   const targetId = notification.shareId || notification.cardId || null;
+  
+  // Görev bildirimi mi kontrol et (cardId "task_" ile başlıyorsa)
+  if (targetId && typeof targetId === 'string' && targetId.startsWith('task_')) {
+    // Görev ID'sini çıkar (örn: "task_123" -> "123")
+    const taskId = parseInt(targetId.replace('task_', ''), 10);
+    if (!isNaN(taskId) && typeof openTaskModal === 'function') {
+      openTaskModal(taskId); // Görev modalını aç
+      return; // Takvim mantığına düşme
+    }
+  }
+  
+  // Takvim paylaşımı bildirimi ise (eski mantık devam eder)
   const entry =
     targetId && entriesById.get(targetId)
       ? entriesById.get(targetId)

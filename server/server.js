@@ -36,7 +36,8 @@ const app = express();
 
 app.use(cors({
   origin: [
-    "https://paylasimtakvimi.netlify.app",
+    "https://paylasimtakvimi.vercel.app", // YENİ: Vercel URL
+    "https://paylasimtakvimi.netlify.app", // ESKİ: Netlify URL
     "http://localhost:8888",
     "http://127.0.0.1:8888",
     "http://localhost:5500",

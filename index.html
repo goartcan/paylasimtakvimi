@@ -9393,13 +9393,16 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           await refreshTaskBoard();
           console.log("[saveTaskFromModal] Güncellenen görev:", updatedTask);
           
-          // Sorumlu kişi değiştiyse bildirim gönder
-          if (ownerChanged && ownerEmail) {
+          // Sorumlu kişi varsa bildirim gönder (owner değişmese bile UPDATE bildirimi gönder)
+          if (ownerEmail) {
+            const messageText = ownerChanged 
+              ? `${getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim"} seni şu göreve sorumlu yaptı: ${taskName}`
+              : `${getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim"} şu görevi güncelledi: ${taskName}`;
             addNotificationForAssignee({
               userEmail: ownerEmail,
               cardId: `task_${currentEditingTaskId}`,
               title: `Görev: ${taskName}`,
-              message: `${getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim"} seni şu göreve sorumlu yaptı: ${taskName}`,
+              message: messageText,
               dayKey: null
             });
           }
@@ -9772,6 +9775,17 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         if (activeItemId && entriesById.has(activeItemId)) {
           await updateEntry(activeItemId, payload);
           resolvedEntryId = activeItemId;
+          
+          // UPDATE yapıldığında sorumluya bildirim gönder
+          if (notificationInfo && notificationInfo.userEmail) {
+            addNotificationForAssignee({
+              userEmail: notificationInfo.userEmail,
+              cardId: `entry_${activeItemId}`,
+              title: notificationInfo.title,
+              message: `${getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim"} şu kartı güncelledi: ${notificationInfo.title}`,
+              dayKey: selectedDateKey
+            });
+          }
         } else {
           const created = await createEntry(payload);
           activeItemId = created.id;
@@ -9847,11 +9861,27 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       actionButtons.forEach((btn) => btn && (btn.disabled = true));
       try {
         await updateEntry(activeItemId, payload);
+        
+        // Durum değişikliğinde sorumluya bildirim gönder
+        const updatedEntry = entriesById.get(activeItemId);
+        if (updatedEntry && updatedEntry.owner_id) {
+          const ownerUser = allUsersCache.find(u => u.id === updatedEntry.owner_id);
+          if (ownerUser && ownerUser.email) {
+            const statusText = nextStatus === 'done' ? 'tamamlandı olarak işaretledi' : 'kaçırıldı olarak işaretledi';
+            addNotificationForAssignee({
+              userEmail: ownerUser.email,
+              cardId: `entry_${activeItemId}`,
+              title: updatedEntry.text || "Takvim Kartı",
+              message: `${getCurrentUserEmail() || getCurrentUserDisplayName() || "Takvim"} kartı ${statusText}: ${updatedEntry.text || "Bu kart"}`,
+              dayKey: selectedDateKey
+            });
+          }
+        }
+        
         currentDayItems = loadDayData(selectedDateKey).items;
         renderCalendar();
         if (viewReports.style.display !== "none") renderReports();
         renderModalSummaryList();
-        const updatedEntry = entriesById.get(activeItemId);
         modalForcePlanMode = false;
         setModalViewForEntry(updatedEntry);
         updateScheduleList();

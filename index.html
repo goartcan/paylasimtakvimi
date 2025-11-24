@@ -3932,6 +3932,18 @@
             </div>
           </div>
 
+          <!-- Oluşturulma Tarihi (Sadece düzenleme modunda görünür, sadece-okunur) -->
+          <div class="form-row" id="taskCreatedAtRow" style="display:none;margin-top:12px;">
+            <label for="taskCreatedAtInput">Oluşturulma Tarihi ve Saati</label>
+            <input 
+              type="text" 
+              id="taskCreatedAtInput" 
+              style="background:#f3f4f6;cursor:not-allowed;font-size:12px;color:#374151;"
+              readonly
+              placeholder="Henüz oluşturulmadı"
+            />
+          </div>
+
           <div class="form-row" style="margin-bottom:8px;margin-top:8px;">
             <label>Öncelik <span style="color:#ef4444;">*</span></label>
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -9249,6 +9261,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       // Düzenleme modunda mı yoksa yeni görev mi?
       currentEditingTaskId = taskId;
       
+      // Oluşturulma tarihi alanı için elementleri al
+      const taskCreatedAtRow = document.getElementById("taskCreatedAtRow");
+      const taskCreatedAtInput = document.getElementById("taskCreatedAtInput");
+      
       if (taskId) {
         // Düzenleme modu - mevcut görevi yükle
         const task = taskBoardData.find(t => t.id === taskId);
@@ -9264,6 +9280,31 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           const dueDate = new Date(task.dueDate);
           taskDueDateInput.value = dueDate.toISOString().split('T')[0];
           taskDueTimeInput.value = dueDate.toTimeString().slice(0, 5);
+        }
+        
+        // 🟢 DEĞİŞTİ: Oluşturulma tarihini göster (created_at alanı)
+        if (task.created_at && taskCreatedAtRow && taskCreatedAtInput) {
+          try {
+            // SQLite'dan gelen tarih formatı: "YYYY-MM-DD HH:MM:SS" veya ISO string
+            const createdDate = new Date(task.created_at);
+            const dateStr = createdDate.toLocaleDateString('tr-TR', { 
+              day: '2-digit', 
+              month: '2-digit', 
+              year: 'numeric' 
+            });
+            const timeStr = createdDate.toLocaleTimeString('tr-TR', { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            });
+            taskCreatedAtInput.value = `${dateStr} - ${timeStr}`;
+            taskCreatedAtRow.style.display = "block"; // Alanı görünür yap
+          } catch (err) {
+            console.error("[openTaskModal] created_at parse hatası:", err);
+            taskCreatedAtRow.style.display = "none"; // Hata varsa gizle
+          }
+        } else {
+          // created_at yoksa alanı gizle
+          if (taskCreatedAtRow) taskCreatedAtRow.style.display = "none";
         }
         
         // Sorumlu kişi seç
@@ -9283,6 +9324,9 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         taskNameInput.value = "";
         taskDescriptionInput.value = "";
         taskNoteInput.value = "";
+        
+        // 🟢 DEĞİŞTİ: Yeni görevde oluşturulma tarihi alanını gizle
+        if (taskCreatedAtRow) taskCreatedAtRow.style.display = "none";
         
         // Bugünün tarihi default olarak
         const today = new Date();

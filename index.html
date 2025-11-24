@@ -9173,9 +9173,8 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     // Görevin mevcut kullanıcıya atanıp atanmadığını kontrol et
     function taskAssignedToCurrentUser(task) {
       if (!task || !task.owner_id) return false; // Görevin sahibi yoksa false
-      const currentUserId = getCurrentUserId();
-      if (!currentUserId) return false; // Giriş yapılmamışsa false
-      return String(task.owner_id) === String(currentUserId); // ID'leri string'e çevir ve karşılaştır
+      if (!currentUser || !currentUser.id) return false; // Giriş yapılmamışsa false
+      return String(task.owner_id) === String(currentUser.id); // ID'leri string'e çevir ve karşılaştır
     }
     
     // Görev filtresini uygula

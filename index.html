@@ -1245,6 +1245,40 @@
   color: #111827;
 }
 
+/* Görev filtre butonları stilleri */
+.task-assignee-filter {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+  margin: 0 8px;
+}
+
+.task-assignee-filter-btn {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #6b7280;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.task-assignee-filter-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.task-assignee-filter-btn.active {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
+  font-weight: 600;
+}
+
 .task-board-add-btn {
   padding: 4px 10px;
   font-size: 12px;
@@ -3588,6 +3622,11 @@
       <div class="task-board-panel">
         <div class="task-board-header">
           <h2>Görevler</h2>
+          <!-- Görev filtresi butonları -->
+          <div class="task-assignee-filter">
+            <button type="button" class="task-assignee-filter-btn active" data-task-assignee="all" title="Tüm görevleri göster">Tüm görevler</button>
+            <button type="button" class="task-assignee-filter-btn" data-task-assignee="mine" title="Sadece bana atanan görevleri göster">Benim görevlerim</button>
+          </div>
           <button class="task-board-add-btn" id="taskBoardAddBtn" title="Yeni görev ekle">+ Görev Oluştur</button>
         </div>
         <div class="task-board-scroll-wrapper">
@@ -8704,6 +8743,34 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         });
       });
     }
+    
+    // Görev paneli assignee filter butonları
+    const taskAssigneeFilterButtons = document.querySelectorAll(".task-assignee-filter-btn");
+    if (taskAssigneeFilterButtons.length) {
+      // Başlangıç state'ine göre active class'ı ayarla
+      taskAssigneeFilterButtons.forEach(btn => {
+        const targetFilter = btn.dataset.taskAssignee || "all";
+        btn.classList.toggle("active", targetFilter === taskAssigneeFilter);
+        
+        // Tıklama event listener'ı ekle
+        btn.addEventListener("click", () => {
+          if (taskAssigneeFilter === targetFilter) return; // Zaten aktifse hiçbir şey yapma
+          
+          // State'i güncelle
+          taskAssigneeFilter = targetFilter;
+          safeLocalStorageSet(TASK_ASSIGNEE_FILTER_KEY, taskAssigneeFilter);
+          
+          // UI'ı güncelle
+          taskAssigneeFilterButtons.forEach(b => {
+            b.classList.toggle("active", b.dataset.taskAssignee === taskAssigneeFilter);
+          });
+          
+          // Görev panosunu yeniden render et
+          renderTaskBoard();
+        });
+      });
+    }
+    
     if (scheduleViewButtons.length) {
       scheduleViewButtons.forEach((btn) => {
         const view = btn.dataset.view || "daily";
@@ -9088,12 +9155,33 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     }
     
     let taskBoardData = [];
+    
+    // Görev filtresi state (localStorage'dan yükle)
+    const TASK_ASSIGNEE_FILTER_KEY = "task_assignee_filter";
+    let taskAssigneeFilter = safeLocalStorageGet(TASK_ASSIGNEE_FILTER_KEY, "all");
+    if (taskAssigneeFilter !== "all" && taskAssigneeFilter !== "mine") {
+      taskAssigneeFilter = "all"; // Geçersiz değer varsa sıfırla
+    }
 
     const taskBoardColumns = [
       { id: "todo", title: "Bekliyor", status: "todo" },
       { id: "in-progress", title: "Yapılıyor", status: "in-progress" },
       { id: "done", title: "Tamamlandı", status: "done" }
     ];
+    
+    // Görevin mevcut kullanıcıya atanıp atanmadığını kontrol et
+    function taskAssignedToCurrentUser(task) {
+      if (!task || !task.owner_id) return false; // Görevin sahibi yoksa false
+      const currentUserId = getCurrentUserId();
+      if (!currentUserId) return false; // Giriş yapılmamışsa false
+      return String(task.owner_id) === String(currentUserId); // ID'leri string'e çevir ve karşılaştır
+    }
+    
+    // Görev filtresini uygula
+    function filterTasksByAssignee(tasks) {
+      if (taskAssigneeFilter !== "mine") return tasks; // "Tüm görevler" modundaysa tümünü göster
+      return tasks.filter(task => taskAssignedToCurrentUser(task)); // "Benim görevlerim" modundaysa sadece atananları göster
+    }
 
     function renderTaskBoard() {
       if (!taskBoardContainer) return;
@@ -9102,7 +9190,10 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
       
       taskBoardColumns.forEach(column => {
         // Status alanı eksik olan görevleri "todo" olarak kabul et (veri bütünlüğü için)
-        const tasks = taskBoardData.filter(task => (task.status || "todo") === column.status);
+        const allColumnTasks = taskBoardData.filter(task => (task.status || "todo") === column.status);
+        
+        // Filter'ı uygula (sadece "Benim görevlerim" seçiliyse filtrelenir)
+        const tasks = filterTasksByAssignee(allColumnTasks);
         
         // Görevleri öncelik ve teslim tarihine göre sırala
         tasks.sort((a, b) => {

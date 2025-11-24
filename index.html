@@ -9176,14 +9176,24 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         cardEl.appendChild(descEl);
       }
       
-      // Teslim tarihi (varsa)
+      // 🟢 DEĞİŞTİ: Teslim tarihi (varsa) - İstanbul saat dilimi
       if (task.dueDate) {
         const dueDateEl = document.createElement("div");
         dueDateEl.style.cssText = "font-size: 10px; color: #6b7280; margin-bottom: 6px; display: flex; align-items: center; gap: 3px;";
         const dueDate = new Date(task.dueDate);
-        const dateStr = dueDate.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        const timeStr = dueDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-        dueDateEl.innerHTML = `📅 ${dateStr} - ${timeStr}`;
+        // İstanbul saat dilimine çevir
+        const dateStr = dueDate.toLocaleDateString('tr-TR', { 
+          day: '2-digit', 
+          month: '2-digit', 
+          year: 'numeric',
+          timeZone: 'Europe/Istanbul' 
+        });
+        const timeStr = dueDate.toLocaleTimeString('tr-TR', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          timeZone: 'Europe/Istanbul'
+        });
+        dueDateEl.textContent = `📅 ${dateStr} - ${timeStr}`; // innerHTML yerine textContent (XSS koruması)
         cardEl.appendChild(dueDateEl);
       }
       
@@ -9293,11 +9303,31 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         taskDescriptionInput.value = task.description || "";
         taskNoteInput.value = task.note || "";
         
-        // Teslim tarihi ve saati ayarla
+        // 🟢 DEĞİŞTİ: Teslim tarihi ve saati ayarla (İstanbul saat dilimi)
         if (task.dueDate) {
-          const dueDate = new Date(task.dueDate);
-          taskDueDateInput.value = dueDate.toISOString().split('T')[0];
-          taskDueTimeInput.value = dueDate.toTimeString().slice(0, 5);
+          try {
+            // Backend'den ISO formatında geliyor (örn: "2025-11-24T14:00:00.000Z" - UTC)
+            const dueDate = new Date(task.dueDate);
+            
+            // İstanbul saat dilimine çevir (Europe/Istanbul - UTC+3)
+            const istanbulDateStr = dueDate.toLocaleDateString('en-CA', { 
+              timeZone: 'Europe/Istanbul' // YYYY-MM-DD formatı için en-CA kullan
+            });
+            const istanbulTimeStr = dueDate.toLocaleTimeString('tr-TR', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              hour12: false,
+              timeZone: 'Europe/Istanbul'
+            });
+            
+            taskDueDateInput.value = istanbulDateStr; // YYYY-MM-DD formatı (input[type="date"] için)
+            taskDueTimeInput.value = istanbulTimeStr; // HH:MM formatı (input[type="time"] için)
+          } catch (err) {
+            console.error("[openTaskModal] dueDate parse hatası:", err);
+            // Hata durumunda inputları boş bırak
+            taskDueDateInput.value = "";
+            taskDueTimeInput.value = "";
+          }
         }
         
         // 🟢 DEĞİŞTİ: Oluşturulma tarihini göster (created_at alanı - İstanbul saat dilimi)

@@ -9213,6 +9213,24 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           return dateA - dateB;
         });
         
+        // Görevleri öncelik ve teslim tarihine göre sırala
+        tasks.sort((a, b) => {
+          // Öncelik sıralaması: high=1, medium=2, low=3 (küçük sayı üstte)
+          const priorityOrder = { high: 1, medium: 2, low: 3 };
+          const aPriority = priorityOrder[a.priority] || 2; // varsayılan: orta
+          const bPriority = priorityOrder[b.priority] || 2;
+          
+          // Öncelikler farklıysa, yüksek öncelik üstte olsun
+          if (aPriority !== bPriority) {
+            return aPriority - bPriority;
+          }
+          
+          // Aynı önceliğe sahipse, teslim tarihine göre sırala (yakın olan üstte)
+          const dateA = new Date(a.dueDate).getTime();
+          const dateB = new Date(b.dueDate).getTime();
+          return dateA - dateB;
+        });
+        
         const columnEl = document.createElement("div");
         columnEl.className = "task-board-column";
         columnEl.setAttribute("data-status", column.status);
@@ -9269,14 +9287,24 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         cardEl.appendChild(descEl);
       }
       
-      // Teslim tarihi (varsa)
+      // 🟢 DEĞİŞTİ: Teslim tarihi (varsa) - İstanbul saat dilimi
       if (task.dueDate) {
         const dueDateEl = document.createElement("div");
         dueDateEl.style.cssText = "font-size: 10px; color: #6b7280; margin-bottom: 6px; display: flex; align-items: center; gap: 3px;";
         const dueDate = new Date(task.dueDate);
-        const dateStr = dueDate.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        const timeStr = dueDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-        dueDateEl.innerHTML = `📅 ${dateStr} - ${timeStr}`;
+        // İstanbul saat dilimine çevir
+        const dateStr = dueDate.toLocaleDateString('tr-TR', { 
+          day: '2-digit', 
+          month: '2-digit', 
+          year: 'numeric',
+          timeZone: 'Europe/Istanbul' 
+        });
+        const timeStr = dueDate.toLocaleTimeString('tr-TR', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          timeZone: 'Europe/Istanbul'
+        });
+        dueDateEl.textContent = `📅 ${dateStr} - ${timeStr}`; // innerHTML yerine textContent (XSS koruması)
         cardEl.appendChild(dueDateEl);
       }
       

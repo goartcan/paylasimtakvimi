@@ -9102,6 +9102,24 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         // Status alanı eksik olan görevleri "todo" olarak kabul et (veri bütünlüğü için)
         const tasks = taskBoardData.filter(task => (task.status || "todo") === column.status);
         
+        // Görevleri öncelik ve teslim tarihine göre sırala
+        tasks.sort((a, b) => {
+          // Öncelik sıralaması: high=1, medium=2, low=3 (küçük sayı üstte)
+          const priorityOrder = { high: 1, medium: 2, low: 3 };
+          const aPriority = priorityOrder[a.priority] || 2; // varsayılan: orta
+          const bPriority = priorityOrder[b.priority] || 2;
+          
+          // Öncelikler farklıysa, yüksek öncelik üstte olsun
+          if (aPriority !== bPriority) {
+            return aPriority - bPriority;
+          }
+          
+          // Aynı önceliğe sahipse, teslim tarihine göre sırala (yakın olan üstte)
+          const dateA = new Date(a.dueDate).getTime();
+          const dateB = new Date(b.dueDate).getTime();
+          return dateA - dateB;
+        });
+        
         const columnEl = document.createElement("div");
         columnEl.className = "task-board-column";
         columnEl.setAttribute("data-status", column.status);
@@ -9275,11 +9293,66 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
         taskDescriptionInput.value = task.description || "";
         taskNoteInput.value = task.note || "";
         
-        // Teslim tarihi ve saati ayarla
+        // 🟢 DEĞİŞTİ: Teslim tarihi ve saati ayarla (İstanbul saat dilimi)
         if (task.dueDate) {
-          const dueDate = new Date(task.dueDate);
-          taskDueDateInput.value = dueDate.toISOString().split('T')[0];
-          taskDueTimeInput.value = dueDate.toTimeString().slice(0, 5);
+          try {
+            // Backend'den ISO formatında geliyor (örn: "2025-11-24T14:00:00.000Z" - UTC)
+            const dueDate = new Date(task.dueDate);
+            
+            // İstanbul saat dilimine çevir (Europe/Istanbul - UTC+3)
+            const istanbulDateStr = dueDate.toLocaleDateString('en-CA', { 
+              timeZone: 'Europe/Istanbul' // YYYY-MM-DD formatı için en-CA kullan
+            });
+            const istanbulTimeStr = dueDate.toLocaleTimeString('tr-TR', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              hour12: false,
+              timeZone: 'Europe/Istanbul'
+            });
+            
+            taskDueDateInput.value = istanbulDateStr; // YYYY-MM-DD formatı (input[type="date"] için)
+            taskDueTimeInput.value = istanbulTimeStr; // HH:MM formatı (input[type="time"] için)
+          } catch (err) {
+            console.error("[openTaskModal] dueDate parse hatası:", err);
+            // Hata durumunda inputları boş bırak
+            taskDueDateInput.value = "";
+            taskDueTimeInput.value = "";
+          }
+        }
+        
+        // 🟢 DEĞİŞTİ: Oluşturulma tarihini göster (created_at alanı - İstanbul saat dilimi)
+        if (task.created_at && taskCreatedAtRow && taskCreatedAtInput) {
+          try {
+            // SQLite'dan gelen tarih formatı: "YYYY-MM-DD HH:MM:SS" (UTC saat dilimi)
+            // Tarihi UTC olarak yorumla (sonuna "Z" veya "UTC" ekleyerek)
+            let utcDateString = task.created_at;
+            if (!utcDateString.endsWith('Z') && !utcDateString.includes('+')) {
+              utcDateString = utcDateString.replace(' ', 'T') + 'Z'; // ISO formatına çevir ve UTC olarak işaretle
+            }
+            
+            const createdDate = new Date(utcDateString);
+            
+            // İstanbul saat dilimine çevir (Europe/Istanbul - otomatik yaz/kış saati desteği)
+            const dateStr = createdDate.toLocaleDateString('tr-TR', { 
+              day: '2-digit', 
+              month: '2-digit', 
+              year: 'numeric',
+              timeZone: 'Europe/Istanbul' // İstanbul saat dilimi (UTC+3)
+            });
+            const timeStr = createdDate.toLocaleTimeString('tr-TR', { 
+              hour: '2-digit', 
+              minute: '2-digit',
+              timeZone: 'Europe/Istanbul' // İstanbul saat dilimi (UTC+3)
+            });
+            taskCreatedAtInput.value = `${dateStr} - ${timeStr}`;
+            taskCreatedAtRow.style.display = "block"; // Alanı görünür yap
+          } catch (err) {
+            console.error("[openTaskModal] created_at parse hatası:", err);
+            taskCreatedAtRow.style.display = "none"; // Hata varsa gizle
+          }
+        } else {
+          // created_at yoksa alanı gizle
+          if (taskCreatedAtRow) taskCreatedAtRow.style.display = "none";
         }
         
         // 🟢 DEĞİŞTİ: Oluşturulma tarihini göster (created_at alanı)

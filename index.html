@@ -4518,6 +4518,14 @@ let assigneeFilter =
 if (assigneeFilter !== "all" && assigneeFilter !== "mine") {
   assigneeFilter = "all";
 }
+
+// Görev paneli filtresi state (localStorage'dan yükle)
+const TASK_ASSIGNEE_FILTER_KEY = "task_assignee_filter";
+let taskAssigneeFilter = safeLocalStorageGet(TASK_ASSIGNEE_FILTER_KEY, "all");
+if (taskAssigneeFilter !== "all" && taskAssigneeFilter !== "mine") {
+  taskAssigneeFilter = "all"; // Geçersiz değer varsa sıfırla
+}
+
 let responsibleUsers = [];
 const responsibleUserMap = new Map();
 
@@ -9155,13 +9163,6 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
     }
     
     let taskBoardData = [];
-    
-    // Görev filtresi state (localStorage'dan yükle)
-    const TASK_ASSIGNEE_FILTER_KEY = "task_assignee_filter";
-    let taskAssigneeFilter = safeLocalStorageGet(TASK_ASSIGNEE_FILTER_KEY, "all");
-    if (taskAssigneeFilter !== "all" && taskAssigneeFilter !== "mine") {
-      taskAssigneeFilter = "all"; // Geçersiz değer varsa sıfırla
-    }
 
     const taskBoardColumns = [
       { id: "todo", title: "Bekliyor", status: "todo" },

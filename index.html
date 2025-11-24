@@ -9019,7 +9019,9 @@ function entryMatchesSearchQuery(entry, queryOverride = null) {
           })
           .map(task => ({
             ...task,
-            status: task.status || "todo"
+            status: task.status || "todo",
+            // 🟢 EKLE: Backend'den snake_case geliyor, camelCase'e çevir
+            dueDate: task.due_date || task.dueDate || null // Backend alanı: due_date
           }));
       } catch (err) {
         console.error('[loadTasksFromServer] Görevler yüklenemedi:', err.message);

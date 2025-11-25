@@ -42,7 +42,8 @@ app.use(cors({
     "http://127.0.0.1:8888",
     "http://localhost:5500",
     "http://127.0.0.1:5500",
-    "https://paylasimtakvimi.onrender.com"
+    "https://paylasimtakvimi.onrender.com",
+    "http://localhost:5173" // 🔹 Vite dev server için
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

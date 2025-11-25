@@ -1,35 +1,60 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import RequireAuth from "./components/auth/RequireAuth";
 import LoginPage from "./pages/LoginPage";
 import CalendarPage from "./pages/CalendarPage";
+import DashboardPage from "./pages/DashboardPage";
+import UsersPage from "./pages/UsersPage";
+import SettingsPage from "./pages/SettingsPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 const App = () => {
-  // Kullanıcı giriş yapmış mı diye localStorage'dan token'a bakıyoruz
-  const token = localStorage.getItem("pt_token");
-
   return (
     <Routes>
-      {/* Login sayfası */}
+      {/* Public route: Login sayfası */}
       <Route path="/login" element={<LoginPage />} />
 
-      {/* Takvim sayfası - sadece token varsa erişilsin */}
+      {/* Protected routes: Auth gerektirenler */}
       <Route
         path="/calendar"
-        element={token ? <CalendarPage /> : <Navigate to="/login" replace />}
-      />
-
-      {/* Ana rota (/) */}
-      <Route
-        path="/"
         element={
-          token ? (
-            // Eğer token varsa ana sayfaya gelince direkt takvime yönlendir
-            <Navigate to="/calendar" replace />
-          ) : (
-            // Token yoksa ana sayfa login'e yönlendirsin
-            <Navigate to="/login" replace />
-          )
+          <RequireAuth>
+            <CalendarPage />
+          </RequireAuth>
         }
       />
+
+      <Route
+        path="/dashboard"
+        element={
+          <RequireAuth>
+            <DashboardPage />
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/users"
+        element={
+          <RequireAuth>
+            <UsersPage />
+          </RequireAuth>
+        }
+      />
+
+      <Route
+        path="/settings"
+        element={
+          <RequireAuth>
+            <SettingsPage />
+          </RequireAuth>
+        }
+      />
+
+      {/* Ana rota: Takvime yönlendir */}
+      <Route path="/" element={<Navigate to="/calendar" replace />} />
+
+      {/* 404: Tanımsız rotalar */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };

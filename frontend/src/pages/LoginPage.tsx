@@ -1,48 +1,35 @@
-import { FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useState, type FormEvent } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { login } from "@/lib/api/auth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
+// Login sayfası
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Router üzerinden yönlendirme yapmak için
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Kullanıcı nereden geldi? (protected route'tan yönlendirildiyse)
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || "/calendar";
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     try {
-      console.log(
-        "Login isteği backend'e gitti. Detaylar için konsolu kontrol et."
-      );
-
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
-        { email, password },
-        {
-          // Şimdilik cookie vs göndermiyoruz
-          withCredentials: false,
-        }
-      );
-
-      console.log("Login cevabı:", response.data);
-
-      const { token, user } = response.data;
-
-      // 🔹 Token ve kullanıcı bilgisini tarayıcıya kaydediyoruz
-      localStorage.setItem("pt_token", token);
-      localStorage.setItem("pt_user", JSON.stringify(user));
-
-      // 🔹 Artık alert yerine direkt takvim sayfasına yönlendiriyoruz
-      navigate("/calendar", { replace: true });
-    } catch (error) {
-      console.error("Login hatası:", error);
-      alert(
-        "Giriş sırasında bir hata oluştu. E-posta / şifreyi veya CORS ayarlarını kontrol et."
-      );
+      await login(email, password);
+      // Başarılı login sonrası yönlendir
+      navigate(from, { replace: true });
+    } catch (err) {
+      console.error("Login hatası:", err);
+      setError("Giriş sırasında bir hata oluştu. E-posta veya şifreyi kontrol edin.");
     } finally {
       setLoading(false);
     }
@@ -50,46 +37,53 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100">
-      <div className="w-full max-w-md bg-white rounded-xl shadow p-6 space-y-4">
-        <h1 className="text-2xl font-semibold text-center">
-          Paylaşım Takvimi
-        </h1>
-        <p className="text-sm text-slate-500 text-center">
-          Lütfen giriş yapın
-        </p>
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Paylaşım Takvimi</CardTitle>
+          <CardDescription>Lütfen giriş yapın</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-600">
+                {error}
+              </div>
+            )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-sm font-medium">E-posta</label>
-            <input
-              type="email"
-              className="w-full rounded-md border px-3 py-2 text-sm"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium">
+                E-posta
+              </label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="ornek@email.com"
+              />
+            </div>
 
-          <div className="space-y-1">
-            <label className="text-sm font-medium">Şifre</label>
-            <input
-              type="password"
-              className="w-full rounded-md border px-3 py-2 text-sm"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium">
+                Şifre
+              </label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="••••••••"
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-md bg-slate-900 text-white py-2 text-sm font-medium disabled:opacity-60"
-          >
-            {loading ? "Giriş yapılıyor..." : "Giriş yap"}
-          </button>
-        </form>
-      </div>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Giriş yapılıyor..." : "Giriş yap"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

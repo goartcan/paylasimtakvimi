@@ -1,19 +1,58 @@
-import axios from "axios";
+import apiClient from "./client";
 
-// Ortak axios instance - tüm istekler bu baseURL'i kullanacak
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  withCredentials: true, // cookie tabanlı auth düşünürsen işine yarar, şimdilik kalsın
-});
+// Kullanıcı bilgisi tipi
+interface User {
+  id: number;
+  email: string;
+  role: "admin" | "user";
+  approved: boolean;
+}
+
+// Login yanıt tipi
+interface LoginResponse {
+  token: string;
+  user: User;
+}
 
 // Backend: POST /auth/login
-export async function loginRequest(email: string, password: string) {
-  // Burada backend'e login isteği atıyoruz
-  const response = await api.post("/auth/login", {
+export async function login(email: string, password: string): Promise<LoginResponse> {
+  const response = await apiClient.post<LoginResponse>("/auth/login", {
     email,
     password,
   });
 
-  // Backend'in döndürdüğü JSON'u aynen geri veriyoruz
+  // Token ve kullanıcı bilgisini localStorage'a kaydet
+  localStorage.setItem("pt_token", response.data.token);
+  localStorage.setItem("pt_user", JSON.stringify(response.data.user));
+
   return response.data;
+}
+
+// Logout - localStorage'dan token ve kullanıcı bilgisini temizle
+export function logout(): void {
+  localStorage.removeItem("pt_token");
+  localStorage.removeItem("pt_user");
+}
+
+// Backend: GET /auth/me - Mevcut kullanıcı bilgisini getir
+export async function getMe(): Promise<User> {
+  const response = await apiClient.get<User>("/auth/me");
+  return response.data;
+}
+
+// localStorage'dan kullanıcı bilgisini oku
+export function getStoredUser(): User | null {
+  const userRaw = localStorage.getItem("pt_user");
+  if (!userRaw) return null;
+  
+  try {
+    return JSON.parse(userRaw) as User;
+  } catch {
+    return null;
+  }
+}
+
+// Token var mı kontrolü
+export function isAuthenticated(): boolean {
+  return localStorage.getItem("pt_token") !== null;
 }

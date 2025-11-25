@@ -1,0 +1,135 @@
+# PROJECT_CONSTRAINTS - Paylaşım Takvimi V2
+
+## 1. Stratejik Kararlar (Tartışma KAPALI)
+
+### Refactor yok, tamamen rewrite
+- 8800+ satırlık Vanilla JS "God file" refactor edilmeyecek
+- Eski kod sadece "davranış/spec" referansı; yeni kod baştan yazılacak (React + TS)
+
+### Vite SPA, Next.js yok
+- Admin / takvim app → SEO yok → SSR/RSC gereksiz
+- Framework: Vite + React + TS
+- Next.js önerisi otomatik REDDEDİLECEK
+
+### Backend dokunulmaz
+- Node/Express + SQLite (Render) şu fazda sadece CORS ve ufak config dışında değiştirilmez
+- API contract'a uyulur; frontend data shape uydurmaz
+
+### Parallel run + zero downtime
+- Eski Vanilla frontend prod'da çalışmaya devam eder
+- Yeni React frontend staging/beta domain'de
+- Karar anında sadece domain switch yapılır
+
+---
+
+## 2. Second System Effect'e Karşı Scope Kuralları
+
+### Önce bire bir migration, sonra yeni feature
+- Faz 1 hedefi: Eski davranışları 1:1 karşılayan yeni arayüz
+- Dashboard, ekstra filtreler, fantezi animasyonlar → Faz 2
+
+### "Tool şişirmesi" yasağı
+Stack sabit:
+- React
+- TypeScript
+- Vite
+- Tailwind
+- shadcn/ui
+
+Bunların üstüne sadece bilinçli karar + gerçek ihtiyaç çıkarsa eklenir:
+- State lib (Redux/Zustand)
+- RTK Query / React Query
+- Form lib alternatifi
+
+### "Bir de şunu ekleyelim" yasağı
+- Her görevde sadece tek feature
+- "Madem buradayız, şunu da düzeltelim" → ayrı task
+
+---
+
+## 3. shadcn/ui ve Tasarım Kuralları
+
+### shadcn = hız, değil "kader"
+- Kullanım amacı: Start-up hızında düzgün UI
+- Kritik bileşenleri minimal override edilebilir kalıplar halinde kullan
+
+### Kısıtlı bileşen seti
+Onaylı komponentler:
+- Button, Input, Select, Dialog, Sheet, Tabs, Card, Badge, Tooltip
+
+### Fork/override stratejisi
+- Çok modifiye ettiğin komponentleri projeye kopyalayıp kendi components/ altında tut
+
+### Design freeze
+- İlk sürümde hedef: işlevsel ve tutarlı görünüm
+- "Pixel-perfect" redesign, micro-animasyonlar → Faz 2
+
+---
+
+## 4. Performans ve Basitlik Kuralları
+
+### State yapısını sade tut
+Global:
+- Auth (kullanıcı, rol)
+- Tema (light/dark)
+
+Calendar state:
+- Öne çıkan şeyler için tek context (gerekirse)
+- Aşırı karmaşıksa önce custom hook, sonra context
+
+### Gereksiz optimizasyon yok
+- useMemo / useCallback sadece gerçek performans problemi görüldüğünde
+- "Her şeyi memo'layalım" → kod karmaşıklığı = bakım yükü
+
+---
+
+## 5. Kod Kuralları
+
+### TypeScript
+- `any` kullanma - her zaman uygun tip tanımla
+- `unknown` kullan, sonra type guard ile daralt
+
+### Güvenlik
+- `dangerouslySetInnerHTML` kullanma
+- `innerHTML` kullanma
+- XSS açıklarına dikkat
+
+### API Çağrıları
+- Tüm istekler `lib/api/client.ts` üzerinden
+- Token interceptor ile otomatik auth header
+
+### Dosya Organizasyonu
+```
+frontend/src/
+├── components/
+│   ├── calendar/
+│   ├── layout/
+│   ├── auth/
+│   └── ui/          # shadcn bileşenleri
+├── lib/
+│   ├── api/         # API client ve endpoint fonksiyonları
+│   ├── types/       # TypeScript tip tanımları
+│   └── utils/       # Yardımcı fonksiyonlar
+├── pages/           # Sayfa bileşenleri
+└── context/         # React context'ler (gerekirse)
+```
+
+---
+
+## 6. Çalışma Şekli
+
+### Her prompt = tek feature
+- "Login + takvim + admin" gibi birleşik iş asla tek mesajda istenmez
+
+### Plan + diff + test üçlüsü
+- Plan: 3–6 madde
+- Kod: Sadece ilgili dosya/blok
+- Test: 3–5 manuel senaryo
+
+### Eski kod = davranış spec'i
+Eski index.html'den:
+- Endpoint adresleri
+- Veri şekli
+- UI akışı
+okunur. Fonksiyonları bire bir taşıma; React dünyasına göre yeniden tasarla.
+
